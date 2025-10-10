@@ -38,3 +38,11 @@ The following details are pre-defined in the DDEV configuration:
 - Username: `admin`
 - Password: `admin`
 
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+**Note**: This is an educational project demonstrating PHP language evolution. Each version branch contains functionally identical code optimized for its target PHP version.

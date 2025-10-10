@@ -186,3 +186,11 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - Number of classes/methods
 - Test coverage percentage
 - Documentation completeness
+
+
+### Nice to haves
+
+- [ ] Use **wpdi** for DI
+- [ ] MCP Server integration via WordPress MCP Adapter
+- [ ] WP-CLI command support
+- [ ] Recipe dependency management
