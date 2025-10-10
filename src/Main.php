@@ -10,22 +10,14 @@ declare( strict_types = 1 );
 namespace Whiskey;
 
 /**
- * Plugin class - Singleton pattern for main plugin initialization
+ * Main plugin bootstrap - manages plugin lifecycle and dependencies
  */
 final class Main {
 
-	private static ?Main $instance = null;
+	private RecipeRegistry $registry;
 
-	private function __construct() {
-		// Intentionally empty - use instance() to get plugin.
-	}
-
-	public static function instance(): Main {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
+	public function __construct( RecipeRegistry $registry ) {
+		$this->registry = $registry;
 	}
 
 	public function init(): void {
@@ -33,7 +25,6 @@ final class Main {
 	}
 
 	public function register_components(): void {
-		// Initialize recipe registry - collects recipes via hooks.
-		RecipeRegistry::instance()->init();
+		$this->registry->init();
 	}
 }

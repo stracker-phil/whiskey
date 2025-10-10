@@ -14,6 +14,7 @@
 declare( strict_types = 1 );
 
 use Whiskey\Main;
+use Whiskey\RecipeRegistry;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,5 +29,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	);
 }
 
-// Initialize plugin.
-Main::instance()->init();
+// Initialize plugin with dependencies.
+$registry = new RecipeRegistry();
+$main     = new Main( $registry );
+$main->init();

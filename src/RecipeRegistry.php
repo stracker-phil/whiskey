@@ -14,28 +14,12 @@ namespace Whiskey;
  */
 final class RecipeRegistry {
 
-	private static ?RecipeRegistry $instance = null;
-
 	/**
 	 * @var array<string, array>
 	 */
 	private array $recipes = [];
 
-	/**
-	 * Whether recipes have been collected
-	 */
 	private bool $initialized = false;
-
-	private function __construct() {
-	}
-
-	public static function instance(): RecipeRegistry {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
 
 	/**
 	 * @explain Pass registry instance to hook callbacks for dependency injection.
