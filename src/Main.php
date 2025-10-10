@@ -33,6 +33,7 @@ final class Main {
 	}
 
 	public function register_components(): void {
-		// Future: Register REST routes, recipe registry, etc.
+		// Initialize recipe registry - collects recipes via hooks.
+		RecipeRegistry::instance()->init();
 	}
 }
