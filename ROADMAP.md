@@ -30,30 +30,30 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 ### Branch `php-7.4` - Baseline Implementation
 
 #### Core Plugin Setup
-- [ ] Autoloader setup (PSR-4)
-- [ ] Define plugin constants (version, path, url)
 
+- [x] Autoloader setup (PSR-4 using composer)
+- [x] Main bootstrap class with DI
 
 #### Recipe Registry (Hook System)
-- [ ] Implement `RecipeRegistry` class
-- [ ] Add `whiskey:register_recipe` hook
-- [ ] Recipe storage and retrieval
-- [ ] Basic recipe validation
 
+- [x] Implement `RecipeRegistry` class
+- [x] Add `whiskey:register_recipe` hook
+- [x] Recipe storage and retrieval
+- [x] Basic recipe validation
 
 #### Handler Architecture
-- [ ] Create `RecipeHandlerInterface`
-- [ ] Define handler method signatures: `validate()`, `execute()`
-- [ ] Implement factory pattern for handler selection
 
+- [x] Create `RecipeHandlerInterface`
+- [x] Define handler method signatures: `validate()`, `execute()`
+- [x] Create `ExecutionResult` class for type-safe responses
+- [x] Implement factory pattern for handler selection
 
 #### First Handler: PayPal (Proof of Concept)
-- [ ] `PayPalHandler` class
-- [ ] Define the recipe schema for PayPal
-- [ ] Basic validation logic
-- [ ] Execute: clear_transients operation
-- [ ] Execute: verify_connection operation
 
+- [x] `PayPalHandler` class
+- [x] Define the recipe schema for PayPal (mode: sandbox/live)
+- [x] Basic validation logic
+- [x] Execute method returning ExecutionResult
 
 #### REST API Controller
 
@@ -71,16 +71,17 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] `WordPressHandler` skeleton
 
 #### Testing Setup
-- [ ] PHPUnit configuration
-- [ ] Test RecipeRegistry
-- [ ] Test PayPalHandler
 
+- [x] PHPUnit configuration
+- [x] Test RecipeRegistry
+- [x] Test Main class
+- [x] Test PayPalHandler
 - [ ] Test REST endpoints
 
 #### Documentation
-- [ ] Inline @explain comments
-- [ ] README with usage examples
 
+- [x] Inline @explain comments throughout codebase
+- [x] README with usage examples
 - [ ] Capture baseline complexity metrics
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
