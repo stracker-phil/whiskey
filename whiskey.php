@@ -11,4 +11,22 @@
  * @package Whiskey
  */
 
+declare( strict_types = 1 );
+
+use Whiskey\Main;
+
 defined( 'ABSPATH' ) || exit;
+
+// Load Composer autoloader.
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+} else {
+	// Fallback error for missing dependencies.
+	wp_die(
+		esc_html__( 'Whiskey plugin requires Composer dependencies. Run: composer install', 'whiskey' ),
+		esc_html__( 'Missing Dependencies', 'whiskey' )
+	);
+}
+
+// Initialize plugin.
+Main::instance()->init();
