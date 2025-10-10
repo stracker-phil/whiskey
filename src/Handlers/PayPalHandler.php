@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Handlers;
 
+use Whiskey\ExecutionResult;
 use Whiskey\RecipeHandlerInterface;
 
 /**
@@ -30,13 +31,13 @@ class PayPalHandler implements RecipeHandlerInterface {
 		return true;
 	}
 
-	public function execute( array $config ): array {
-		$results = [
-			'success' => true,
-			'message' => 'PayPal recipe executed',
-			'data'    => [],
-		];
+	public function execute( array $config ): ExecutionResult {
+		$data = [];
 
-		return $results;
+		return new ExecutionResult(
+			true,
+			'PayPal recipe executed successfully',
+			$data
+		);
 	}
 }

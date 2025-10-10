@@ -32,10 +32,10 @@ interface RecipeHandlerInterface {
 	 * Execute recipe operations
 	 *
 	 * @explain Performs the actual recipe operations (e.g., configure PayPal, setup WooCommerce).
-	 *          Returns result array with 'success' boolean and optional 'message' or 'data'.
+	 *          Returns ExecutionResult object with success status and optional data.
 	 *
 	 * @param array $config Recipe configuration to execute.
-	 * @return array Result with keys: 'success' (bool), 'message' (string), 'data' (array).
+	 * @return ExecutionResult Execution result.
 	 */
-	public function execute( array $config ): array;
+	public function execute( array $config ): ExecutionResult;
 }
