@@ -1,0 +1,19 @@
+{
+  "name": "stracker-phil/whiskey",
+  "description": "WordPress configuration recipes demonstrating PHP 7.4 to 8.3 evolution",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Whiskey\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Whiskey\\Tests\\": "tests/"
+    }
+  }
+}
