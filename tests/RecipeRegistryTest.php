@@ -41,37 +41,41 @@ final class RecipeRegistryTest extends TestCase {
 		$this->assertEquals( $recipe, $this->registry->get( 'test-recipe' ) );
 	}
 
-	public function test_register_ignores_recipe_without_name(): void {
-		$recipe = [
-			'type'   => 'paypal',
-			'config' => [ 'mode' => 'sandbox' ],
-		];
-
+	/**
+	 * @dataProvider invalid_recipe_provider
+	 */
+	public function test_register_ignores_invalid_recipe( array $recipe ): void {
 		$this->registry->register( $recipe );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
-	public function test_register_ignores_recipe_without_type(): void {
-		$recipe = [
-			'name'   => 'test-recipe',
-			'config' => [ 'mode' => 'sandbox' ],
+	/**
+	 * Data provider for invalid recipes
+	 *
+	 * @return array<string, array<array>>
+	 */
+	public function invalid_recipe_provider(): array {
+		return [
+			'missing name'   => [
+				[
+					'type'   => 'paypal',
+					'config' => [ 'mode' => 'sandbox' ],
+				],
+			],
+			'missing type'   => [
+				[
+					'name'   => 'test-recipe',
+					'config' => [ 'mode' => 'sandbox' ],
+				],
+			],
+			'missing config' => [
+				[
+					'name' => 'test-recipe',
+					'type' => 'paypal',
+				],
+			],
 		];
-
-		$this->registry->register( $recipe );
-
-		$this->assertEmpty( $this->registry->all() );
-	}
-
-	public function test_register_ignores_recipe_without_config(): void {
-		$recipe = [
-			'name' => 'test-recipe',
-			'type' => 'paypal',
-		];
-
-		$this->registry->register( $recipe );
-
-		$this->assertEmpty( $this->registry->all() );
 	}
 
 	public function test_get_returns_null_for_nonexistent_recipe(): void {
