@@ -3,7 +3,6 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Whiskey\ExecutionResult;
 use Whiskey\RecipeHandlerInterface;
 use Whiskey\Handlers\PayPalHandler;
@@ -11,7 +10,7 @@ use Whiskey\Handlers\PayPalHandler;
 /**
  * @covers PayPalHandler
  */
-final class PayPalHandlerTest extends TestCase {
+final class PayPalHandlerTest extends WhiskeyTest {
 	private ?PayPalHandler $handler = null;
 
 	protected function setUp(): void {

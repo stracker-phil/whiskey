@@ -3,7 +3,6 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Mockery;
 use Mockery\MockInterface;
 use WP_REST_Request;
@@ -17,7 +16,7 @@ use Whiskey\ExecutionResult;
 /**
  * @covers RestController
  */
-final class RestControllerTest extends TestCase {
+final class RestControllerTest extends WhiskeyTest {
 	private ?RestController $controller = null;
 
 	/** @var MockInterface&RecipeRegistry */

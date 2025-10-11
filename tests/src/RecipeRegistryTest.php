@@ -3,29 +3,20 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Whiskey\RecipeRegistry;
 use function Brain\Monkey\Actions\expectDone;
 use function Brain\Monkey\Functions\when;
-use function Brain\Monkey\setUp;
-use function Brain\Monkey\tearDown;
 
 /**
  * @covers RecipeRegistry
  */
-final class RecipeRegistryTest extends TestCase {
+final class RecipeRegistryTest extends WhiskeyTest {
 	private ?RecipeRegistry $registry = null;
 
 	protected function setUp(): void {
 		parent::setUp();
-		setUp();
 
 		$this->registry = new RecipeRegistry();
-	}
-
-	protected function tearDown(): void {
-		tearDown();
-		parent::tearDown();
 	}
 
 	/**

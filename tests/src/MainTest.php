@@ -3,20 +3,17 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Mockery;
 use Mockery\MockInterface;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
 use Whiskey\RestController;
 use function Brain\Monkey\Actions\expectAdded;
-use function Brain\Monkey\setUp;
-use function Brain\Monkey\tearDown;
 
 /**
  * @covers Main
  */
-final class MainTest extends TestCase {
+final class MainTest extends WhiskeyTest {
 	/** @var MockInterface&RecipeRegistry */
 	private MockInterface $registry;
 
@@ -27,18 +24,11 @@ final class MainTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		setUp();
 
 		$this->registry       = Mockery::mock( RecipeRegistry::class );
 		$this->restController = Mockery::mock( RestController::class );
 
 		$this->main = new Main( $this->registry, $this->restController );
-	}
-
-	protected function tearDown(): void {
-		tearDown();
-		Mockery::close();
-		parent::tearDown();
 	}
 
 	/**
