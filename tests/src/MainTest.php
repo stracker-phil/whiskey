@@ -1,62 +1,95 @@
 <?php
-/**
- * Tests for Main
- *
- * @package Whiskey\Tests
- */
-
 declare( strict_types = 1 );
 
+namespace Whiskey\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Whiskey\HandlerFactory;
+use Mockery;
+use Mockery\MockInterface;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
 use Whiskey\RestController;
+use function Brain\Monkey\Actions\expectAdded;
+use function Brain\Monkey\setUp;
+use function Brain\Monkey\tearDown;
 
 /**
- * Main test case
+ * @covers Main
  */
 final class MainTest extends TestCase {
+	/** @var MockInterface&RecipeRegistry */
+	private MockInterface $registry;
 
-	private RecipeRegistry $registry;
-	private HandlerFactory $factory;
-	private RestController $rest_controller;
-	private Main $main;
+	/** @var MockInterface&RestController */
+	private MockInterface $restController;
+
+	private ?Main $main = null;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->registry        = new RecipeRegistry();
-		$this->factory         = new HandlerFactory();
-		$this->rest_controller = new RestController( $this->registry, $this->factory );
-		$this->main            = new Main( $this->registry, $this->rest_controller );
+		setUp();
 
-		// Reset global hooks between tests.
-		global $wp_filter;
-		$wp_filter = [];
+		$this->registry       = Mockery::mock( RecipeRegistry::class );
+		$this->restController = Mockery::mock( RestController::class );
+
+		$this->main = new Main( $this->registry, $this->restController );
 	}
 
-	public function test_constructor_accepts_dependencies(): void {
-		$registry        = new RecipeRegistry();
-		$factory         = new HandlerFactory();
-		$rest_controller = new RestController( $registry, $factory );
-		$main            = new Main( $registry, $rest_controller );
-
-		$this->assertInstanceOf( Main::class, $main );
+	protected function tearDown(): void {
+		tearDown();
+		Mockery::close();
+		parent::tearDown();
 	}
 
-	public function test_register_components_initializes_registry(): void {
-		$hook_called = false;
+	/**
+	 * GIVEN Main is initialized
+	 * WHEN init() is called
+	 * THEN WordPress hooks should be registered
+	 * AND components should initialize on 'init'
+	 * AND REST routes should register on 'rest_api_init'
+	 */
+	public function testInitRegistersWordPressHooks(): void {
+		expectAdded( 'init' )
+			->once()
+			->with( [ $this->main, 'register_components' ] );
 
-		add_action(
-			'whiskey:register_recipe',
-			function () use ( &$hook_called ) {
-				$hook_called = true;
-			}
-		);
+		expectAdded( 'rest_api_init' )
+			->once()
+			->with( [ $this->main, 'register_rest_routes' ] );
+
+		$this->main->init();
+
+		// Count the mockery assertions.
+		$this->addToAssertionCount( 2 );
+	}
+
+	/**
+	 * GIVEN the recipe registry is configured
+	 * WHEN register_components is called
+	 * THEN the registry should initialize
+	 */
+	public function testRegisterComponentsDelegatesToRegistry(): void {
+		$this->registry->expects( 'init' )
+			->once();
 
 		$this->main->register_components();
 
-		$this->assertTrue( $hook_called, 'Registry init should fire registration hook' );
+		// Count the mockery assertion.
+		$this->addToAssertionCount( 1 );
+	}
+
+	/**
+	 * GIVEN the REST controller is configured
+	 * WHEN register_rest_routes is called
+	 * THEN the controller should register its routes
+	 */
+	public function testRegisterRestRoutesDelegatesToController(): void {
+		$this->restController->expects( 'register_routes' )
+			->once();
+
+		$this->main->register_rest_routes();
+
+		// Count the mockery assertion.
+		$this->addToAssertionCount( 1 );
 	}
 }
