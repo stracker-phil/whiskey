@@ -13,8 +13,10 @@
 
 declare( strict_types = 1 );
 
+use Whiskey\HandlerFactory;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
+use Whiskey\RestController;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,6 +32,9 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 // Initialize plugin with dependencies.
-$registry = new RecipeRegistry();
-$main     = new Main( $registry );
+$registry        = new RecipeRegistry();
+$factory         = new HandlerFactory();
+$rest_controller = new RestController( $registry, $factory );
+$main            = new Main( $registry, $rest_controller );
+
 $main->init();
