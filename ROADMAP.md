@@ -57,13 +57,13 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### REST API Controller
 
-- [ ] Register REST namespace (`whiskey/v1`)
-- [ ] `GET /recipes` - List all recipes
-- [ ] `GET /recipe/{name}` - Get recipe details
-- [ ] `POST /recipe/{name}/execute` - Execute recipe
-- [ ] `GET /status` - Plugin status
-- [ ] Permission callbacks (manage_options)
-- [ ] Response formatting (success/error)
+- [x] Register REST namespace (`whiskey/v1`)
+- [x] `GET /recipes` - List all recipes
+- [x] `GET /recipe/{name}` - Get recipe details
+- [x] `POST /recipe/{name}/apply` - Execute recipe
+- [x] `GET /status` - Plugin status
+- [x] Permission callbacks (manage_options)
+- [x] Response formatting (success/error)
 
 #### Additional Handlers
 
@@ -76,7 +76,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] Test RecipeRegistry
 - [x] Test Main class
 - [x] Test PayPalHandler
-- [ ] Test REST endpoints
+- [x] Test REST endpoints
 
 #### Documentation
 
