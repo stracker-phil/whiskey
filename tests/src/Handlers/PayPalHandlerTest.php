@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-namespace Whiskey\Tests\Handlers;
+namespace Handlers;
 
 use PHPUnit\Framework\TestCase;
 use Whiskey\ExecutionResult;
