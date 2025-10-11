@@ -4,7 +4,6 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit;
 
 use Whiskey\RecipeRegistry;
-use function Brain\Monkey\Actions\expectDone;
 use function Brain\Monkey\Functions\when;
 
 /**
@@ -26,13 +25,11 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	 * AND the registry instance should be passed for dependency injection
 	 */
 	public function testInitFiresRegistrationHook(): void {
-		expectDone( 'whiskey:register_recipe' )
+		$this->expectDone( 'whiskey:register_recipe' )
 			->once()
 			->with( $this->registry );
 
 		$this->registry->init();
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	/**
@@ -41,15 +38,13 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	 * THEN the registration hook should NOT fire again
 	 */
 	public function testInitOnlyFiresOnce(): void {
-		expectDone( 'whiskey:register_recipe' )
+		$this->expectDone( 'whiskey:register_recipe' )
 			->once()
 			->with( $this->registry );
 
 		$this->registry->init();
 		$this->registry->init(); // Second call
 		$this->registry->init(); // Third call
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	/**

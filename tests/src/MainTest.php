@@ -8,7 +8,6 @@ use Mockery\MockInterface;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
 use Whiskey\RestController;
-use function Brain\Monkey\Actions\expectAdded;
 
 /**
  * @covers Main
@@ -39,18 +38,15 @@ final class MainTest extends WhiskeyTest {
 	 * AND REST routes should register on 'rest_api_init'
 	 */
 	public function testInitRegistersWordPressHooks(): void {
-		expectAdded( 'init' )
+		$this->expectAdded( 'init' )
 			->once()
 			->with( [ $this->main, 'register_components' ] );
 
-		expectAdded( 'rest_api_init' )
+		$this->expectAdded( 'rest_api_init' )
 			->once()
 			->with( [ $this->main, 'register_rest_routes' ] );
 
 		$this->main->init();
-
-		// Count the mockery assertions.
-		$this->addToAssertionCount( 2 );
 	}
 
 	/**
@@ -63,9 +59,7 @@ final class MainTest extends WhiskeyTest {
 			->once();
 
 		$this->main->register_components();
-
-		// Count the mockery assertion.
-		$this->addToAssertionCount( 1 );
+		$this->assertedByMockery();
 	}
 
 	/**
@@ -78,8 +72,6 @@ final class MainTest extends WhiskeyTest {
 			->once();
 
 		$this->main->register_rest_routes();
-
-		// Count the mockery assertion.
-		$this->addToAssertionCount( 1 );
+		$this->assertedByMockery();
 	}
 }
