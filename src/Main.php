@@ -12,7 +12,7 @@ namespace Whiskey;
 /**
  * Main plugin bootstrap - manages plugin lifecycle and dependencies
  */
-final class Main {
+class Main {
 
 	private RecipeRegistry $registry;
 	private RestController $rest_controller;

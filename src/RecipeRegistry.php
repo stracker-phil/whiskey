@@ -12,7 +12,7 @@ namespace Whiskey;
 /**
  * RecipeRegistry class - Central registry for all configuration recipes
  */
-final class RecipeRegistry {
+class RecipeRegistry {
 
 	/**
 	 * @var array<string, array>

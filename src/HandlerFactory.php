@@ -17,7 +17,7 @@ use Whiskey\Handlers\PayPalHandler;
  * @explain Maps recipe types to their corresponding handler implementations.
  *          Uses switch statement in PHP 7.4, will be refactored to match in PHP 8.0.
  */
-final class HandlerFactory {
+class HandlerFactory {
 
 	/**
 	 * Get handler instance for given recipe type
