@@ -40,13 +40,14 @@ class Main {
 		$this->rest_controller->register_routes();
 	}
 
+	/**
+	 * Load the built-in recipes from the "Recipes"-folder.
+	 */
 	private function load_builtin_recipes(): void {
-		if ( ! is_dir( WHISKEY_RECIPES_DIR ) ) {
-			return;
-		}
+		$recipes_dir = __DIR__ . '/Recipes';
 
-		foreach ( glob( WHISKEY_RECIPES_DIR . '/*.php' ) as $file ) {
-			require_once $file;
+		foreach ( glob( $recipes_dir . '/*.php' ) as $file ) {
+			include_once $file;
 		}
 	}
 }

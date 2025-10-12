@@ -26,7 +26,6 @@ final class MainTest extends WhiskeyTest {
 
 		$this->registry       = Mockery::mock( RecipeRegistry::class );
 		$this->restController = Mockery::mock( RestController::class );
-		defined( 'WHISKEY_RECIPES_DIR' ) || define( 'WHISKEY_RECIPES_DIR', '' );
 
 		$this->main = new Main( $this->registry, $this->restController );
 	}
