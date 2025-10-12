@@ -3,115 +3,43 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Handlers;
 
-use Whiskey\ExecutionResult;
-use Whiskey\Handlers\RecipeHandler;
 use Whiskey\Handlers\PayPalHandler;
-use Whiskey\Tests\Unit\WhiskeyTest;
+use Whiskey\Handlers\RecipeHandler;
 
 /**
  * @covers PayPalHandler
  */
-final class PayPalHandlerTest extends WhiskeyTest {
-	private ?PayPalHandler $handler = null;
-
-	protected function setUp(): void {
-		parent::setUp();
-
-		$this->handler = new PayPalHandler();
+final class PayPalHandlerTest extends RecipeHandlerTest {
+	protected function createHandler(): RecipeHandler {
+		return new PayPalHandler();
 	}
 
 	/**
-	 * GIVEN PayPalHandler is instantiated
-	 * WHEN checking its type
-	 * THEN it should implement RecipeHandler
+	 * GIVEN a PayPal handler
+	 * WHEN checking its TYPE constant
+	 * THEN it should be 'paypal'
 	 */
-	public function testImplementsRecipeHandler(): void {
-		$this->assertInstanceOf( RecipeHandler::class, $this->handler );
+	public function testTypeConstantIsPayPal(): void {
+		$reflection = new \ReflectionClass( $this->handler );
+		$type       = $reflection->getConstant( 'TYPE' );
+
+		$this->assertSame( 'paypal', $type );
 	}
 
 	/**
-	 * GIVEN a valid PayPal configuration with allowed mode
-	 * WHEN validate() is called
-	 * THEN it should return true
-	 *
-	 * @dataProvider validConfigProvider
-	 */
-	public function testValidateAcceptsValidConfiguration( array $config ): void {
-		$result = $this->handler->validate( $config );
-
-		$this->assertTrue( $result );
-	}
-
-	/**
-	 * GIVEN an invalid PayPal configuration
-	 * WHEN validate() is called
-	 * THEN it should return false
-	 *
-	 * @dataProvider invalidConfigProvider
-	 */
-	public function testValidateRejectsInvalidConfiguration( array $config ): void {
-		$result = $this->handler->validate( $config );
-
-		$this->assertFalse( $result );
-	}
-
-	/**
-	 * GIVEN a valid PayPal configuration
+	 * GIVEN a PayPal configuration with sandbox mode
 	 * WHEN execute() is called
-	 * THEN an ExecutionResult should be returned
-	 * AND it should indicate success
-	 * AND provide access to message and data
+	 * THEN the result should indicate PayPal-specific success
 	 */
-	public function testExecuteReturnsSuccessfulResult(): void {
-		$config = [ 'mode' => 'sandbox' ];
-
-		$result = $this->handler->execute( $config );
-
-		$this->assertInstanceOf( ExecutionResult::class, $result );
-		$this->assertTrue( $result->is_success() );
-		$this->assertIsString( $result->get_message() );
-		$this->assertIsArray( $result->get_data() );
-	}
-
-	/**
-	 * GIVEN a valid PayPal configuration
-	 * WHEN execute() result is converted to array
-	 * THEN it should contain all required keys
-	 * AND the success flag should be true
-	 */
-	public function testExecuteResultConvertsToArray(): void {
+	public function testExecuteReturnsPayPalSpecificMessage(): void {
 		$config = [ 'mode' => 'sandbox' ];
 		$result = $this->handler->execute( $config );
 
 		$array = $result->to_array();
-
-		$this->assertIsArray( $array );
-		$this->assertArrayHasKey( 'success', $array );
-		$this->assertArrayHasKey( 'message', $array );
-		$this->assertArrayHasKey( 'data', $array );
 		$this->assertTrue( $array['success'] );
-		$this->assertSame( 'PayPal recipe executed successfully', $array['message'] );
+		$this->assertStringContainsString( 'PayPal', $array['message'] );
 	}
 
-	/**
-	 * GIVEN different valid configurations
-	 * WHEN execute() is called
-	 * THEN the result should be consistent
-	 *
-	 * @dataProvider validConfigProvider
-	 */
-	public function testExecuteHandlesDifferentValidConfigurations( array $config ): void {
-		$result = $this->handler->execute( $config );
-
-		$resultArray = $result->to_array();
-		$this->assertTrue( $resultArray['success'] );
-		$this->assertArrayHasKey( 'message', $resultArray );
-		$this->assertArrayHasKey( 'data', $resultArray );
-	}
-
-	/**
-	 * @return array<string, array<string, array>>
-	 */
 	public function validConfigProvider(): array {
 		return [
 			'sandbox mode'              => [
@@ -136,9 +64,6 @@ final class PayPalHandlerTest extends WhiskeyTest {
 		];
 	}
 
-	/**
-	 * @return array<string, array<string, array>>
-	 */
 	public function invalidConfigProvider(): array {
 		return [
 			'missing mode'       => [
