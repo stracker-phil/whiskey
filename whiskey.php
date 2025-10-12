@@ -16,7 +16,7 @@ declare( strict_types = 1 );
 use Whiskey\HandlerFactory;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
-use Whiskey\RestController;
+use Whiskey\Controllers\RestController;
 
 defined( 'ABSPATH' ) || exit;
 

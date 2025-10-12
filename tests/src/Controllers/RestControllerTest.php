@@ -9,13 +9,13 @@ use WP_REST_Request;
 use WP_REST_Response;
 use Whiskey\HandlerFactory;
 use Whiskey\RecipeRegistry;
-use Whiskey\RestController;
+use Whiskey\Controllers\RestController;
 use Whiskey\Handlers\RecipeHandler;
 use Whiskey\ExecutionResult;
 use function Brain\Monkey\Functions\when;
 
 /**
- * @covers RestController
+ * @covers \Whiskey\Controllers\RestController
  */
 final class RestControllerTest extends WhiskeyTest {
 	private ?RestController $controller = null;

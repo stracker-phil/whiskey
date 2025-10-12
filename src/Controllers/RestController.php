@@ -7,10 +7,12 @@
 
 declare( strict_types = 1 );
 
-namespace Whiskey;
+namespace Whiskey\Controllers;
 
 use WP_REST_Request;
 use WP_REST_Response;
+use Whiskey\HandlerFactory;
+use Whiskey\RecipeRegistry;
 
 /**
  * REST API controller for recipe endpoints

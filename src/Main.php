@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
+use Whiskey\Controllers\RestController;
+
 /**
  * Main plugin bootstrap - manages plugin lifecycle and dependencies
  */

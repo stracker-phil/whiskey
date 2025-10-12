@@ -7,7 +7,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Whiskey\Main;
 use Whiskey\RecipeRegistry;
-use Whiskey\RestController;
+use Whiskey\Controllers\RestController;
 
 /**
  * @covers Main
