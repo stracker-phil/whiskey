@@ -40,14 +40,12 @@ class RecipeRegistry {
 	 * @explain Called by plugins/themes via the 'whiskey:register_recipe' hook.
 	 *          Registry instance is passed as hook parameter for dependency injection.
 	 */
-	public function register( array $recipe ): void {
-		// Validate required fields.
-		if ( ! isset( $recipe['name'], $recipe['type'], $recipe['config'] ) ) {
+	public function register( string $type, string $name, array $config ): void {
+		if ( empty( $name ) || empty( $type ) || empty( $config ) ) {
 			return;
 		}
 
-		// Store by name.
-		$this->recipes[ $recipe['name'] ] = $recipe;
+		$this->recipes[ $name ] = [ 'type' => $type, 'config' => $config ];
 	}
 
 	public function get( string $name ): ?array {

@@ -48,63 +48,55 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	/**
-	 * GIVEN a recipe with all required fields
+	 * GIVEN valid recipe parameters
 	 * WHEN register() is called
 	 * THEN the recipe should be stored by name
 	 */
 	public function testRegisterStoresValidRecipe(): void {
-		$recipe = [
-			'name'   => 'test-recipe',
-			'type'   => 'plugin',
-			'config' => [ 'plugin' => 'my-plugin' ],
-		];
-
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( $recipe );
+		$this->registry->register( 'plugin', 'test-recipe', [ 'plugin' => 'my-plugin' ] );
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
-		$this->assertSame( $recipe, $this->registry->get( 'test-recipe' ) );
+
+		$stored = $this->registry->get( 'test-recipe' );
+		$this->assertSame( 'plugin', $stored['type'] );
+		$this->assertSame( [ 'plugin' => 'my-plugin' ], $stored['config'] );
 	}
 
 	/**
-	 * GIVEN a recipe missing required fields
+	 * GIVEN invalid recipe parameters
 	 * WHEN register() is called
 	 * THEN the recipe should NOT be stored
 	 *
 	 * @dataProvider invalidRecipeProvider
 	 */
-	public function testRegisterIgnoresInvalidRecipe( array $invalidRecipe ): void {
+	public function testRegisterIgnoresInvalidRecipe( string $type, string $name, array $config ): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( $invalidRecipe );
+		$this->registry->register( $type, $name, $config );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
 	/**
-	 * GIVEN recipes are registered
+	 * GIVEN a recipe is registered
 	 * WHEN get() is called with an existing name
-	 * THEN the recipe should be returned
+	 * THEN the recipe should be returned with type and config
 	 */
 	public function testGetReturnsExistingRecipe(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$recipe = [
-			'name'   => 'my-recipe',
-			'type'   => 'theme',
-			'config' => [ 'theme' => 'my-theme' ],
-		];
-
-		$this->registry->register( $recipe );
+		$this->registry->register( 'theme', 'my-recipe', [ 'theme' => 'my-theme' ] );
 
 		$result = $this->registry->get( 'my-recipe' );
 
-		$this->assertSame( $recipe, $result );
+		$this->assertSame( 'theme', $result['type'] );
+		$this->assertSame( [ 'theme' => 'my-theme' ], $result['config'] );
 	}
 
 	/**
-	 * GIVEN recipes are registered
+	 * GIVEN no recipes are registered
 	 * WHEN get() is called with a non-existing name
 	 * THEN null should be returned
 	 */
@@ -124,49 +116,35 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testAllReturnsAllRecipes(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$recipe1 = [
-			'name'   => 'recipe-one',
-			'type'   => 'plugin',
-			'config' => [ 'plugin' => 'plugin-one' ],
-		];
-
-		$recipe2 = [
-			'name'   => 'recipe-two',
-			'type'   => 'plugin',
-			'config' => [ 'plugin' => 'plugin-two' ],
-		];
-
-		$this->registry->register( $recipe1 );
-		$this->registry->register( $recipe2 );
+		$this->registry->register( 'plugin', 'recipe-one', [ 'plugin' => 'plugin-one' ] );
+		$this->registry->register( 'plugin', 'recipe-two', [ 'plugin' => 'plugin-two' ] );
 
 		$all = $this->registry->all();
 
 		$this->assertCount( 2, $all );
-		$this->assertSame( $recipe1, $all['recipe-one'] );
-		$this->assertSame( $recipe2, $all['recipe-two'] );
+		$this->assertArrayHasKey( 'recipe-one', $all );
+		$this->assertArrayHasKey( 'recipe-two', $all );
+		$this->assertSame( 'plugin', $all['recipe-one']['type'] );
+		$this->assertSame( [ 'plugin' => 'plugin-one' ], $all['recipe-one']['config'] );
+		$this->assertSame( 'plugin', $all['recipe-two']['type'] );
+		$this->assertSame( [ 'plugin' => 'plugin-two' ], $all['recipe-two']['config'] );
 	}
 
 	/**
-	 * GIVEN recipes are registered
+	 * GIVEN a recipe is registered
 	 * WHEN has() is called with an existing name
 	 * THEN true should be returned
 	 */
 	public function testHasReturnsTrueForExistingRecipe(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$recipe = [
-			'name'   => 'existing-recipe',
-			'type'   => 'plugin',
-			'config' => [ 'plugin' => 'test' ],
-		];
-
-		$this->registry->register( $recipe );
+		$this->registry->register( 'plugin', 'existing-recipe', [ 'plugin' => 'test' ] );
 
 		$this->assertTrue( $this->registry->has( 'existing-recipe' ) );
 	}
 
 	/**
-	 * GIVEN recipes are registered
+	 * GIVEN no recipes are registered
 	 * WHEN has() is called with a non-existing name
 	 * THEN false should be returned
 	 */
@@ -177,58 +155,23 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	/**
-	 * @return array<string, array<string, array>>
-	 */
-	public function invalidRecipeProvider(): array {
-		return [
-			'missing name'   => [
-				'recipe' => [
-					'type'   => 'plugin',
-					'config' => [ 'plugin' => 'test' ],
-				],
-			],
-			'missing type'   => [
-				'recipe' => [
-					'name'   => 'test',
-					'config' => [ 'plugin' => 'test' ],
-				],
-			],
-			'missing config' => [
-				'recipe' => [
-					'name' => 'test',
-					'type' => 'plugin',
-				],
-			],
-			'empty array'    => [
-				'recipe' => [],
-			],
-		];
-	}
-
-	/**
 	 * GIVEN recipes are registered via the hook
 	 * WHEN get() is called WITHOUT explicit init()
 	 * THEN the registry should auto-initialize
 	 * AND the hooked recipe should be available
 	 */
 	public function testGetTriggersInitAutomatically(): void {
-		// Simulate a plugin hooking in to register a recipe
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( [
-					'name'   => 'auto-recipe',
-					'type'   => 'plugin',
-					'config' => [ 'plugin' => 'my-plugin' ],
-				] );
+				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'my-plugin' ] );
 			}
 		} );
 
-		// Call get() WITHOUT calling init() first
 		$recipe = $this->registry->get( 'auto-recipe' );
 
 		$this->assertNotNull( $recipe );
-		$this->assertSame( 'auto-recipe', $recipe['name'] );
 		$this->assertSame( 'plugin', $recipe['type'] );
+		$this->assertSame( [ 'plugin' => 'my-plugin' ], $recipe['config'] );
 	}
 
 	/**
@@ -240,11 +183,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testAllTriggersInitAutomatically(): void {
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( [
-					'name'   => 'auto-recipe',
-					'type'   => 'plugin',
-					'config' => [ 'plugin' => 'test' ],
-				] );
+				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
 			}
 		} );
 
@@ -263,14 +202,33 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testHasTriggersInitAutomatically(): void {
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( [
-					'name'   => 'auto-recipe',
-					'type'   => 'plugin',
-					'config' => [ 'plugin' => 'test' ],
-				] );
+				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
 			}
 		} );
 
 		$this->assertTrue( $this->registry->has( 'auto-recipe' ) );
+	}
+
+	/**
+	 * @return array<string, array{type: string, name: string, config: array}>
+	 */
+	public function invalidRecipeProvider(): array {
+		return [
+			'empty name'   => [
+				'type'   => 'plugin',
+				'name'   => '',
+				'config' => [ 'plugin' => 'test' ],
+			],
+			'empty type'   => [
+				'type'   => '',
+				'name'   => 'test-recipe',
+				'config' => [ 'plugin' => 'test' ],
+			],
+			'empty config' => [
+				'type'   => 'plugin',
+				'name'   => 'test-recipe',
+				'config' => [],
+			],
+		];
 	}
 }
