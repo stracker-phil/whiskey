@@ -67,8 +67,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Additional Handlers
 
-- [x] `WooCommerceHandler` skeleton
-- [x] `WordPressHandler` skeleton
+- [x] `WooCommerceHandler` handler
+- [x] `WordPressHandler` handler
 
 #### Testing Setup
 
@@ -77,6 +77,10 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] Test Main class
 - [x] Test PayPalHandler
 - [x] Test REST endpoints
+
+#### Sample Recipes
+
+- [ ] Provide at least one recipe for each handler
 
 #### Documentation
 
