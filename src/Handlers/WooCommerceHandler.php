@@ -1,6 +1,6 @@
 <?php
 /**
- * PayPal Recipe Handler
+ * WooCommerce Recipe Handler
  *
  * @package Whiskey\Handlers
  */
@@ -13,29 +13,22 @@ use Whiskey\ExecutionResult;
 use Whiskey\RecipeHandlerInterface;
 
 /**
- * Handles PayPal configuration recipes
+ * Handles WooCommerce configuration recipes
  */
-class PayPalHandler implements RecipeHandlerInterface {
+class WooCommerceHandler implements RecipeHandlerInterface {
 	public function validate( array $config ): bool {
-		// Required fields for PayPal recipes.
-		if ( ! isset( $config['mode'] ) ) {
-			return false;
-		}
-
-		// Validate mode value.
-		if ( ! in_array( $config['mode'], [ 'sandbox', 'live' ], true ) ) {
-			return false;
-		}
-
+		// Not implemented yet.
 		return true;
 	}
 
 	public function execute( array $config ): ExecutionResult {
 		$data = [];
 
+		// Not implemented yet.
+
 		return new ExecutionResult(
 			true,
-			'PayPal recipe executed successfully',
+			'WooCommerce recipe executed successfully',
 			$data
 		);
 	}
