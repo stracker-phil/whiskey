@@ -63,7 +63,6 @@ final class HandlerFactoryTest extends WhiskeyTest {
 	public function unknownTypeProvider(): array {
 		return [
 			'empty string'   => [ 'type' => '' ],
-			'woocommerce'    => [ 'type' => 'woocommerce' ],
 			'stripe'         => [ 'type' => 'stripe' ],
 			'random text'    => [ 'type' => 'random-unknown-type' ],
 			'numeric string' => [ 'type' => '12345' ],
