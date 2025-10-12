@@ -12,7 +12,7 @@ namespace Whiskey;
 use Whiskey\Handlers\PayPalHandler;
 use Whiskey\Handlers\WooCommerceHandler;
 use Whiskey\Handlers\WordPressHandler;
-use Whiskey\Handlers\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandler;
 
 /**
  * Factory for creating recipe handlers
@@ -25,7 +25,7 @@ class HandlerFactory {
 	/**
 	 * Get handler instance for given recipe type
 	 */
-	public function get_handler( string $type ): ?RecipeHandlerInterface {
+	public function get_handler( string $type ): ?RecipeHandler {
 		switch ( $type ) {
 			case 'paypal':
 				return new PayPalHandler();

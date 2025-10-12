@@ -14,13 +14,13 @@ use Whiskey\ExecutionResult;
 /**
  * Handles WordPress configuration recipes
  */
-class WordPressHandler implements RecipeHandlerInterface {
-	public function validate( array $config ): bool {
+class WordPressHandler extends RecipeHandler {
+	protected function do_validate( array $config ): bool {
 		// Not implemented yet.
 		return true;
 	}
 
-	public function execute( array $config ): ExecutionResult {
+	protected function do_execute( array $config ): ExecutionResult {
 		$data = [];
 
 		// Not implemented yet.

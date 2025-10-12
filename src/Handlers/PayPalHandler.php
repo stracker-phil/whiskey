@@ -14,8 +14,8 @@ use Whiskey\ExecutionResult;
 /**
  * Handles PayPal configuration recipes
  */
-class PayPalHandler implements RecipeHandlerInterface {
-	public function validate( array $config ): bool {
+class PayPalHandler extends RecipeHandler {
+	protected function do_validate( array $config ): bool {
 		// Required fields for PayPal recipes.
 		if ( ! isset( $config['mode'] ) ) {
 			return false;
@@ -29,7 +29,7 @@ class PayPalHandler implements RecipeHandlerInterface {
 		return true;
 	}
 
-	public function execute( array $config ): ExecutionResult {
+	protected function do_execute( array $config ): ExecutionResult {
 		$data = [];
 
 		return new ExecutionResult(

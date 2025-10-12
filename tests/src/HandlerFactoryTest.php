@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit;
 
 use Whiskey\HandlerFactory;
-use Whiskey\Handlers\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandler;
 use Whiskey\Handlers\PayPalHandler;
 
 /**
@@ -23,12 +23,12 @@ final class HandlerFactoryTest extends WhiskeyTest {
 	 * GIVEN the factory is initialized
 	 * WHEN get_handler is called with 'paypal' type
 	 * THEN a PayPalHandler instance should be returned
-	 * AND it should implement RecipeHandlerInterface
+	 * AND it should implement RecipeHandler
 	 */
 	public function testGetHandlerReturnsPayPalHandlerForPayPalType(): void {
 		$handler = $this->factory->get_handler( 'paypal' );
 
-		$this->assertInstanceOf( RecipeHandlerInterface::class, $handler );
+		$this->assertInstanceOf( RecipeHandler::class, $handler );
 		$this->assertInstanceOf( PayPalHandler::class, $handler );
 	}
 

@@ -10,7 +10,7 @@ use WP_REST_Response;
 use Whiskey\HandlerFactory;
 use Whiskey\RecipeRegistry;
 use Whiskey\RestController;
-use Whiskey\Handlers\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandler;
 use Whiskey\ExecutionResult;
 use function Brain\Monkey\Functions\when;
 
@@ -138,7 +138,7 @@ final class RestControllerTest extends WhiskeyTest {
 			'message' => 'Recipe applied successfully',
 		] );
 
-		$handler = Mockery::mock( RecipeHandlerInterface::class );
+		$handler = Mockery::mock( RecipeHandler::class );
 		// Use allows() - we don't care about the orchestration
 		$handler->allows( 'validate' )->andReturnTrue();
 		$handler->allows( 'execute' )->andReturn( $executionResult );
@@ -227,7 +227,7 @@ final class RestControllerTest extends WhiskeyTest {
 			'config' => [ 'invalid' => 'config' ],
 		];
 
-		$handler = Mockery::mock( RecipeHandlerInterface::class );
+		$handler = Mockery::mock( RecipeHandler::class );
 		$handler->expects( 'validate' )
 			->with( $recipeData['config'] )
 			->andReturnFalse();

@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit;
 
 use Whiskey\ExecutionResult;
-use Whiskey\Handlers\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandler;
 use Whiskey\Handlers\PayPalHandler;
 
 /**
@@ -22,10 +22,10 @@ final class PayPalHandlerTest extends WhiskeyTest {
 	/**
 	 * GIVEN PayPalHandler is instantiated
 	 * WHEN checking its type
-	 * THEN it should implement RecipeHandlerInterface
+	 * THEN it should implement RecipeHandler
 	 */
-	public function testImplementsRecipeHandlerInterface(): void {
-		$this->assertInstanceOf( RecipeHandlerInterface::class, $this->handler );
+	public function testImplementsRecipeHandler(): void {
+		$this->assertInstanceOf( RecipeHandler::class, $this->handler );
 	}
 
 	/**
