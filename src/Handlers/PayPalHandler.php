@@ -15,6 +15,8 @@ use Whiskey\ExecutionResult;
  * Handles PayPal configuration recipes
  */
 class PayPalHandler extends RecipeHandler {
+	protected const TYPE = 'paypal';
+
 	protected function do_validate( array $config ): bool {
 		// Required fields for PayPal recipes.
 		if ( ! isset( $config['mode'] ) ) {
