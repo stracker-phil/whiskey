@@ -1,11 +1,12 @@
 <?php
 declare( strict_types = 1 );
 
-namespace Whiskey\Tests\Unit;
+namespace Whiskey\Tests\Unit\Handlers;
 
 use Whiskey\ExecutionResult;
 use Whiskey\Handlers\RecipeHandler;
 use Whiskey\Handlers\PayPalHandler;
+use Whiskey\Tests\Unit\WhiskeyTest;
 
 /**
  * @covers PayPalHandler

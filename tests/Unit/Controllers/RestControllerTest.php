@@ -1,7 +1,7 @@
 <?php
 declare( strict_types = 1 );
 
-namespace Whiskey\Tests\Unit;
+namespace Whiskey\Tests\Unit\Controllers;
 
 use Mockery;
 use Mockery\MockInterface;
@@ -13,6 +13,7 @@ use Whiskey\Controllers\RestController;
 use Whiskey\Handlers\RecipeHandler;
 use Whiskey\ExecutionResult;
 use function Brain\Monkey\Functions\when;
+use Whiskey\Tests\Unit\WhiskeyTest;
 
 /**
  * @covers \Whiskey\Controllers\RestController
