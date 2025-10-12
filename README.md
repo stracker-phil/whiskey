@@ -38,6 +38,67 @@ The following details are pre-defined in the DDEV configuration:
 - Username: `admin`
 - Password: `admin`
 
+## Quick Start
+
+### 1. List Available Recipes
+
+```bash
+GET /wp-json/whiskey/v1/recipes
+```
+
+### 2. Execute via REST API
+
+Apply the recipe for `paypal-us-merchant`:
+
+```bash
+POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply
+```
+
+### API Endpoints
+
+| Endpoint                                  | Method | Description                        |
+|-------------------------------------------|--------|------------------------------------|
+| `/wp-json/whiskey/v1/recipes`             | GET    | List all registered recipes        |
+| `/wp-json/whiskey/v1/recipe/{name}`       | GET    | Get specific recipe details        |
+| `/wp-json/whiskey/v1/recipe/{name}/apply` | POST   | Execute a recipe                   |
+| `/wp-json/whiskey/v1/status`              | GET    | Plugin status and PHP version info |
+
+## Recipes
+
+The plugin comes with a set of recipes (configuration blueprints) that are defined in `src/Recipes/*.php` files.
+
+Want to add a custom recipe? Use the same hook our built-in recipes use:
+
+```php
+add_action('whiskey:register_recipe', function( RecipeRegistry $registry ) {
+    $registry->register(
+        'paypal',
+        'my-custom-setup',
+        [ /* your config */ ]
+    );
+});
+```
+
+## Development
+
+### Running Tests
+
+```bash
+# Install dependencies
+composer install
+
+# Run PHPUnit tests
+composer test
+```
+
+### Creating New Recipe Types
+
+1. Create handler class in `src/Handlers/`
+2. Extend the base class `RecipeHandler`
+3. Register in `src/RecipeRegistry.php`
+4. Implement the behavior in the handler class
+5. Write tests
+
 
 ## License
 
