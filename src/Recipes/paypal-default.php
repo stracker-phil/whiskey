@@ -34,5 +34,3 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 		]
 	);
 } );
-
-throw new \Exception('TST');
