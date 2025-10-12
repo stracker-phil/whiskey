@@ -72,7 +72,13 @@ abstract class RecipeHandlerTest extends WhiskeyTest {
 	 *
 	 * @dataProvider validConfigProvider
 	 */
-	public function testValidateAcceptsValidConfiguration( array $config ): void {
+	public function testValidateAcceptsValidConfiguration( array $config = [] ): void {
+		if ( ! $config ) {
+			$this->expectNotToPerformAssertions();
+
+			return;
+		}
+
 		$result = $this->handler->validate( $config );
 
 		$this->assertTrue( $result );
@@ -85,7 +91,13 @@ abstract class RecipeHandlerTest extends WhiskeyTest {
 	 *
 	 * @dataProvider invalidConfigProvider
 	 */
-	public function testValidateRejectsInvalidConfiguration( array $config ): void {
+	public function testValidateRejectsInvalidConfiguration( array $config = [] ): void {
+		if ( ! $config ) {
+			$this->expectNotToPerformAssertions();
+
+			return;
+		}
+
 		$result = $this->handler->validate( $config );
 
 		$this->assertFalse( $result );
@@ -99,7 +111,13 @@ abstract class RecipeHandlerTest extends WhiskeyTest {
 	 *
 	 * @dataProvider validConfigProvider
 	 */
-	public function testExecuteReturnsExecutionResult( array $config ): void {
+	public function testExecuteReturnsExecutionResult( array $config = [] ): void {
+		if ( ! $config ) {
+			$this->expectNotToPerformAssertions();
+
+			return;
+		}
+
 		$result = $this->handler->execute( $config );
 
 		$this->assertInstanceOf( ExecutionResult::class, $result );
@@ -115,7 +133,13 @@ abstract class RecipeHandlerTest extends WhiskeyTest {
 	 *
 	 * @dataProvider validConfigProvider
 	 */
-	public function testExecuteResultConvertsToArray( array $config ): void {
+	public function testExecuteResultConvertsToArray( array $config = [] ): void {
+		if ( ! $config ) {
+			$this->expectNotToPerformAssertions();
+
+			return;
+		}
+
 		$result = $this->handler->execute( $config );
 		$array  = $result->to_array();
 

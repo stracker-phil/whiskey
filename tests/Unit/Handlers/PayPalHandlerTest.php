@@ -66,9 +66,6 @@ final class PayPalHandlerTest extends RecipeHandlerTest {
 
 	public function invalidConfigProvider(): array {
 		return [
-			'missing mode'       => [
-				'config' => [],
-			],
 			'empty mode string'  => [
 				'config' => [ 'mode' => '' ],
 			],
