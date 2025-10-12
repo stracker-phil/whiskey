@@ -13,12 +13,12 @@
 
 declare( strict_types = 1 );
 
-use Whiskey\HandlerFactory;
-use Whiskey\Main;
-use Whiskey\RecipeRegistry;
+namespace Whiskey;
+
 use Whiskey\Controllers\RestController;
 
 defined( 'ABSPATH' ) || exit;
+defined( 'WHISKEY_RECIPES_DIR' ) || define( 'WHISKEY_RECIPES_DIR', __DIR__ . '/src/Recipes' );
 
 // Load Composer autoloader.
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {

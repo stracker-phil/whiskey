@@ -30,7 +30,6 @@ class RecipeRegistry {
 			return;
 		}
 
-		// Collect recipes via action hook - pass registry for DI.
 		do_action( 'whiskey:register_recipe', $this );
 
 		$this->initialized = true;
