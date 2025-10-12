@@ -67,8 +67,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Additional Handlers
 
-- [ ] `WooCommerceHandler` skeleton
-- [ ] `WordPressHandler` skeleton
+- [x] `WooCommerceHandler` skeleton
+- [x] `WordPressHandler` skeleton
 
 #### Testing Setup
 
