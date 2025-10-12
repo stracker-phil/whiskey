@@ -12,6 +12,7 @@ namespace Whiskey;
 use Whiskey\Handlers\PayPalHandler;
 use Whiskey\Handlers\WooCommerceHandler;
 use Whiskey\Handlers\WordPressHandler;
+use Whiskey\Handlers\RecipeHandlerInterface;
 
 /**
  * Factory for creating recipe handlers
@@ -34,7 +35,7 @@ class HandlerFactory {
 
 			case 'wordpress':
 				return new WordPressHandler();
-				
+
 			default:
 				return null;
 		}

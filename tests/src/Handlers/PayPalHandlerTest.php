@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit;
 
 use Whiskey\ExecutionResult;
-use Whiskey\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandlerInterface;
 use Whiskey\Handlers\PayPalHandler;
 
 /**

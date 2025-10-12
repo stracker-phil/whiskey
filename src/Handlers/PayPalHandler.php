@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Whiskey\Handlers;
 
 use Whiskey\ExecutionResult;
-use Whiskey\RecipeHandlerInterface;
 
 /**
  * Handles PayPal configuration recipes

@@ -10,9 +10,8 @@ use WP_REST_Response;
 use Whiskey\HandlerFactory;
 use Whiskey\RecipeRegistry;
 use Whiskey\RestController;
-use Whiskey\RecipeHandlerInterface;
+use Whiskey\Handlers\RecipeHandlerInterface;
 use Whiskey\ExecutionResult;
-use function Brain\Monkey\Functions\expect;
 use function Brain\Monkey\Functions\when;
 
 /**
