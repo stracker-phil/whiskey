@@ -55,7 +55,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testRegisterStoresValidRecipe(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( 'plugin', 'test-recipe', [ 'plugin' => 'my-plugin' ] );
+		$this->registry->add( 'plugin', 'test-recipe', [ 'plugin' => 'my-plugin' ] );
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
 
@@ -74,7 +74,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testRegisterIgnoresInvalidRecipe( string $type, string $name, array $config ): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( $type, $name, $config );
+		$this->registry->add( $type, $name, $config );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
@@ -87,7 +87,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testGetReturnsExistingRecipe(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( 'theme', 'my-recipe', [ 'theme' => 'my-theme' ] );
+		$this->registry->add( 'theme', 'my-recipe', [ 'theme' => 'my-theme' ] );
 
 		$result = $this->registry->get( 'my-recipe' );
 
@@ -116,8 +116,8 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testAllReturnsAllRecipes(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( 'plugin', 'recipe-one', [ 'plugin' => 'plugin-one' ] );
-		$this->registry->register( 'plugin', 'recipe-two', [ 'plugin' => 'plugin-two' ] );
+		$this->registry->add( 'plugin', 'recipe-one', [ 'plugin' => 'plugin-one' ] );
+		$this->registry->add( 'plugin', 'recipe-two', [ 'plugin' => 'plugin-two' ] );
 
 		$all = $this->registry->all();
 
@@ -138,7 +138,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testHasReturnsTrueForExistingRecipe(): void {
 		when( 'do_action' )->justReturn( null );
 
-		$this->registry->register( 'plugin', 'existing-recipe', [ 'plugin' => 'test' ] );
+		$this->registry->add( 'plugin', 'existing-recipe', [ 'plugin' => 'test' ] );
 
 		$this->assertTrue( $this->registry->has( 'existing-recipe' ) );
 	}
@@ -163,7 +163,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testGetTriggersInitAutomatically(): void {
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'my-plugin' ] );
+				$registry->add( 'plugin', 'auto-recipe', [ 'plugin' => 'my-plugin' ] );
 			}
 		} );
 
@@ -183,7 +183,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testAllTriggersInitAutomatically(): void {
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
+				$registry->add( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
 			}
 		} );
 
@@ -202,7 +202,7 @@ final class RecipeRegistryTest extends WhiskeyTest {
 	public function testHasTriggersInitAutomatically(): void {
 		when( 'do_action' )->alias( function ( $hook, $registry ) {
 			if ( $hook === 'whiskey:register_recipe' ) {
-				$registry->register( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
+				$registry->add( 'plugin', 'auto-recipe', [ 'plugin' => 'test' ] );
 			}
 		} );
 

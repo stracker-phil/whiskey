@@ -39,7 +39,7 @@ class RecipeRegistry {
 	 * @explain Called by plugins/themes via the 'whiskey:register_recipe' hook.
 	 *          Registry instance is passed as hook parameter for dependency injection.
 	 */
-	public function register( string $type, string $name, array $config ): void {
+	public function add( string $type, string $name, array $config ): void {
 		if ( empty( $name ) || empty( $type ) || empty( $config ) ) {
 			return;
 		}

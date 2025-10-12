@@ -1,8 +1,6 @@
 <?php
 /**
- * PayPal Recipe Configurations
- *
- * Registers default PayPal setups for common scenarios.
+ * Recipes for: PayPal Payments for WooCommerce
  */
 
 declare( strict_types = 1 );
@@ -10,7 +8,7 @@ declare( strict_types = 1 );
 use Whiskey\RecipeRegistry;
 
 add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registry ) {
-	$registry->register(
+	$registry->add(
 		'paypal',
 		'us_merchant',
 		[
@@ -18,7 +16,7 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 		]
 	);
 
-	$registry->register(
+	$registry->add(
 		'paypal',
 		'german_merchant',
 		[
@@ -26,7 +24,7 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 		]
 	);
 
-	$registry->register(
+	$registry->add(
 		'paypal',
 		'mexico_merchant',
 		[
