@@ -15,6 +15,8 @@ use Whiskey\ExecutionResult;
  * Handles WooCommerce configuration recipes
  */
 class WooCommerceHandler extends RecipeHandler {
+	protected const TYPE = 'woocommerce';
+
 	protected function do_validate( array $config ): bool {
 		// Not implemented yet.
 		return true;

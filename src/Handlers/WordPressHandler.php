@@ -15,6 +15,8 @@ use Whiskey\ExecutionResult;
  * Handles WordPress configuration recipes
  */
 class WordPressHandler extends RecipeHandler {
+	protected const TYPE = 'wordpress';
+
 	protected function do_validate( array $config ): bool {
 		// Not implemented yet.
 		return true;
