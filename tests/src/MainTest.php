@@ -40,7 +40,7 @@ final class MainTest extends WhiskeyTest {
 	public function testInitRegistersWordPressHooks(): void {
 		$this->expectAdded( 'init' )
 			->once()
-			->with( [ $this->main, 'register_components' ] );
+			->with( [ $this->main, 'register_components' ], 11 );
 
 		$this->expectAdded( 'rest_api_init' )
 			->once()

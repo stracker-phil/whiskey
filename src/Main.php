@@ -27,7 +27,7 @@ class Main {
 	}
 
 	public function init(): void {
-		add_action( 'init', [ $this, 'register_components' ] );
+		add_action( 'init', [ $this, 'register_components' ], 11 );
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
 	}
 
