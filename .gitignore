@@ -1,2 +1,5 @@
 # Composer
 /vendor/
+
+# Claude integration
+!CLAUDE.md
