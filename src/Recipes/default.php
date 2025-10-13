@@ -9,7 +9,6 @@ use Whiskey\RecipeRegistry;
 
 add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registry ) {
 	$registry->add(
-		'paypal',
 		'us_merchant',
 		[
 			// TODO
@@ -17,7 +16,6 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 	);
 
 	$registry->add(
-		'paypal',
 		'german_merchant',
 		[
 			// TODO
@@ -25,7 +23,6 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 	);
 
 	$registry->add(
-		'paypal',
 		'mexico_merchant',
 		[
 			// TODO

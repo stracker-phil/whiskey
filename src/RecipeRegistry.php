@@ -38,13 +38,17 @@ class RecipeRegistry {
 	/**
 	 * @explain Called by plugins/themes via the 'whiskey:register_recipe' hook.
 	 *          Registry instance is passed as hook parameter for dependency injection.
+	 *
+	 * @param string $name        Unique name of the recipe. If a recipe with the
+	 *                            same name exists, it is replaced
+	 * @param array  $ingredients List of ingredients to execute, with configuration.
 	 */
-	public function add( string $type, string $name, array $config ): void {
-		if ( empty( $name ) || empty( $type ) || empty( $config ) ) {
+	public function add( string $name, array $ingredients ): void {
+		if ( empty( $name ) || empty( $ingredients ) ) {
 			return;
 		}
 
-		$this->recipes[ $name ] = [ 'type' => $type, 'config' => $config ];
+		$this->recipes[ $name ] = $ingredients;
 	}
 
 	public function get( string $name ): ?array {
