@@ -5,8 +5,8 @@
 
 declare( strict_types = 1 );
 
-return array(
+return [
 	'title'     => 'Classic Checkout',
 	'content'   => '<!-- wp:woocommerce/classic-shortcode {"shortcode":"checkout"} /-->',
 	'post_type' => 'page',
-);
+];

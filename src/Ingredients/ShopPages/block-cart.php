@@ -5,7 +5,7 @@
 
 declare( strict_types = 1 );
 
-return array(
+return [
 	'title'     => 'Block Cart',
 	'content'   => '<!-- wp:woocommerce/cart -->
 <div class="wp-block-woocommerce-cart alignwide is-loading"><!-- wp:woocommerce/filled-cart-block -->
@@ -97,4 +97,4 @@ return array(
 <!-- /wp:woocommerce/empty-cart-block --></div>
 <!-- /wp:woocommerce/cart -->',
 	'post_type' => 'page',
-);
+];

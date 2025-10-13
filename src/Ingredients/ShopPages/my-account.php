@@ -5,8 +5,8 @@
 
 declare( strict_types = 1 );
 
-return array(
+return [
 	'title'     => 'My account',
 	'content'   => '<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->',
 	'post_type' => 'page',
-);
+];

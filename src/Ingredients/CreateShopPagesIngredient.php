@@ -34,9 +34,9 @@ class CreateShopPagesIngredient extends Ingredient {
 	}
 
 	public function execute( $value ): ExecutionResult {
-		$created = array();
-		$updated = array();
-		$failed  = array();
+		$created = [];
+		$updated = [];
+		$failed  = [];
 
 		foreach ( $value as $slug ) {
 			$template = $this->load_template( $slug );
@@ -61,21 +61,21 @@ class CreateShopPagesIngredient extends Ingredient {
 			return new ExecutionResult(
 				false,
 				'Failed to create or update some pages.',
-				array(
+				[
 					'created' => $created,
 					'updated' => $updated,
 					'failed'  => $failed,
-				)
+				]
 			);
 		}
 
 		return new ExecutionResult(
 			true,
 			'Shop pages created or updated successfully.',
-			array(
+			[
 				'created' => $created,
 				'updated' => $updated,
-			)
+			]
 		);
 	}
 
@@ -104,7 +104,7 @@ class CreateShopPagesIngredient extends Ingredient {
 		}
 
 		if ( ! isset( $template['post_meta'] ) ) {
-			$template['post_meta'] = array();
+			$template['post_meta'] = [];
 		}
 
 		return $template;
@@ -117,13 +117,13 @@ class CreateShopPagesIngredient extends Ingredient {
 	private function create_or_update_page( string $slug, array $template ): array {
 		$existing_page = get_page_by_path( $slug );
 
-		$post_data = array(
+		$post_data = [
 			'post_title'   => $template['title'],
 			'post_content' => $template['content'],
 			'post_status'  => 'publish',
 			'post_name'    => $slug,
 			'post_type'    => $template['post_type'],
-		);
+		];
 
 		if ( $existing_page instanceof WP_Post ) {
 			// Update existing page
@@ -131,36 +131,36 @@ class CreateShopPagesIngredient extends Ingredient {
 			$result          = wp_insert_post( $post_data, true );
 
 			if ( is_wp_error( $result ) ) {
-				return array(
+				return [
 					'created' => false,
 					'updated' => false,
-				);
+				];
 			}
 
 			$this->update_post_meta( $result, $template['post_meta'] );
 
-			return array(
+			return [
 				'created' => false,
 				'updated' => true,
-			);
+			];
 		}
 
 		// Create new page
 		$result = wp_insert_post( $post_data, true );
 
 		if ( is_wp_error( $result ) ) {
-			return array(
+			return [
 				'created' => false,
 				'updated' => false,
-			);
+			];
 		}
 
 		$this->update_post_meta( $result, $template['post_meta'] );
 
-		return array(
+		return [
 			'created' => true,
 			'updated' => false,
-		);
+		];
 	}
 
 	private function update_post_meta( int $post_id, array $post_meta ): void {

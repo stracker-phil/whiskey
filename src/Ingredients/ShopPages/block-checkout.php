@@ -5,7 +5,7 @@
 
 declare( strict_types = 1 );
 
-return array(
+return [
 	'title'     => 'Block Checkout',
 	'content'   => '<!-- wp:woocommerce/checkout -->
 <div class="wp-block-woocommerce-checkout alignwide wc-block-checkout is-loading"><!-- wp:woocommerce/checkout-fields-block -->
@@ -91,4 +91,4 @@ return array(
 <!-- /wp:woocommerce/checkout-totals-block --></div>
 <!-- /wp:woocommerce/checkout -->',
 	'post_type' => 'page',
-);
+];

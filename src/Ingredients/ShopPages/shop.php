@@ -5,8 +5,8 @@
 
 declare( strict_types = 1 );
 
-return array(
+return [
 	'title'     => 'Shop',
 	'content'   => '',
 	'post_type' => 'page',
-);
+];
