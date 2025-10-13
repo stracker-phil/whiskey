@@ -3,7 +3,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit;
 
-use Whiskey\RecipeRegistry;
+use Whiskey\Registry\RecipeRegistry;
 use function Brain\Monkey\Functions\when;
 
 /**

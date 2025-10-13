@@ -6,14 +6,14 @@ namespace Whiskey\Tests\Unit;
 use Mockery;
 use Mockery\MockInterface;
 use Whiskey\Main;
-use Whiskey\RecipeRegistry;
+use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Controllers\RestController;
 
 /**
  * @covers Main
  */
 final class MainTest extends WhiskeyTest {
-	/** @var MockInterface&RecipeRegistry */
+	/** @var MockInterface&\Whiskey\Registry\RecipeRegistry */
 	private MockInterface $registry;
 
 	/** @var MockInterface&RestController */

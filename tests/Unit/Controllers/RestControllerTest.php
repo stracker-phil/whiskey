@@ -8,7 +8,7 @@ use Mockery\MockInterface;
 use WP_REST_Request;
 use WP_REST_Response;
 use Whiskey\HandlerFactory;
-use Whiskey\RecipeRegistry;
+use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Controllers\RestController;
 use Whiskey\Handlers\RecipeHandler;
 use Whiskey\ExecutionResult;
@@ -21,7 +21,7 @@ use Whiskey\Tests\Unit\WhiskeyTest;
 final class RestControllerTest extends WhiskeyTest {
 	private ?RestController $controller = null;
 
-	/** @var MockInterface&RecipeRegistry */
+	/** @var MockInterface&\Whiskey\Registry\RecipeRegistry */
 	private MockInterface $registry;
 
 	/** @var MockInterface&HandlerFactory */
