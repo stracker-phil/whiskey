@@ -31,20 +31,19 @@ class UpdatePermalinksIngredient extends Ingredient {
 			return new ExecutionResult(
 				false,
 				'Failed to update permalink structure.',
-				array( 'previous' => $previous_structure )
+				[ 'previous' => $previous_structure ]
 			);
 		}
 
-		// Flush rewrite rules to ensure the new structure takes effect
 		flush_rewrite_rules();
 
 		return new ExecutionResult(
 			true,
 			'Permalink structure updated and rewrite rules flushed.',
-			array(
+			[
 				'previous' => $previous_structure,
 				'current'  => $value,
-			)
+			]
 		);
 	}
 }
