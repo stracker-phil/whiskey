@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Updates the "home_page" setting.
@@ -64,3 +65,10 @@ class SetHomepageIngredient extends Ingredient {
 		update_option( 'page_on_front', $post_id );
 	}
 }
+
+add_action(
+	'whiskey:register_ingredient',
+	static function ( IngredientRegistry $registry ) {
+		$registry->add( 'set_homepage', SetHomepageIngredient::class );
+	}
+);
