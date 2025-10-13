@@ -15,7 +15,9 @@ use Whiskey\Registry\IngredientRegistry;
  * @todo untested
  */
 class SetHomepageIngredient extends Ingredient {
-	public const CATEGORY = 'wordpress';
+	public const NAME        = 'set_homepage';
+	public const CATEGORY    = 'wordpress';
+	public const DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
 
 	public function validate( $value ): bool {
 		return is_string( $value ) || is_int( $value );
