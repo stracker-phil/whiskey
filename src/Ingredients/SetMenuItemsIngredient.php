@@ -20,6 +20,9 @@ class SetMenuItemsIngredient extends Ingredient {
 	public const CATEGORY    = 'wordpress';
 	public const DESCRIPTION = 'Creates or replaces the primary navigation menu with the specified page slugs';
 
+	private const MENU_LOCATION = 'primary';
+	private const MENU_NAME     = 'Primary Navigation';
+
 	public function validate( $value ): bool {
 		if ( ! is_array( $value ) ) {
 			return false;
@@ -58,12 +61,12 @@ class SetMenuItemsIngredient extends Ingredient {
 				continue;
 			}
 
-			$menu_item_id = $this->add_menu_item( $menu_id, $page->ID );
+			$menu_item_id   = $this->add_menu_item( $menu_id, $page->ID );
 			$items[ $slug ] = $menu_item_id;
 		}
 
 		// Assign menu to primary location
-		$this->set_primary_menu_location( $menu_id );
+		$this->set_menu_location( $menu_id );
 
 		$failed_count = count( array_filter( $items, fn( $id ) => $id === 0 ) );
 
@@ -89,14 +92,13 @@ class SetMenuItemsIngredient extends Ingredient {
 	}
 
 	private function get_or_create_menu(): int {
-		$menu_name = 'Primary';
-		$menu      = wp_get_nav_menu_object( $menu_name );
+		$menu = wp_get_nav_menu_object( self::MENU_NAME );
 
 		if ( $menu ) {
 			return $menu->term_id;
 		}
 
-		$menu_id = wp_create_nav_menu( $menu_name );
+		$menu_id = wp_create_nav_menu( self::MENU_NAME );
 
 		if ( is_wp_error( $menu_id ) ) {
 			return 0;
@@ -122,10 +124,10 @@ class SetMenuItemsIngredient extends Ingredient {
 			$menu_id,
 			0,
 			[
-				'menu-item-object-id'   => $page_id,
-				'menu-item-object'      => 'page',
-				'menu-item-type'        => 'post_type',
-				'menu-item-status'      => 'publish',
+				'menu-item-object-id' => $page_id,
+				'menu-item-object'    => 'page',
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
 			]
 		);
 
@@ -136,9 +138,10 @@ class SetMenuItemsIngredient extends Ingredient {
 		return $menu_item_id;
 	}
 
-	private function set_primary_menu_location( int $menu_id ): void {
+	private function set_menu_location( int $menu_id ): void {
 		$locations = get_theme_mod( 'nav_menu_locations', [] );
-		$locations['primary'] = $menu_id;
+
+		$locations[ self::MENU_LOCATION ] = $menu_id;
 		set_theme_mod( 'nav_menu_locations', $locations );
 	}
 }
