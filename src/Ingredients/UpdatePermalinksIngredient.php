@@ -30,27 +30,22 @@ class UpdatePermalinksIngredient extends Ingredient {
 		if ( ! $updated && $previous_structure !== $value ) {
 			return new ExecutionResult(
 				false,
-				'Failed to update permalink structure.'
+				'Failed to update permalink structure.',
+				array( 'previous' => $previous_structure )
 			);
 		}
 
 		// Flush rewrite rules to ensure the new structure takes effect
 		flush_rewrite_rules();
 
-		$structure_name = $this->get_structure_name( $value );
-
 		return new ExecutionResult(
 			true,
-			"Permalink structure updated to {$structure_name}."
+			'Permalink structure updated and rewrite rules flushed.',
+			array(
+				'previous' => $previous_structure,
+				'current'  => $value,
+			)
 		);
-	}
-
-	private function get_structure_name( string $value ): string {
-		if ( '' === $value ) {
-			return 'default (numeric)';
-		}
-
-		return "'{$value}'";
 	}
 }
 
