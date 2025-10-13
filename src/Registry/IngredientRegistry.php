@@ -32,12 +32,16 @@ class IngredientRegistry {
 	}
 
 	/**
-	 * @param string $name       Unique name of the recipe. If a recipe with the
-	 *                           same name exists, it is replaced
 	 * @param string $ingredient Class name of the ingredient implementation.
 	 */
-	public function add( string $name, string $ingredient ): void {
-		if ( empty( $name ) || ! class_exists( $ingredient ) ) {
+	public function add( string $ingredient ): void {
+		if ( ! class_exists( $ingredient ) ) {
+			return;
+		}
+
+		$name = $ingredient::NAME;
+
+		if ( empty( $name ) ) {
 			return;
 		}
 
@@ -71,16 +75,9 @@ class IngredientRegistry {
 	public function all_metadata(): array {
 		$this->init();
 
-		$result = [];
-		foreach ( $this->ingredients as $key => $class ) {
-			$ingredient = new $class();
-
-			$result[ $key ] = [
-				'key'      => $key,
-				'category' => $ingredient::CATEGORY,
-			];
-		}
-
-		return $result;
+		return array_map( static fn( $class ) => [
+			'category'    => $class::CATEGORY,
+			'description' => $class::DESCRIPTION,
+		], $this->ingredients );
 	}
 }

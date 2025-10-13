@@ -71,6 +71,6 @@ class SetHomepageIngredient extends Ingredient {
 add_action(
 	'whiskey:register_ingredient',
 	static function ( IngredientRegistry $registry ) {
-		$registry->add( 'set_homepage', SetHomepageIngredient::class );
+		$registry->add( SetHomepageIngredient::class );
 	}
 );
