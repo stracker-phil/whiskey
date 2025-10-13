@@ -25,7 +25,7 @@ class CreateShopPagesIngredient extends Ingredient {
 		}
 
 		foreach ( $value as $slug ) {
-			if ( ! is_string( $slug ) || ! $this->template_exists( $slug ) ) {
+			if ( ! is_string( $slug ) ) {
 				return false;
 			}
 		}
@@ -34,55 +34,35 @@ class CreateShopPagesIngredient extends Ingredient {
 	}
 
 	public function execute( $value ): ExecutionResult {
-		$created = [];
-		$updated = [];
-		$failed  = [];
+		$pages = [];
 
 		foreach ( $value as $slug ) {
 			$template = $this->load_template( $slug );
 
 			if ( ! $template ) {
-				$failed[] = $slug;
+				$pages[ $slug ] = 0;
 				continue;
 			}
 
-			$result = $this->create_or_update_page( $slug, $template );
-
-			if ( $result['created'] ) {
-				$created[] = $slug;
-			} elseif ( $result['updated'] ) {
-				$updated[] = $slug;
-			} else {
-				$failed[] = $slug;
-			}
+			$post_id = $this->create_or_update_page( $slug, $template );
+			$pages[ $slug ] = $post_id;
 		}
 
-		if ( count( $failed ) > 0 ) {
+		$failed_count = count( array_filter( $pages, fn( $id ) => $id === 0 ) );
+
+		if ( $failed_count > 0 ) {
 			return new ExecutionResult(
 				false,
-				'Failed to create or update some pages.',
-				[
-					'created' => $created,
-					'updated' => $updated,
-					'failed'  => $failed,
-				]
+				"Failed to create or update {$failed_count} page(s).",
+				[ 'pages' => $pages ]
 			);
 		}
 
 		return new ExecutionResult(
 			true,
 			'Shop pages created or updated successfully.',
-			[
-				'created' => $created,
-				'updated' => $updated,
-			]
+			[ 'pages' => $pages ]
 		);
-	}
-
-	private function template_exists( string $slug ): bool {
-		$template_path = $this->get_template_path( $slug );
-
-		return file_exists( $template_path );
 	}
 
 	private function load_template( string $slug ): ?array {
@@ -114,7 +94,7 @@ class CreateShopPagesIngredient extends Ingredient {
 		return __DIR__ . '/ShopPages/' . $slug . '.php';
 	}
 
-	private function create_or_update_page( string $slug, array $template ): array {
+	private function create_or_update_page( string $slug, array $template ): int {
 		$existing_page = get_page_by_path( $slug );
 
 		$post_data = [
@@ -131,36 +111,24 @@ class CreateShopPagesIngredient extends Ingredient {
 			$result          = wp_insert_post( $post_data, true );
 
 			if ( is_wp_error( $result ) ) {
-				return [
-					'created' => false,
-					'updated' => false,
-				];
+				return 0;
 			}
 
 			$this->update_post_meta( $result, $template['post_meta'] );
 
-			return [
-				'created' => false,
-				'updated' => true,
-			];
+			return $result;
 		}
 
 		// Create new page
 		$result = wp_insert_post( $post_data, true );
 
 		if ( is_wp_error( $result ) ) {
-			return [
-				'created' => false,
-				'updated' => false,
-			];
+			return 0;
 		}
 
 		$this->update_post_meta( $result, $template['post_meta'] );
 
-		return [
-			'created' => true,
-			'updated' => false,
-		];
+		return $result;
 	}
 
 	private function update_post_meta( int $post_id, array $post_meta ): void {
