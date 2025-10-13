@@ -31,10 +31,10 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 // Initialize plugin with dependencies.
-$registry        = new RecipeRegistry();
-$factory         = new IngredientFactory();
-$executor        = new RecipeExecutor( $factory );
-$rest_controller = new RestController( $registry, $executor, $factory );
-$main            = new Main( $registry, $rest_controller );
+$recipes         = new RecipeRegistry();
+$ingredients     = new IngredientRegistry();
+$executor        = new RecipeExecutor( $ingredients );
+$rest_controller = new RestController( $recipes, $ingredients, $executor );
+$main            = new Main( $recipes, $ingredients, $rest_controller );
 
 $main->init();

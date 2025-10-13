@@ -10,19 +10,24 @@ declare( strict_types = 1 );
 namespace Whiskey;
 
 use Whiskey\Controllers\RestController;
+use Whiskey\Registry\RecipeRegistry;
+use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Main plugin bootstrap - manages plugin lifecycle and dependencies
  */
 class Main {
-	private RecipeRegistry $registry;
+	private RecipeRegistry $recipes;
+	private IngredientRegistry $ingredients;
 	private RestController $rest_controller;
 
 	public function __construct(
-		RecipeRegistry $registry,
+		RecipeRegistry $recipes,
+		IngredientRegistry $ingredients,
 		RestController $rest_controller
 	) {
-		$this->registry        = $registry;
+		$this->recipes         = $recipes;
+		$this->ingredients     = $ingredients;
 		$this->rest_controller = $rest_controller;
 	}
 
@@ -32,8 +37,11 @@ class Main {
 	}
 
 	public function register_components(): void {
+		$this->load_builtin_ingredients();
 		$this->load_builtin_recipes();
-		$this->registry->init();
+
+		$this->ingredients->init();
+		$this->recipes->init();
 	}
 
 	public function register_rest_routes(): void {
@@ -41,12 +49,23 @@ class Main {
 	}
 
 	/**
+	 * Load the built-in ingredients from the "Ingredients"-folder.
+	 */
+	private function load_builtin_ingredients(): void {
+		$dir = __DIR__ . '/Ingredients';
+
+		foreach ( glob( $dir . '/*.php' ) as $file ) {
+			include_once $file;
+		}
+	}
+
+	/**
 	 * Load the built-in recipes from the "Recipes"-folder.
 	 */
 	private function load_builtin_recipes(): void {
-		$recipes_dir = __DIR__ . '/Recipes';
+		$dir = __DIR__ . '/Recipes';
 
-		foreach ( glob( $recipes_dir . '/*.php' ) as $file ) {
+		foreach ( glob( $dir . '/*.php' ) as $file ) {
 			include_once $file;
 		}
 	}

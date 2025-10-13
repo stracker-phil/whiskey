@@ -11,9 +11,9 @@ namespace Whiskey\Controllers;
 
 use WP_REST_Request;
 use WP_REST_Response;
-use Whiskey\RecipeRegistry;
+use Whiskey\Registry\RecipeRegistry;
 use Whiskey\RecipeExecutor;
-use Whiskey\IngredientFactory;
+use Whiskey\Registry\IngredientRegistry;
 
 /**
  * REST API controller for recipe endpoints
@@ -22,14 +22,14 @@ class RestController {
 
 	private const NAMESPACE = 'whiskey/v1';
 
-	private RecipeRegistry $registry;
+	private RecipeRegistry $recipes;
 	private RecipeExecutor $executor;
-	private IngredientFactory $factory;
+	private IngredientRegistry $ingredients;
 
-	public function __construct( RecipeRegistry $registry, RecipeExecutor $executor, IngredientFactory $factory ) {
-		$this->registry = $registry;
-		$this->executor = $executor;
-		$this->factory  = $factory;
+	public function __construct( RecipeRegistry $recipes, IngredientRegistry $ingredients, Recipeexecutor $executor ) {
+		$this->recipes     = $recipes;
+		$this->ingredients = $ingredients;
+		$this->executor    = $executor;
 	}
 
 	public function register_routes(): void {
@@ -88,7 +88,7 @@ class RestController {
 	 * Get all registered recipes
 	 */
 	public function get_recipes(): WP_REST_Response {
-		$recipes = $this->registry->all();
+		$recipes = $this->recipes->all();
 
 		return new WP_REST_Response(
 			[
@@ -104,7 +104,7 @@ class RestController {
 	 */
 	public function get_recipe( WP_REST_Request $request ): WP_REST_Response {
 		$name   = $request->get_param( 'name' );
-		$recipe = $this->registry->get( $name );
+		$recipe = $this->recipes->get( $name );
 
 		if ( ! $recipe ) {
 			return new WP_REST_Response(
@@ -130,7 +130,7 @@ class RestController {
 	 */
 	public function apply_recipe( WP_REST_Request $request ): WP_REST_Response {
 		$name   = $request->get_param( 'name' );
-		$config = $this->registry->get( $name );
+		$config = $this->recipes->get( $name );
 
 		if ( ! $config ) {
 			return new WP_REST_Response(
@@ -155,7 +155,7 @@ class RestController {
 	 * Get all available ingredients
 	 */
 	public function get_ingredients(): WP_REST_Response {
-		$ingredients = $this->factory->get_all_keys();
+		$ingredients = $this->ingredients->all_metadata();
 
 		return new WP_REST_Response(
 			[

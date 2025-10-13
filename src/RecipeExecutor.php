@@ -3,11 +3,13 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
-class RecipeExecutor {
-	private IngredientFactory $factory;
+use Whiskey\Registry\IngredientRegistry;
 
-	public function __construct( IngredientFactory $factory ) {
-		$this->factory = $factory;
+class RecipeExecutor {
+	private IngredientRegistry $ingredients;
+
+	public function __construct( IngredientRegistry $ingredients ) {
+		$this->ingredients = $ingredients;
 	}
 
 	public function validate( array $config ): bool {
@@ -16,7 +18,7 @@ class RecipeExecutor {
 		}
 
 		foreach ( $config as $key => $value ) {
-			$ingredient = $this->factory->get( $key );
+			$ingredient = $this->ingredients->get( $key );
 
 			// Unknown ingredients are silently ignored (WordPress pattern).
 			if ( ! $ingredient ) {
@@ -35,7 +37,7 @@ class RecipeExecutor {
 		$results = [];
 
 		foreach ( $config as $key => $value ) {
-			$ingredient = $this->factory->get( $key );
+			$ingredient = $this->ingredients->get( $key );
 
 			if ( ! $ingredient ) {
 				continue;
