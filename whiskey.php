@@ -34,7 +34,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 $registry        = new RecipeRegistry();
 $factory         = new IngredientFactory();
 $executor        = new RecipeExecutor( $factory );
-$rest_controller = new RestController( $registry, $executor );
+$rest_controller = new RestController( $registry, $executor, $factory );
 $main            = new Main( $registry, $rest_controller );
 
 $main->init();

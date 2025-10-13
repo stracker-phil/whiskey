@@ -13,6 +13,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 use Whiskey\RecipeRegistry;
 use Whiskey\RecipeExecutor;
+use Whiskey\IngredientFactory;
 
 /**
  * REST API controller for recipe endpoints
@@ -23,10 +24,12 @@ class RestController {
 
 	private RecipeRegistry $registry;
 	private RecipeExecutor $executor;
+	private IngredientFactory $factory;
 
-	public function __construct( RecipeRegistry $registry, RecipeExecutor $executor ) {
+	public function __construct( RecipeRegistry $registry, RecipeExecutor $executor, IngredientFactory $factory ) {
 		$this->registry = $registry;
 		$this->executor = $executor;
+		$this->factory  = $factory;
 	}
 
 	public function register_routes(): void {
@@ -56,6 +59,16 @@ class RestController {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'apply_recipe' ],
+				'permission_callback' => [ $this, 'permission_callback' ],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/ingredients',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ $this, 'get_ingredients' ],
 				'permission_callback' => [ $this, 'permission_callback' ],
 			]
 		);
@@ -136,6 +149,21 @@ class RestController {
 		$result = $this->executor->execute( $config );
 
 		return new WP_REST_Response( $result->to_array(), 200 );
+	}
+
+	/**
+	 * Get all available ingredients
+	 */
+	public function get_ingredients(): WP_REST_Response {
+		$ingredients = $this->factory->get_all_keys();
+
+		return new WP_REST_Response(
+			[
+				'success' => true,
+				'data'    => $ingredients,
+				200,
+			]
+		);
 	}
 
 	/**
