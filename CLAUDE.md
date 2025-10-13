@@ -377,9 +377,9 @@ Base URL: `/wp-json/whiskey/v1`
 ## Code Style (PHP 7.4)
 
 ```php
-// Long array syntax (WordPress standard)
-array( 'key' => 'value' )  // ✅
-[ 'key' => 'value' ]        // ❌
+// Short array syntax (deviation from WordPress standard)
+[ 'key' => 'value' ]        // ✅
+array( 'key' => 'value' )   // ❌
 
 // Indentation: tabs not spaces
 if ( isset( $data['key'] ) ) {  // ✅
@@ -398,6 +398,8 @@ public function test(): void    // ❌
 if ( isset( $data['key'] ) ) {  // ✅
 if (isset($data['key'])) {      // ❌
 ```
+
+**Note:** This project uses **short array syntax `[]`** instead of WordPress's standard `array()` syntax. While most WordPress conventions are followed (spacing, braces, type hints), the modern array syntax is preferred for readability and consistency with PHP 8+ branches.
 
 ---
 
