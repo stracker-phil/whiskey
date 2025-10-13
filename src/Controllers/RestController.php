@@ -12,8 +12,8 @@ namespace Whiskey\Controllers;
 use WP_REST_Request;
 use WP_REST_Response;
 use Whiskey\Registry\RecipeRegistry;
-use Whiskey\RecipeExecutor;
 use Whiskey\Registry\IngredientRegistry;
+use Whiskey\RecipeExecutor;
 
 /**
  * REST API controller for recipe endpoints
@@ -23,10 +23,10 @@ class RestController {
 	private const NAMESPACE = 'whiskey/v1';
 
 	private RecipeRegistry $recipes;
-	private RecipeExecutor $executor;
 	private IngredientRegistry $ingredients;
+	private RecipeExecutor $executor;
 
-	public function __construct( RecipeRegistry $recipes, IngredientRegistry $ingredients, Recipeexecutor $executor ) {
+	public function __construct( RecipeRegistry $recipes, IngredientRegistry $ingredients, RecipeExecutor $executor ) {
 		$this->recipes     = $recipes;
 		$this->ingredients = $ingredients;
 		$this->executor    = $executor;
@@ -161,8 +161,8 @@ class RestController {
 			[
 				'success' => true,
 				'data'    => $ingredients,
-				200,
-			]
+			],
+			200
 		);
 	}
 
