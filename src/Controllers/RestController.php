@@ -11,8 +11,8 @@ namespace Whiskey\Controllers;
 
 use WP_REST_Request;
 use WP_REST_Response;
-use Whiskey\HandlerFactory;
 use Whiskey\RecipeRegistry;
+use Whiskey\RecipeExecutor;
 
 /**
  * REST API controller for recipe endpoints
@@ -22,11 +22,11 @@ class RestController {
 	private const NAMESPACE = 'whiskey/v1';
 
 	private RecipeRegistry $registry;
-	private HandlerFactory $factory;
+	private RecipeExecutor $executor;
 
-	public function __construct( RecipeRegistry $registry, HandlerFactory $factory ) {
+	public function __construct( RecipeRegistry $registry, RecipeExecutor $executor ) {
 		$this->registry = $registry;
-		$this->factory  = $factory;
+		$this->executor = $executor;
 	}
 
 	public function register_routes(): void {
@@ -117,46 +117,25 @@ class RestController {
 	 */
 	public function apply_recipe( WP_REST_Request $request ): WP_REST_Response {
 		$name   = $request->get_param( 'name' );
-		$recipe = $this->registry->get( $name );
+		$config = $this->registry->get( $name );
 
-		if ( ! $recipe ) {
+		if ( ! $config ) {
 			return new WP_REST_Response(
-				[
-					'success' => false,
-					'message' => sprintf( 'Recipe not found: %s', $name ),
-				],
+				[ 'success' => false, 'message' => "Recipe not found: $name" ],
 				404
 			);
 		}
 
-		$handler = $this->factory->get_handler( $recipe['type'] );
-
-		if ( ! $handler ) {
+		if ( ! $this->executor->validate( $config ) ) {
 			return new WP_REST_Response(
-				[
-					'success' => false,
-					'message' => sprintf( 'Unknown recipe type: %s', $recipe['type'] ),
-				],
+				[ 'success' => false, 'message' => 'Invalid recipe configuration' ],
 				400
 			);
 		}
 
-		if ( ! $handler->validate( $recipe['config'] ) ) {
-			return new WP_REST_Response(
-				[
-					'success' => false,
-					'message' => 'Invalid recipe configuration',
-				],
-				400
-			);
-		}
+		$result = $this->executor->execute( $config );
 
-		$result = $handler->execute( $recipe['config'] );
-
-		return new WP_REST_Response(
-			$result->to_array(),
-			200
-		);
+		return new WP_REST_Response( $result->to_array(), 200 );
 	}
 
 	/**
@@ -166,8 +145,6 @@ class RestController {
 		return new WP_REST_Response(
 			[
 				'success'     => true,
-				'plugin'      => 'Whiskey',
-				'version'     => '1.0.0',
 				'php_version' => PHP_VERSION,
 			],
 			200
