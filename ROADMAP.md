@@ -34,24 +34,25 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] Autoloader setup (PSR-4 using composer)
 - [x] Main bootstrap class with DI
 
-#### Recipe Registry (Hook System)
+#### Registry System (Hook-Based)
 
 - [x] Implement `RecipeRegistry` class
+- [x] Implement `IngredientRegistry` class
 - [x] Add `whiskey:register_recipe` hook
-- [x] Recipe storage and retrieval
-- [x] Basic recipe validation
+- [x] Add `whiskey:register_ingredient` hook
+- [x] Storage and retrieval for both registries
+- [x] Basic validation
 
-#### Handler Architecture
+#### Ingredient Architecture
 
-- [x] Create `RecipeHandlerInterface`
-- [x] Define handler method signatures: `validate()`, `execute()`
+- [x] Create `Ingredient` base class
+- [x] Define method signatures: `validate()`, `execute()`
 - [x] Create `ExecutionResult` class for type-safe responses
-- [x] Implement factory pattern for handler selection
+- [x] Create `RecipeExecutor` for ingredient orchestration
 
-#### First Handler: PayPal (Proof of Concept)
+#### First Ingredients (Proof of Concept)
 
-- [x] `PayPalHandler` class
-- [x] Define the recipe schema for PayPal (mode: sandbox/live)
+- [x] `SetHomepageIngredient` class
 - [x] Basic validation logic
 - [x] Execute method returning ExecutionResult
 
@@ -61,101 +62,121 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] `GET /recipes` - List all recipes
 - [x] `GET /recipe/{name}` - Get recipe details
 - [x] `POST /recipe/{name}/apply` - Execute recipe
+- [x] `GET /ingredients` - List all ingredients
 - [x] `GET /status` - Plugin status
 - [x] Permission callbacks (manage_options)
 - [x] Response formatting (success/error)
 
-#### Additional Handlers
+#### Additional Ingredients
 
-- [x] `WooCommerceHandler` handler
-- [x] `WordPressHandler` handler
+- [ ] WordPress ingredients (5+ operations)
+  - [x] `SetHomepageIngredient`
+  - [ ] `CreateShopPagesIngredient`
+  - [ ] `UpdatePermalinksIngredient`
+  - [ ] `AddMenuItemsIngredient`
+  - [ ] Additional as needed
+- [ ] WooCommerce ingredients (5+ operations)
+  - [ ] `WooCommerceCountryIngredient`
+  - [ ] `WooCommerceCurrencyIngredient`
+  - [ ] `WooCommerceShippingIngredient`
+  - [ ] Additional as needed
+- [ ] PayPal ingredients (5+ operations)
+  - [ ] `PayPalModeIngredient`
+  - [ ] `PayPalCredentialsIngredient`
+  - [ ] `PayPalSettingsIngredient`
+  - [ ] Additional as needed
 
 #### Testing Setup
 
 - [x] PHPUnit configuration
 - [x] Test RecipeRegistry
 - [x] Test Main class
-- [x] Test PayPalHandler
-- [x] Test REST endpoints
+- [ ] Test IngredientRegistry
+- [ ] Test RecipeExecutor
+- [ ] Test individual ingredients
+- [ ] Test REST endpoints
 
 #### Sample Recipes
 
-- [ ] Provide at least one recipe for each handler
+- [ ] WordPress shop setup recipe
+- [ ] WooCommerce US store recipe
+- [ ] PayPal sandbox recipe
 
 #### Documentation
 
 - [x] Inline @explain comments throughout codebase
 - [x] README with usage examples
-- [ ] Capture baseline complexity metrics
+- [ ] Capture baseline complexity metrics (15+ ingredients needed)
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
 ### Branch `php-8.0` - Modern Syntax
 
 #### Constructor Promotion
 
-- [ ] Refactor: Handler classes constructor properties
-- [ ] Refactor: Config objects as value objects
+- [ ] Refactor: All class constructor properties (Main, Registries, RestController, RecipeExecutor)
+- [ ] Refactor: Ingredient classes with state
 - [ ] Document before/after in `docs/changes-from-7.4.md`
 
 #### Match Expressions
 
-- [ ] Refactor: Handler factory (switch → match)
-- [ ] Refactor: Recipe type validation
-- [ ] Refactor: Status code mapping
+- [ ] Refactor: RecipeExecutor ingredient instantiation patterns (if applicable)
+- [ ] Refactor: Status code mapping in RestController
 - [ ] Document examples
 
 #### Named Arguments
 
 - [ ] Refactor: REST response building
-- [ ] Refactor: Handler instantiation
+- [ ] Refactor: Ingredient instantiation
+- [ ] Refactor: ExecutionResult creation
 - [ ] Document readability improvements
 
 #### Union Types
 
-- [ ] Refactor: Handler method return types
-- [ ] Refactor: Config value types
+- [ ] Refactor: Ingredient validate() parameter types
+- [ ] Refactor: Ingredient execute() parameter types
 - [ ] Document type safety gains
 
 #### Nullsafe Operator
 
-- [ ] Refactor: Config access chains
-- [ ] Refactor: Optional parameter handling
+- [ ] Refactor: Registry access chains
+- [ ] Refactor: Optional parameter handling in ingredients
 - [ ] Document null safety improvements
 
 #### Additional Features
 
-- [ ] Use `str_contains()`, `str_starts_with()`, `str_ends_with()`
+- [ ] Use `str_contains()`, `str_starts_with()`, `str_ends_with()` in ingredients
 - [ ] Update tests for new syntax
 - [ ] Measure complexity reduction
 
 ### Branch `php-8.1` - Type Safety
 
-#### Enums for Recipe Types
+#### Enums for Categories
 
-- [ ] Create `RecipeType` enum (PayPal, WooCommerce, WordPress)
-- [ ] Refactor: Registry type validation
-- [ ] Refactor: Handler factory type checking
+- [ ] Create `IngredientCategory` enum (WordPress, WooCommerce, PayPal, etc.)
+- [ ] Refactor: Replace `const CATEGORY` strings with enum
+- [ ] Refactor: Registry category filtering
 - [ ] Document before/after in `docs/changes-from-8.0.md`
 
 #### Readonly Properties
 
-- [ ] Refactor: Config classes as immutable DTOs
-- [ ] Refactor: Handler constructor properties
+- [ ] Refactor: ExecutionResult as readonly class
+- [ ] Refactor: Ingredient constructor properties as readonly
+- [ ] Refactor: Registry properties as readonly where appropriate
 - [ ] Document immutability benefits
 
 #### Never Return Type
 
-- [ ] Refactor: Error handling methods
+- [ ] Refactor: Error handling methods in ingredients
 - [ ] Document exhaustive validation
 
 #### Final Class Constants
 
-- [ ] Refactor: Config key constants
-- [ ] Refactor: Status code constants
+- [ ] Refactor: Ingredient CATEGORY constants as final
+- [ ] Refactor: REST namespace constant as final
 
 #### Additional Features
 
-- [ ] Use `array_is_list()` where applicable
+- [ ] Use `array_is_list()` in validation where applicable
 - [ ] Update tests
 - [ ] Measure complexity reduction
 
@@ -163,19 +184,20 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Readonly Classes
 
-- [ ] Refactor: All config DTOs as readonly classes
-- [ ] Refactor: Recipe data objects
+- [ ] Refactor: ExecutionResult as readonly class
+- [ ] Refactor: Simple ingredient classes as readonly
 - [ ] Document before/after in `docs/changes-from-8.1.md`
 - [ ] Document architectural improvements
 
 #### DNF Types
 
-- [ ] Review handler signatures for DNF type opportunities
+- [ ] Review ingredient validate() signatures for DNF type opportunities
+- [ ] Review ingredient execute() return types
 - [ ] Document type precision gains
 
 #### Additional Features
 
-- [ ] Use `true`/`false`/`null` types where beneficial
+- [ ] Use `true`/`false`/`null` types in ingredient validation
 - [ ] Update tests
 - [ ] Measure complexity reduction
 
@@ -183,17 +205,19 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Typed Constants
 
-- [ ] Add types to all class constants
+- [ ] Add types to all ingredient CATEGORY constants
+- [ ] Add types to REST namespace constant
 - [ ] Document type safety in `docs/changes-from-8.2.md`
 
 #### Override Attribute
 
-- [ ] Add `#[Override]` to handler implementations
+- [ ] Add `#[Override]` to ingredient validate() implementations
+- [ ] Add `#[Override]` to ingredient execute() implementations
 - [ ] Document inheritance clarity
 
 #### Additional Features
 
-- [ ] Use `json_validate()` for config validation
+- [ ] Use `json_validate()` for recipe config validation
 - [ ] Use anonymous readonly classes if applicable
 - [ ] Update tests
 - [ ] Measure final complexity reduction
@@ -216,7 +240,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - Lines of code per version
 - Cyclomatic complexity per version
-- Number of classes/methods
+- Number of classes/methods (ingredients provide more classes to measure)
+- Number of ingredients implemented
 - Test coverage percentage
 - Documentation completeness
 
