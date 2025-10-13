@@ -16,6 +16,8 @@ declare( strict_types = 1 );
 namespace Whiskey;
 
 use Whiskey\Controllers\RestController;
+use Whiskey\Registry\RecipeRegistry;
+use Whiskey\Registry\IngredientRegistry;
 
 defined( 'ABSPATH' ) || exit;
 
