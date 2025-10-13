@@ -61,20 +61,21 @@ POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply
 | `/wp-json/whiskey/v1/recipes`             | GET    | List all registered recipes        |
 | `/wp-json/whiskey/v1/recipe/{name}`       | GET    | Get specific recipe details        |
 | `/wp-json/whiskey/v1/recipe/{name}/apply` | POST   | Execute a recipe                   |
+| `/wp-json/whiskey/v1/ingredients`         | GET    | Get all available ingredients      |
 | `/wp-json/whiskey/v1/status`              | GET    | Plugin status and PHP version info |
 
 ## Architecture
 
-### Recipe Handlers vs. Recipes
+### Ingredients vs. Recipes
 
-**Recipe Handlers** define *what can be configured*. They're domain experts that know how to configure specific WordPress subsystems (core, WooCommerce, PayPal, etc.).
+**Ingredients** define *what can be configured*. They're focused operations that know how to perform specific configuration tasks (create pages, set homepage, configure PayPal mode, etc.).
 
-**Recipes** define *actual configurations*. They're data that handlers execute - like blueprints for setting up sandbox environments, production stores, or development sites.
+**Recipes** combine ingredients into complete configurations. They're blueprints that specify which ingredients to use and what values to pass them.
 
 Think of it this way:
 
-- Handler = "I know how to configure PayPal"
-- Recipe = "Configure PayPal for sandbox mode with these specific credentials"
+- Ingredient = "I know how to set the homepage"
+- Recipe = "Set homepage to 'shop', create cart page, configure permalinks"
 
 ## Development
 
@@ -88,48 +89,70 @@ composer install
 composer test
 ```
 
-### Creating New Recipe Handler
+### Creating New Ingredients
 
-Recipe handlers define the schema and capabilities for a configuration domain.
+Ingredients are individual configuration operations that recipes can use.
 
-**When to create a handler:**
+**When to create an ingredient:**
 
-- You want to configure a new system (Stripe, Mailchimp, etc.)
-- You need different validation/execution logic than existing handlers
+- You want to configure a specific setting (Stripe API key, email SMTP, etc.)
+- You need validation and execution logic for one focused task
 
 **Steps:**
 
-1. Create handler class, in `src/Handlers/`, extend the base class `RecipeHandler`
-2. Register in `src/RecipeRegistry.php`
-3. Implement the behavior in the handler class
+1. Create ingredient class in `src/Ingredients/` extending `Ingredient` base class
+2. Implement `validate()` and `execute()` methods
+3. Add self-registration via `whiskey:register_ingredient` hook at bottom of file
 4. Write tests
+
+**Example ingredient:**
+
+```php
+class MyCustomIngredient extends Ingredient {
+    public const CATEGORY = 'my-plugin';
+    
+    public function validate( $value ): bool {
+        return is_string( $value );
+    }
+    
+    public function execute( $value ): ExecutionResult {
+        // Do the configuration work
+        return new ExecutionResult( true, 'Success' );
+    }
+}
+
+// Self-register
+add_action( 'whiskey:register_ingredient', function( $registry ) {
+    $registry->add( 'my_custom_setting', MyCustomIngredient::class );
+});
+```
 
 ### Creating New Recipes
 
-Recipes are configuration blueprints that handlers execute.
+Recipes combine ingredients into complete configuration blueprints.
 
-The plugin includes built-in recipes in `src/Recipes/*.php` that work out-of-the-box, and are registered via the hook `whiskey:register_recipe`.
+The plugin includes built-in recipes in `src/Recipes/*.php` that work out-of-the-box, registered via the `whiskey:register_recipe` hook.
 
-To create custom recipes, you can use the same hook in any file that that's loaded on/before `init` action at priority 10.
+To create custom recipes, use the same hook in any file loaded on/before `init` action at priority 10.
 
-Sample recipe:
+**Sample recipe:**
 
 ```php
-// In a custom plugin
-add_action('whiskey:register_recipe', function( \Whiskey\RecipeRegistry $registry ) {
+// In a custom plugin or theme
+add_action('whiskey:register_recipe', function( \Whiskey\Registry\RecipeRegistry $registry ) {
     $registry->add(
-        'paypal',            // Handler type
-        'eu_merchant'        // Unique recipe name
-        [                    // Configuration data
-            'merchant_id' => '...',
-            'merchant_country' => 'DE',
-            // ... rest of config
+        'my-shop-setup',     // Unique recipe name
+        [                    // Ingredient configuration
+            'set_homepage' => 'shop',
+            'create_shop_pages' => ['shop', 'cart'],
+            'paypal_mode' => 'sandbox',
+            'woocommerce_country' => 'US',
         ]
     );
 });
 ```
 
-Note: If a recipe with the same type + name already exists, it will be _replaced_ by the new recipe.
+**Note:** If a recipe with the same name already exists, it will be replaced by the new recipe.
 
 ## License
 
