@@ -7,11 +7,8 @@
 
 declare( strict_types = 1 );
 
-namespace Whiskey;
+namespace Whiskey\Registry;
 
-/**
- * RecipeRegistry class - Central registry for all configuration recipes
- */
 class RecipeRegistry {
 
 	/**
