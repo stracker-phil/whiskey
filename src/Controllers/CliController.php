@@ -183,14 +183,60 @@ class CliController {
 
 				// Display data details if present
 				if ( ! empty( $ingredient_data ) ) {
-					$formatted_data = wp_json_encode( $ingredient_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
-					$lines          = explode( "\n", $formatted_data );
-					foreach ( $lines as $line ) {
-						WP_CLI::log( sprintf( '    %s', $line ) );
-					}
+					$this->format_data( $ingredient_data, 4 );
 				}
 			}
 		}
+
+		WP_CLI::log( '' );
+		WP_CLI::success( $result->get_message() );
+	}
+
+	/**
+	 * Format data array for CLI output in a readable way
+	 *
+	 * @param array $data  Data to format
+	 * @param int   $indent  Number of spaces to indent
+	 */
+	private function format_data( array $data, int $indent ): void {
+		$prefix = str_repeat( ' ', $indent );
+
+		foreach ( $data as $key => $value ) {
+			if ( is_array( $value ) ) {
+				// Check if it's a simple list of scalars
+				if ( $this->is_simple_list( $value ) ) {
+					$formatted = implode( ', ', $value );
+					WP_CLI::log( sprintf( '%s%s: %s', $prefix, $key, $formatted ) );
+				} else {
+					// Nested structure
+					WP_CLI::log( sprintf( '%s%s:', $prefix, $key ) );
+					$this->format_data( $value, $indent + 2 );
+				}
+			} else {
+				WP_CLI::log( sprintf( '%s%s: %s', $prefix, $key, $value ) );
+			}
+		}
+	}
+
+	/**
+	 * Check if array is a simple list of scalar values
+	 *
+	 * @param array $array  Array to check
+	 * @return bool
+	 */
+	private function is_simple_list( array $array ): bool {
+		if ( empty( $array ) ) {
+			return true;
+		}
+
+		foreach ( $array as $value ) {
+			if ( is_array( $value ) || is_object( $value ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 		WP_CLI::log( '' );
 		WP_CLI::success( $result->get_message() );
