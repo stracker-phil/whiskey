@@ -43,7 +43,7 @@ class RecipeExecutor {
 				continue;
 			}
 
-			$results[ $key ] = $ingredient->execute( $value );
+			$results[ $key ] = $ingredient->execute( $value )->to_array();
 		}
 
 		return new ExecutionResult(
