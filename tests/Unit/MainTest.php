@@ -42,4 +42,49 @@ class MainTest extends WhiskeyTest {
 
 		$this->assertedByMockery();
 	}
+
+	public function testRegisterComponentsInitializesIngredientRegistry(): void {
+		$recipes     = Mockery::mock( RecipeRegistry::class );
+		$ingredients = Mockery::mock( IngredientRegistry::class );
+		$rest        = Mockery::mock( RestController::class );
+		$cli         = Mockery::mock( CliController::class );
+
+		$ingredients->shouldReceive( 'init' )->once();
+		$recipes->shouldReceive( 'init' )->once();
+
+		$main = new Main( $recipes, $ingredients, $rest, $cli );
+		$main->register_components();
+
+		$this->assertedByMockery();
+	}
+
+	public function testRegisterComponentsInitializesRecipeRegistry(): void {
+		$recipes     = Mockery::mock( RecipeRegistry::class );
+		$ingredients = Mockery::mock( IngredientRegistry::class );
+		$rest        = Mockery::mock( RestController::class );
+		$cli         = Mockery::mock( CliController::class );
+
+		$ingredients->shouldReceive( 'init' )->once();
+		$recipes->shouldReceive( 'init' )->once();
+
+		$main = new Main( $recipes, $ingredients, $rest, $cli );
+		$main->register_components();
+
+		$this->assertedByMockery();
+	}
+
+	public function testRegisterComponentsInitializesRegistriesInCorrectOrder(): void {
+		$recipes     = Mockery::mock( RecipeRegistry::class );
+		$ingredients = Mockery::mock( IngredientRegistry::class );
+		$rest        = Mockery::mock( RestController::class );
+		$cli         = Mockery::mock( CliController::class );
+
+		$ingredients->shouldReceive( 'init' )->once()->globally()->ordered();
+		$recipes->shouldReceive( 'init' )->once()->globally()->ordered();
+
+		$main = new Main( $recipes, $ingredients, $rest, $cli );
+		$main->register_components();
+
+		$this->assertedByMockery();
+	}
 }
