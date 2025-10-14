@@ -59,6 +59,7 @@ class CliController {
 
 		if ( empty( $recipes ) ) {
 			WP_CLI::warning( 'No recipes registered.' );
+
 			return;
 		}
 
@@ -102,7 +103,7 @@ class CliController {
 		WP_CLI::log( 'Configuration:' );
 
 		foreach ( $recipe as $ingredient => $value ) {
-			$formatted_value = is_array( $value ) ? json_encode( $value ) : $value;
+			$formatted_value = is_array( $value ) ? wp_json_encode( $value ) : $value;
 			WP_CLI::log( sprintf( '  %s: %s', $ingredient, $formatted_value ) );
 		}
 	}
@@ -151,6 +152,7 @@ class CliController {
 		if ( $dry_run ) {
 			WP_CLI::log( '' );
 			WP_CLI::warning( 'Dry-run mode: Recipe was not executed.' );
+
 			return;
 		}
 
@@ -198,6 +200,7 @@ class CliController {
 
 		if ( empty( $ingredients ) ) {
 			WP_CLI::warning( 'No ingredients registered.' );
+
 			return;
 		}
 
