@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-namespace Whiskey;
+namespace Whiskey\Tools;
 
 use WP_CLI;
 use WP_REST_Request;
@@ -15,6 +15,7 @@ use WP_REST_Response;
 use Exception;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
+use Whiskey\RecipeExecutor;
 
 /**
  * Base class for all Whiskey tools.
@@ -27,12 +28,6 @@ abstract class WhiskeyTool {
 	protected IngredientRegistry $ingredients;
 	protected RecipeExecutor $executor;
 
-	/**
-	 * PHP 7.4 verbose constructor.
-	 * This will evolve:
-	 * - 8.0: Constructor property promotion
-	 * - 8.1: + readonly modifier
-	 */
 	public function __construct(
 		RecipeRegistry $recipes,
 		IngredientRegistry $ingredients,
@@ -80,12 +75,12 @@ abstract class WhiskeyTool {
 		register_rest_route(
 			$namespace,
 			$config['path'],
-			array(
+			[
 				'methods'             => $config['method'],
-				'callback'            => array( $this, 'handle_rest' ),
+				'callback'            => [ $this, 'handle_rest' ],
 				'permission_callback' => $permission_callback,
-				'args'                => $config['args'] ?? array(),
-			)
+				'args'                => $config['args'] ?? [],
+			]
 		);
 	}
 
@@ -104,11 +99,11 @@ abstract class WhiskeyTool {
 
 		WP_CLI::add_command(
 			$config['command'],
-			array( $this, 'handle_cli' ),
-			array(
+			[ $this, 'handle_cli' ],
+			[
 				'shortdesc' => $config['synopsis'] ?? '',
 				'when'      => $config['when'] ?? 'after_wp_load',
-			)
+			]
 		);
 	}
 
@@ -161,10 +156,10 @@ abstract class WhiskeyTool {
 	 */
 	protected function format_rest_success( array $data ): WP_REST_Response {
 		return new WP_REST_Response(
-			array(
+			[
 				'success' => true,
 				'data'    => $data,
-			),
+			],
 			200
 		);
 	}
@@ -174,10 +169,10 @@ abstract class WhiskeyTool {
 	 */
 	protected function format_rest_error( string $message, int $code = 400 ): WP_REST_Response {
 		return new WP_REST_Response(
-			array(
+			[
 				'success' => false,
 				'message' => $message,
-			),
+			],
 			$code
 		);
 	}
@@ -205,7 +200,11 @@ abstract class WhiskeyTool {
 	 * Override to customize error codes.
 	 */
 	protected function get_http_code( Exception $e ): int {
-		// Could use exception types in future
+		// Common pattern: "not found" exceptions map to 404
+		if ( strpos( $e->getMessage(), 'not found' ) !== false ) {
+			return 404;
+		}
+
 		return 400;
 	}
 }
