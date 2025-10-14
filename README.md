@@ -61,8 +61,21 @@ POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply
 | `/wp-json/whiskey/v1/recipes`             | GET    | List all registered recipes        |
 | `/wp-json/whiskey/v1/recipe/{name}`       | GET    | Get specific recipe details        |
 | `/wp-json/whiskey/v1/recipe/{name}/apply` | POST   | Execute a recipe                   |
-| `/wp-json/whiskey/v1/ingredients`         | GET    | Get all available ingredients      |
+| `/wp-json/whiskey/v1/ingredients`         | GET    | List all available ingredients     |
+| `/wp-json/whiskey/v1/ingredient/{name}`   | GET    | Get specific ingredient details    |
 | `/wp-json/whiskey/v1/status`              | GET    | Plugin status and PHP version info |
+
+### WP-CLI Commands
+
+```bash
+wp whiskey recipes                    # List all recipes
+wp whiskey recipe <name>              # Show recipe details
+wp whiskey apply <name>               # Execute a recipe
+wp whiskey apply <name> --dry-run     # Validate without executing
+wp whiskey ingredients                # List all ingredients
+wp whiskey ingredient <name>          # Show ingredient details
+wp whiskey status                     # Show plugin status
+```
 
 ## Architecture
 
