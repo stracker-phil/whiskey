@@ -122,21 +122,25 @@ Ingredients are individual configuration operations that recipes can use.
 
 ```php
 class MyCustomIngredient extends Ingredient {
+    public const NAME = 'my_custom_setting';
     public const CATEGORY = 'my-plugin';
+    public const DESCRIPTION = 'Optional description for documentation';
     
     public function validate( $value ): bool {
         return is_string( $value );
     }
     
     public function execute( $value ): ExecutionResult {
+        // Collect response details for output.
+        $details = [];
         // Do the configuration work
-        return new ExecutionResult( true, 'Success' );
+        return new ExecutionResult( true, 'Success', $details );
     }
 }
 
 // Self-register
 add_action( 'whiskey:register_ingredient', function( $registry ) {
-    $registry->add( 'my_custom_setting', MyCustomIngredient::class );
+    $registry->add( MyCustomIngredient::class );
 });
 ```
 
@@ -151,15 +155,15 @@ To create custom recipes, use the same hook in any file loaded on/before `init` 
 **Sample recipe:**
 
 ```php
-// In a custom plugin or theme
+// In a custom plugin or theme.
 add_action('whiskey:register_recipe', function( \Whiskey\Registry\RecipeRegistry $registry ) {
     $registry->add(
         'my-shop-setup',     // Unique recipe name
         [                    // Ingredient configuration
             'set_homepage' => 'shop',
             'create_shop_pages' => ['shop', 'cart'],
-            'paypal_mode' => 'sandbox',
             'woocommerce_country' => 'US',
+            MyCustomIngredient::NAME => true, // Custom ingredient
         ]
     );
 });
