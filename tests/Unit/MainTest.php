@@ -28,4 +28,18 @@ class MainTest extends WhiskeyTest {
 
 		$this->assertedByMockery();
 	}
+
+	public function testRegisterCliCommandsCallsController(): void {
+		$recipes     = Mockery::mock( RecipeRegistry::class );
+		$ingredients = Mockery::mock( IngredientRegistry::class );
+		$rest        = Mockery::mock( RestController::class );
+		$cli         = Mockery::mock( CliController::class );
+
+		$cli->shouldReceive( 'register_commands' )->once();
+
+		$main = new Main( $recipes, $ingredients, $rest, $cli );
+		$main->register_cli_commands();
+
+		$this->assertedByMockery();
+	}
 }
