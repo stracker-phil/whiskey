@@ -229,6 +229,12 @@ class CliController {
 			return true;
 		}
 
+		// Check if it's an indexed array (not associative)
+		if ( array_keys( $array ) !== range( 0, count( $array ) - 1 ) ) {
+			return false;
+		}
+
+		// Check if all values are scalars
 		foreach ( $array as $value ) {
 			if ( is_array( $value ) || is_object( $value ) ) {
 				return false;
@@ -236,10 +242,6 @@ class CliController {
 		}
 
 		return true;
-	}
-
-		WP_CLI::log( '' );
-		WP_CLI::success( $result->get_message() );
 	}
 
 	/**
