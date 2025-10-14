@@ -41,6 +41,7 @@ class CliController {
 		WP_CLI::add_command( 'whiskey recipe', [ $this, 'show_recipe' ] );
 		WP_CLI::add_command( 'whiskey apply', [ $this, 'apply_recipe' ] );
 		WP_CLI::add_command( 'whiskey ingredients', [ $this, 'list_ingredients' ] );
+		WP_CLI::add_command( 'whiskey ingredient', [ $this, 'show_ingredient' ] );
 		WP_CLI::add_command( 'whiskey status', [ $this, 'show_status' ] );
 	}
 
@@ -186,6 +187,36 @@ class CliController {
 	/**
 	 * List all available ingredients.
 	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp whiskey ingredients
+	 *
+	 * @when after_wp_load
+	 */
+	public function list_ingredients(): void {
+		$ingredients = array_keys( $this->ingredients->all() );
+
+		if ( empty( $ingredients ) ) {
+			WP_CLI::warning( 'No ingredients registered.' );
+			return;
+		}
+
+		WP_CLI::log( 'Available ingredients:' );
+		foreach ( $ingredients as $ingredient ) {
+			WP_CLI::log( "  - {$ingredient}" );
+		}
+
+		WP_CLI::success( sprintf( 'Found %d ingredient(s).', count( $ingredients ) ) );
+	}
+
+	/**
+	 * Show details of a specific ingredient.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <n>
+	 * : The ingredient name.
+	 *
 	 * [--format=<format>]
 	 * : Render output in a particular format.
 	 * ---
@@ -198,34 +229,33 @@ class CliController {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp whiskey ingredients
-	 *     wp whiskey ingredients --format=json
+	 *     wp whiskey ingredient set_homepage
+	 *     wp whiskey ingredient set_homepage --format=json
 	 *
 	 * @when after_wp_load
 	 */
-	public function list_ingredients( array $args, array $assoc_args ): void {
-		$ingredients = $this->ingredients->all_metadata();
-		$format      = $assoc_args['format'] ?? 'table';
+	public function show_ingredient( array $args, array $assoc_args ): void {
+		$name   = $args[0] ?? null;
+		$format = $assoc_args['format'] ?? 'table';
 
-		if ( empty( $ingredients ) ) {
-			WP_CLI::warning( 'No ingredients registered.' );
-			return;
+		if ( ! $name ) {
+			WP_CLI::error( 'Ingredient name is required.' );
 		}
 
-		$items = [];
-		foreach ( $ingredients as $name => $metadata ) {
-			$items[] = [
-				'name'        => $name,
-				'category'    => $metadata['category'],
-				'description' => $metadata['description'],
-			];
-		}
+		$metadata = $this->ingredients->get_metadata( $name );
 
-		WP_CLI\Utils\format_items( $format, $items, [ 'name', 'category', 'description' ] );
+		if ( ! $metadata ) {
+			WP_CLI::error( sprintf( 'Ingredient not found: %s', $name ) );
+		}
 
 		if ( 'table' === $format ) {
+			WP_CLI::log( sprintf( 'Ingredient: %s', $name ) );
 			WP_CLI::log( '' );
-			WP_CLI::success( sprintf( 'Found %d ingredient(s).', count( $ingredients ) ) );
+			WP_CLI::log( sprintf( '  Category: %s', $metadata['category'] ) );
+			WP_CLI::log( sprintf( '  Description: %s', $metadata['description'] ) );
+		} else {
+			$output = array_merge( [ 'name' => $name ], $metadata );
+			WP_CLI\Utils\format_items( $format, [ $output ], array_keys( $output ) );
 		}
 	}
 
@@ -242,7 +272,7 @@ class CliController {
 		WP_CLI::log( 'Whiskey Plugin Status:' );
 		WP_CLI::log( sprintf( '  PHP Version: %s', PHP_VERSION ) );
 		WP_CLI::log( sprintf( '  Recipes: %d', count( $this->recipes->all() ) ) );
-		WP_CLI::log( sprintf( '  Ingredients: %d', count( $this->ingredients->all_metadata() ) ) );
+		WP_CLI::log( sprintf( '  Ingredients: %d', count( $this->ingredients->all() ) ) );
 		WP_CLI::success( 'Plugin is active.' );
 	}
 }
