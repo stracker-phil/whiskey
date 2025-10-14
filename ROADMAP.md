@@ -105,7 +105,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
   - [x] `UpdatePermalinksIngredient`
   - [x] `CreateShopPagesIngredient` (with modular template system)
   - [x] `SetMenuItemsIngredient`
-  - [ ] 1 more needed for target
+  - [ ] `SetActiveTheme`
 - [ ] WooCommerce ingredients (0/5 operations)
   - [ ] `WooCommerceCountryIngredient`
   - [ ] `WooCommerceCurrencyIngredient`
