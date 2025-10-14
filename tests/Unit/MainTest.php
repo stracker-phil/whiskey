@@ -12,78 +12,79 @@ use Whiskey\Controllers\CliController;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Mockery;
+use Mockery\MockInterface;
 
 class MainTest extends WhiskeyTest {
 
+	/** @var MockInterface&RecipeRegistry */
+	private MockInterface $recipes;
+
+	/** @var MockInterface&IngredientRegistry */
+	private MockInterface $ingredients;
+
+	/** @var MockInterface&RestController */
+	private MockInterface $rest;
+
+	/** @var MockInterface&CliController */
+	private MockInterface $cli;
+
+	private Main $main;
+
+	protected function setUp(): void {
+		parent::setUp();
+
+		$this->recipes     = Mockery::mock( RecipeRegistry::class );
+		$this->ingredients = Mockery::mock( IngredientRegistry::class );
+		$this->rest        = Mockery::mock( RestController::class );
+		$this->cli         = Mockery::mock( CliController::class );
+
+		$this->main = new Main(
+			$this->recipes,
+			$this->ingredients,
+			$this->rest,
+			$this->cli
+		);
+	}
+
 	public function testRegisterRestRoutesCallsController(): void {
-		$recipes     = Mockery::mock( RecipeRegistry::class );
-		$ingredients = Mockery::mock( IngredientRegistry::class );
-		$rest        = Mockery::mock( RestController::class );
-		$cli         = Mockery::mock( CliController::class );
+		$this->rest->shouldReceive( 'register_routes' )->once();
 
-		$rest->shouldReceive( 'register_routes' )->once();
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-		$main->register_rest_routes();
+		$this->main->register_rest_routes();
 
 		$this->assertedByMockery();
 	}
 
 	public function testRegisterCliCommandsCallsController(): void {
-		$recipes     = Mockery::mock( RecipeRegistry::class );
-		$ingredients = Mockery::mock( IngredientRegistry::class );
-		$rest        = Mockery::mock( RestController::class );
-		$cli         = Mockery::mock( CliController::class );
+		$this->cli->shouldReceive( 'register_commands' )->once();
 
-		$cli->shouldReceive( 'register_commands' )->once();
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-		$main->register_cli_commands();
+		$this->main->register_cli_commands();
 
 		$this->assertedByMockery();
 	}
 
 	public function testRegisterComponentsInitializesIngredientRegistry(): void {
-		$recipes     = Mockery::mock( RecipeRegistry::class );
-		$ingredients = Mockery::mock( IngredientRegistry::class );
-		$rest        = Mockery::mock( RestController::class );
-		$cli         = Mockery::mock( CliController::class );
+		$this->ingredients->shouldReceive( 'init' )->once();
+		$this->recipes->shouldReceive( 'init' )->once();
 
-		$ingredients->shouldReceive( 'init' )->once();
-		$recipes->shouldReceive( 'init' )->once();
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-		$main->register_components();
+		$this->main->register_components();
 
 		$this->assertedByMockery();
 	}
 
 	public function testRegisterComponentsInitializesRecipeRegistry(): void {
-		$recipes     = Mockery::mock( RecipeRegistry::class );
-		$ingredients = Mockery::mock( IngredientRegistry::class );
-		$rest        = Mockery::mock( RestController::class );
-		$cli         = Mockery::mock( CliController::class );
+		$this->ingredients->shouldReceive( 'init' )->once();
+		$this->recipes->shouldReceive( 'init' )->once();
 
-		$ingredients->shouldReceive( 'init' )->once();
-		$recipes->shouldReceive( 'init' )->once();
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-		$main->register_components();
+		$this->main->register_components();
 
 		$this->assertedByMockery();
 	}
 
 	public function testRegisterComponentsInitializesRegistriesInCorrectOrder(): void {
-		$recipes     = Mockery::mock( RecipeRegistry::class );
-		$ingredients = Mockery::mock( IngredientRegistry::class );
-		$rest        = Mockery::mock( RestController::class );
-		$cli         = Mockery::mock( CliController::class );
+		$this->ingredients->shouldReceive( 'init' )->once()->globally()->ordered();
+		$this->recipes->shouldReceive( 'init' )->once()->globally()->ordered();
 
-		$ingredients->shouldReceive( 'init' )->once()->globally()->ordered();
-		$recipes->shouldReceive( 'init' )->once()->globally()->ordered();
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-		$main->register_components();
+		$this->main->register_components();
 
 		$this->assertedByMockery();
 	}
