@@ -180,9 +180,10 @@ class RestController {
 	}
 
 	/**
-	 * Permission callback for protected endpoints
+	 * As this is a plugin to set up dev/test environments, we do not
+	 * add any permission check here.
 	 */
 	public function permission_callback(): bool {
-		return current_user_can( 'manage_options' );
+		return true;
 	}
 }
