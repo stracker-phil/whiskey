@@ -71,7 +71,7 @@ Ingredient files & Recipe files
 
 **4. WordPress Integration**
 - Unknown ingredients silently ignored (WordPress pattern)
-- `manage_options` capability required for most REST endpoints
+- REST endpoints do not require permissions, as the plugin runs on test/dev sites
 - Uses Brain Monkey for testing without full WordPress
 
 ---
@@ -100,7 +100,7 @@ use Whiskey\Registry\IngredientRegistry;
 
 class MyIngredient extends Ingredient {
 	public const NAME        = 'my_setting';
-	public const CATEGORY    = 'wordpress'; // or 'woocommerce' or 'paypal'
+	public const CATEGORY    = 'wordpress'; // or 'woocommerce', 'paypal', etc.
 	public const DESCRIPTION = 'What this ingredient does';
 
 	public function validate( $value ): bool {
@@ -111,17 +111,20 @@ class MyIngredient extends Ingredient {
 	public function execute( $value ): ExecutionResult {
 		// Perform the configuration
 		$result = $this->do_something( $value );
+		$details = [ 'value' => $value ];
 
 		if ( ! $result ) {
 			return new ExecutionResult(
 				false,
-				'Helpful error message explaining what went wrong'
+				'Helpful error message explaining what went wrong',
+				$details
 			);
 		}
 
 		return new ExecutionResult(
 			true,
-			'Success message explaining what changed'
+			'Success message explaining what changed',
+			$details
 		);
 	}
 
@@ -142,6 +145,7 @@ add_action(
 ### Ingredient Best Practices
 
 **Validation:**
+- Input comes from user generated configuration and might be invalid
 - Always validate type first (`is_string`, `is_int`, `is_array`)
 - Check for required array keys before accessing
 - Return `false` on invalid input (no exceptions)
@@ -150,14 +154,14 @@ add_action(
 **Execution:**
 - Extract complex logic to private methods
 - Always return `ExecutionResult` (never throw exceptions)
-- Provide helpful error messages (users see these in REST responses)
+- Provide helpful error messages and execution details (users see these in REST responses)
 - Success messages should describe what changed
 - Check WordPress function return values (many return false on failure)
 
 **WordPress Integration:**
 - Check if posts/pages exist before using IDs
 - Verify post types match expectations (`'page'`, `'post'`, etc.)
-- Use `WP_Post instanceof WP_Post` checks
+- Use `$obj instanceof WP_Post` checks
 - Remember: `get_page_by_path()` can return null
 - Remember: `get_post()` can return null or wrong post type
 
@@ -188,7 +192,8 @@ public function execute( $value ): ExecutionResult {
 	if ( ! $page_id ) {
 		return new ExecutionResult(
 			false,
-			"Did not find a page with id or slug '{$value}'."
+			'Did not find a page with id or slug.',
+			[ 'not_found': $value ]
 		);
 	}
 	
@@ -197,7 +202,8 @@ public function execute( $value ): ExecutionResult {
 	
 	return new ExecutionResult(
 		true,
-		"Successfully set page_id {$page_id}."
+		"Successfully set page_id {$page_id}.",
+		[ 'home_page' => $page_id ]
 	);
 }
 ```
@@ -218,7 +224,6 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 			'set_homepage'          => 'shop',
 			'woocommerce_country'   => 'US',
 			'woocommerce_currency'  => 'USD',
-			'paypal_mode'           => 'sandbox',
 		]
 	);
 } );
@@ -348,83 +353,25 @@ Use conventional commits with emojis:
 🧪 Add tests for PayPalModeIngredient
 ```
 
-### Multi-Branch Development
-
-1. Complete php-7.4 baseline first (15+ ingredients)
-2. Merge to php-8.0 branch and refactor for PHP 8.0
-3. Document changes in `docs/changes-from-7.4.md`
-4. Repeat for each subsequent PHP version
-5. Each branch remains functional independently
-
 ---
 
-## REST API Reference
-
-Base URL: `/wp-json/whiskey/v1`
-
-| Endpoint | Method | Auth | Description |
-|----------|--------|------|-------------|
-| `/recipes` | GET | Yes | List all recipes |
-| `/recipe/{name}` | GET | Yes | Get specific recipe |
-| `/recipe/{name}/apply` | POST | Yes | Execute recipe |
-| `/ingredients` | GET | Yes | List ingredient metadata |
-| `/status` | GET | No | Plugin status & PHP version |
-
-**Auth:** Most endpoints require `manage_options` capability
-
----
-
-## Code Style (PHP 7.4)
+## Code Style
 
 ```php
 // Short array syntax (deviation from WordPress standard)
 [ 'key' => 'value' ]        // ✅
 array( 'key' => 'value' )   // ❌
 
-// Indentation: tabs not spaces
-if ( isset( $data['key'] ) ) {  // ✅
-if (isset($data['key'])) {      // ❌
-
-// Type hints (PHP 7.4 compatible)
-public function id(): ?string {      // ✅
-public function id(): string|null {  // ❌ (PHP 8.0+)
-
 // Opening braces on same line
 public function test(): void {  // ✅
 public function test(): void    // ❌
-{
 
-// White space around parentheses and brackets
+// White space around parentheses and brackets, tabs for indentation
 if ( isset( $data['key'] ) ) {  // ✅
 if (isset($data['key'])) {      // ❌
 ```
 
 **Note:** This project uses **short array syntax `[]`** instead of WordPress's standard `array()` syntax. While most WordPress conventions are followed (spacing, braces, type hints), the modern array syntax is preferred for readability and consistency with PHP 8+ branches.
-
----
-
-## Useful Commands
-
-```bash
-# Run tests
-composer test
-
-# Run specific test
-vendor/bin/phpunit tests/Unit/RecipeRegistryTest.php
-
-# Start DDEV environment
-ddev start
-
-# Access WordPress
-# URL: https://whiskey.ddev.site
-# User: admin / admin
-
-# SSH into container
-ddev ssh
-
-# View logs
-ddev logs
-```
 
 ---
 
