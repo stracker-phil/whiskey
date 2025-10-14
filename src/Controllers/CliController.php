@@ -169,8 +169,8 @@ class CliController {
 
 		// Display ingredient results
 		$data = $result->get_data();
-		if ( ! empty( $data['results'] ) ) {
-			foreach ( $data['results'] as $ingredient => $ingredient_result ) {
+		if ( ! empty( $data ) ) {
+			foreach ( $data as $ingredient => $ingredient_result ) {
 				$success = $ingredient_result['success'] ?? false;
 				$message = $ingredient_result['message'] ?? '';
 
