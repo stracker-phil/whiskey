@@ -171,13 +171,23 @@ class CliController {
 		$data = $result->get_data();
 		if ( ! empty( $data ) ) {
 			foreach ( $data as $ingredient => $ingredient_result ) {
-				$success = $ingredient_result['success'] ?? false;
-				$message = $ingredient_result['message'] ?? '';
+				$success         = $ingredient_result['success'] ?? false;
+				$message         = $ingredient_result['message'] ?? '';
+				$ingredient_data = $ingredient_result['data'] ?? [];
 
 				if ( $success ) {
 					WP_CLI::log( sprintf( '  ✓ %s: %s', $ingredient, $message ) );
 				} else {
 					WP_CLI::log( sprintf( '  ✗ %s: %s', $ingredient, $message ) );
+				}
+
+				// Display data details if present
+				if ( ! empty( $ingredient_data ) ) {
+					$formatted_data = wp_json_encode( $ingredient_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+					$lines          = explode( "\n", $formatted_data );
+					foreach ( $lines as $line ) {
+						WP_CLI::log( sprintf( '    %s', $line ) );
+					}
 				}
 			}
 		}
