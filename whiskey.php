@@ -16,6 +16,7 @@ declare( strict_types = 1 );
 namespace Whiskey;
 
 use Whiskey\Controllers\RestController;
+use Whiskey\Controllers\CliController;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 
@@ -37,6 +38,7 @@ $recipes         = new RecipeRegistry();
 $ingredients     = new IngredientRegistry();
 $executor        = new RecipeExecutor( $ingredients );
 $rest_controller = new RestController( $recipes, $ingredients, $executor );
-$main            = new Main( $recipes, $ingredients, $rest_controller );
+$cli_controller  = new CliController( $recipes, $ingredients, $executor );
+$main            = new Main( $recipes, $ingredients, $rest_controller, $cli_controller );
 
 $main->init();
