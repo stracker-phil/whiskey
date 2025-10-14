@@ -72,12 +72,20 @@ class IngredientRegistry {
 		return isset( $this->ingredients[ $name ] );
 	}
 
-	public function all_metadata(): array {
-		$this->init();
+	public function get_metadata( string $name ): array {
+		$ingredient = $this->get( $name );
 
+		return [
+			'name'        => $ingredient::NAME,
+			'category'    => $ingredient::CATEGORY,
+			'description' => $ingredient::DESCRIPTION,
+		];
+	}
+
+	public function all_metadata(): array {
 		return array_map( static fn( $class ) => [
 			'category'    => $class::CATEGORY,
 			'description' => $class::DESCRIPTION,
-		], $this->ingredients );
+		], $this->all() );
 	}
 }

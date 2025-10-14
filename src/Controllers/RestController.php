@@ -45,7 +45,7 @@ class RestController {
 
 		register_rest_route(
 			self::NAMESPACE,
-			'/recipe/(?P<name>[a-zA-Z0-9-]+)',
+			'/recipe/(?P<name>[a-zA-Z0-9-_]+)',
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_recipe' ],
@@ -55,7 +55,7 @@ class RestController {
 
 		register_rest_route(
 			self::NAMESPACE,
-			'/recipe/(?P<name>[a-zA-Z0-9-]+)/apply',
+			'/recipe/(?P<name>[a-zA-Z0-9-_]+)/apply',
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'apply_recipe' ],
@@ -69,6 +69,16 @@ class RestController {
 			[
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_ingredients' ],
+				'permission_callback' => [ $this, 'permission_callback' ],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/ingredient/(?P<name>[a-zA-Z0-9-_]+)',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ $this, 'get_ingredient' ],
 				'permission_callback' => [ $this, 'permission_callback' ],
 			]
 		);
@@ -155,12 +165,39 @@ class RestController {
 	 * Get all available ingredients
 	 */
 	public function get_ingredients(): WP_REST_Response {
-		$ingredients = $this->ingredients->all_metadata();
+		$ingredients = array_keys( $this->ingredients->all() );
 
 		return new WP_REST_Response(
 			[
 				'success' => true,
-				'data'    => $ingredients,
+				'data'    => [ 'ingredients' => $ingredients ],
+			],
+			200
+		);
+	}
+
+	/**
+	 * Show details about a single ingredient
+	 */
+	public function get_ingredient( WP_REST_Request $request ): WP_REST_Response {
+		$name       = $request->get_param( 'name' );
+		$ingredient = $this->ingredients->get_metadata( $name );
+
+		if ( ! $ingredient ) {
+			return new WP_REST_Response(
+				[
+					'success' => false,
+					'message' => sprintf( 'Ingredient not found: %s', $name ),
+				],
+				404
+			);
+		}
+
+
+		return new WP_REST_Response(
+			[
+				'success' => true,
+				'data'    => $ingredient,
 			],
 			200
 		);
