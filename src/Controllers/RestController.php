@@ -88,12 +88,12 @@ class RestController {
 	 * Get all registered recipes
 	 */
 	public function get_recipes(): WP_REST_Response {
-		$recipes = $this->recipes->all();
+		$recipes = array_keys( $this->recipes->all() );
 
 		return new WP_REST_Response(
 			[
 				'success' => true,
-				'data'    => $recipes,
+				'data'    => [ 'recipes' => $recipes ],
 			],
 			200
 		);
