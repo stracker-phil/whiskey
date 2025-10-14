@@ -1,39 +1,66 @@
 <?php
 /**
- * Example: Register a PayPal configuration recipe
+ * Example: Register custom recipes from external code
+ *
+ * Place this in your theme's functions.php or a custom plugin.
  *
  * @package Whiskey\Examples
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
-use Whiskey\RecipeRegistry;
+use Whiskey\Registry\RecipeRegistry;
 
-// Register a PayPal sandbox configuration recipe.
+/**
+ * Register a simple recipe
+ */
 add_action(
 	'whiskey:register_recipe',
-	function( RecipeRegistry $registry ) {
-		$registry->register(
+	static function ( RecipeRegistry $registry ) {
+		$registry->add(
+			'my-shop-setup',
 			[
-				'name'   => 'paypal-sandbox-setup',
-				'type'   => 'paypal',
-				'config' => [
-					'mode'               => 'sandbox',
-					'merchant_id'        => 'YOUR_MERCHANT_ID',
-					'clear_transients'   => true,
-					'verify_connection'  => true,
-				],
+				'set_homepage'      => 'shop',
+				'create_shop_pages' => [ 'shop', 'cart', 'checkout' ],
+				'update_permalinks' => 'shop',
 			]
 		);
 	}
 );
 
-// Arrow function version (also PHP 7.4):
-// add_action(
-//     'whiskey:register_recipe',
-//     fn( RecipeRegistry $r ) => $r->register([
-//         'name' => 'paypal-sandbox-setup',
-//         'type' => 'paypal',
-//         'config' => [...]
-//     ])
-// );
+/**
+ * Register multiple recipes in one callback
+ */
+add_action(
+	'whiskey:register_recipe',
+	static function ( RecipeRegistry $registry ) {
+		// US Store Setup
+		$registry->add(
+			'us-store',
+			[
+				'set_homepage'      => 'shop',
+				'create_shop_pages' => [ 'shop', 'cart', 'checkout' ],
+			]
+		);
+
+		// EU Store Setup
+		$registry->add(
+			'eu-store',
+			[
+				'set_homepage'      => 'shop',
+				'create_shop_pages' => [ 'shop', 'cart', 'checkout' ],
+			]
+		);
+	}
+);
+
+/**
+ * Use arrow function syntax (PHP 7.4+)
+ */
+add_action(
+	'whiskey:register_recipe',
+	static fn( RecipeRegistry $r ) => $r->add(
+		'minimal-setup',
+		[ 'set_homepage' => 'home' ]
+	)
+);
