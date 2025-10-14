@@ -63,38 +63,54 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] `GET /recipe/{name}` - Get recipe details
 - [x] `POST /recipe/{name}/apply` - Execute recipe
 - [x] `GET /ingredients` - List all ingredients
+- [x] `GET /ingredient/{name}` - Get ingredient details
 - [x] `GET /status` - Plugin status
-- [x] Permission callbacks (manage_options)
+- [x] Unified response pattern (plural endpoints return names, singular return full data)
+- [x] Permission callbacks
 - [x] Response formatting (success/error)
+
+#### WP-CLI Controller
+
+- [x] `wp whiskey recipes` - List all recipes
+- [x] `wp whiskey recipe <n>` - Get recipe details
+- [x] `wp whiskey apply <n>` - Execute recipe with --dry-run support
+- [x] `wp whiskey ingredients` - List all ingredients
+- [x] `wp whiskey ingredient <n>` - Get ingredient details
+- [x] `wp whiskey status` - Plugin status
+- [x] Unified with REST API pattern
 
 #### Additional Ingredients
 
-- [ ] WordPress ingredients (5+ operations)
+- [x] WordPress ingredients (4/5 operations completed)
   - [x] `SetHomepageIngredient`
-  - [ ] `CreateShopPagesIngredient`
-  - [ ] `UpdatePermalinksIngredient`
-  - [ ] `AddMenuItemsIngredient`
-  - [ ] Additional as needed
-- [ ] WooCommerce ingredients (5+ operations)
+  - [x] `UpdatePermalinksIngredient`
+  - [x] `CreateShopPagesIngredient` (with modular template system)
+  - [x] `SetMenuItemsIngredient`
+  - [ ] 1 more needed for target
+- [ ] WooCommerce ingredients (0/5 operations)
   - [ ] `WooCommerceCountryIngredient`
   - [ ] `WooCommerceCurrencyIngredient`
   - [ ] `WooCommerceShippingIngredient`
   - [ ] Additional as needed
-- [ ] PayPal ingredients (5+ operations)
-  - [ ] `PayPalModeIngredient`
-  - [ ] `PayPalCredentialsIngredient`
+- [ ] PayPal ingredients (0/5 operations)
+  - [ ] `PayPalMerchantIngredient`
+  - [ ] `PayPalOnboardingIngredient`
   - [ ] `PayPalSettingsIngredient`
+  - [ ] `PayPalPaymentMethodsIngredient`
   - [ ] Additional as needed
 
 #### Testing Setup
 
 - [x] PHPUnit configuration
+- [x] Brain Monkey for WordPress function mocking
 - [x] Test RecipeRegistry
 - [x] Test Main class
+- [x] PHP stubs for IDE support (wordpress-stubs, wp-cli-stubs)
 - [ ] Test IngredientRegistry
 - [ ] Test RecipeExecutor
 - [ ] Test individual ingredients
 - [ ] Test REST endpoints
+- [ ] Test CLI commands
 
 #### Sample Recipes
 
@@ -104,9 +120,12 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Documentation
 
-- [x] Inline @explain comments throughout codebase
+- [x] Inline docblocks throughout codebase
 - [x] README with usage examples
-- [ ] Capture baseline complexity metrics (15+ ingredients needed)
+- [x] REST API endpoint documentation
+- [x] WP-CLI command documentation
+- [x] CLAUDE.md for AI assistant context
+- [ ] Capture baseline complexity metrics (need 15+ ingredients total)
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
 ### Branch `php-8.0` - Modern Syntax
@@ -249,5 +268,5 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - [ ] Use **wpdi** for DI
 - [ ] MCP Server integration via WordPress MCP Adapter
-- [ ] WP-CLI command support
+- [x] WP-CLI command support
 - [ ] Recipe dependency management
