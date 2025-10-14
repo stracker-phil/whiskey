@@ -9,11 +9,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Controllers;
 
-use WP_REST_Request;
-use WP_REST_Response;
-use Whiskey\Registry\RecipeRegistry;
-use Whiskey\Registry\IngredientRegistry;
-use Whiskey\RecipeExecutor;
+use Whiskey\Tools\WhiskeyTool;
 
 /**
  * REST API controller for recipe endpoints
@@ -22,198 +18,20 @@ class RestController {
 
 	private const NAMESPACE = 'whiskey/v1';
 
-	private RecipeRegistry $recipes;
-	private IngredientRegistry $ingredients;
-	private RecipeExecutor $executor;
+	/** @var WhiskeyTool[] */
+	private array $tools;
 
-	public function __construct( RecipeRegistry $recipes, IngredientRegistry $ingredients, RecipeExecutor $executor ) {
-		$this->recipes     = $recipes;
-		$this->ingredients = $ingredients;
-		$this->executor    = $executor;
+	/**
+	 * @param WhiskeyTool[] $tools
+	 */
+	public function __construct( array $tools ) {
+		$this->tools = $tools;
 	}
 
 	public function register_routes(): void {
-		register_rest_route(
-			self::NAMESPACE,
-			'/recipes',
-			[
-				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_recipes' ],
-				'permission_callback' => [ $this, 'permission_callback' ],
-			]
-		);
-
-		register_rest_route(
-			self::NAMESPACE,
-			'/recipe/(?P<name>[a-zA-Z0-9-_]+)',
-			[
-				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_recipe' ],
-				'permission_callback' => [ $this, 'permission_callback' ],
-			]
-		);
-
-		register_rest_route(
-			self::NAMESPACE,
-			'/recipe/(?P<name>[a-zA-Z0-9-_]+)/apply',
-			[
-				'methods'             => 'POST',
-				'callback'            => [ $this, 'apply_recipe' ],
-				'permission_callback' => [ $this, 'permission_callback' ],
-			]
-		);
-
-		register_rest_route(
-			self::NAMESPACE,
-			'/ingredients',
-			[
-				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_ingredients' ],
-				'permission_callback' => [ $this, 'permission_callback' ],
-			]
-		);
-
-		register_rest_route(
-			self::NAMESPACE,
-			'/ingredient/(?P<name>[a-zA-Z0-9-_]+)',
-			[
-				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_ingredient' ],
-				'permission_callback' => [ $this, 'permission_callback' ],
-			]
-		);
-
-		register_rest_route(
-			self::NAMESPACE,
-			'/status',
-			[
-				'methods'             => 'GET',
-				'callback'            => [ $this, 'get_status' ],
-				'permission_callback' => '__return_true',
-			]
-		);
-	}
-
-	/**
-	 * Get all registered recipes
-	 */
-	public function get_recipes(): WP_REST_Response {
-		$recipes = array_keys( $this->recipes->all() );
-
-		return new WP_REST_Response(
-			[
-				'success' => true,
-				'data'    => [ 'recipes' => $recipes ],
-			],
-			200
-		);
-	}
-
-	/**
-	 * Get specific recipe by name
-	 */
-	public function get_recipe( WP_REST_Request $request ): WP_REST_Response {
-		$name   = $request->get_param( 'name' );
-		$recipe = $this->recipes->get( $name );
-
-		if ( ! $recipe ) {
-			return new WP_REST_Response(
-				[
-					'success' => false,
-					'message' => sprintf( 'Recipe not found: %s', $name ),
-				],
-				404
-			);
+		foreach ( $this->tools as $tool ) {
+			$tool->init_rest( self::NAMESPACE, [ $this, 'permission_callback' ] );
 		}
-
-		return new WP_REST_Response(
-			[
-				'success' => true,
-				'data'    => $recipe,
-			],
-			200
-		);
-	}
-
-	/**
-	 * Execute a recipe
-	 */
-	public function apply_recipe( WP_REST_Request $request ): WP_REST_Response {
-		$name   = $request->get_param( 'name' );
-		$config = $this->recipes->get( $name );
-
-		if ( ! $config ) {
-			return new WP_REST_Response(
-				[ 'success' => false, 'message' => "Recipe not found: $name" ],
-				404
-			);
-		}
-
-		if ( ! $this->executor->validate( $config ) ) {
-			return new WP_REST_Response(
-				[ 'success' => false, 'message' => 'Invalid recipe configuration' ],
-				400
-			);
-		}
-
-		$result = $this->executor->execute( $config );
-
-		return new WP_REST_Response( $result->to_array(), 200 );
-	}
-
-	/**
-	 * Get all available ingredients
-	 */
-	public function get_ingredients(): WP_REST_Response {
-		$ingredients = array_keys( $this->ingredients->all() );
-
-		return new WP_REST_Response(
-			[
-				'success' => true,
-				'data'    => [ 'ingredients' => $ingredients ],
-			],
-			200
-		);
-	}
-
-	/**
-	 * Show details about a single ingredient
-	 */
-	public function get_ingredient( WP_REST_Request $request ): WP_REST_Response {
-		$name       = $request->get_param( 'name' );
-		$ingredient = $this->ingredients->get_metadata( $name );
-
-		if ( ! $ingredient ) {
-			return new WP_REST_Response(
-				[
-					'success' => false,
-					'message' => sprintf( 'Ingredient not found: %s', $name ),
-				],
-				404
-			);
-		}
-
-
-		return new WP_REST_Response(
-			[
-				'success' => true,
-				'data'    => $ingredient,
-			],
-			200
-		);
-	}
-
-	/**
-	 * Get plugin status
-	 */
-	public function get_status(): WP_REST_Response {
-		return new WP_REST_Response(
-			[
-				'success'     => true,
-				'php_version' => PHP_VERSION,
-			],
-			200
-		);
 	}
 
 	/**
