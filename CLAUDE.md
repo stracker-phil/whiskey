@@ -18,6 +18,27 @@ Educational WordPress plugin demonstrating PHP 7.4 → 8.3 evolution through pra
 - `RecipeExecutor` - Orchestrates ingredient execution
 - `RecipeRegistry` - Collects recipes via hooks
 - `IngredientRegistry` - Collects ingredients via hooks
+- `WhiskeyTool` - Abstract base for REST/CLI features
+- `RestController` - Thin registration layer for REST endpoints
+- `CliController` - Thin registration layer for WP-CLI commands
+
+### Tool-Based Architecture
+
+Controllers delegate all business logic to **tool classes**. Each tool:
+- Defines its REST endpoint configuration (method, path, args)
+- Defines its CLI command configuration (command, synopsis, when)
+- Implements the core business logic once in `handle_logic()`
+- Optionally customizes output formatting for REST/CLI
+
+**Why tools?** Single source of truth - no duplication between REST and CLI. Adding a feature means creating one tool class, not updating both controllers.
+
+**Available tools:**
+- `ListRecipesTool` - List all recipes
+- `ShowRecipeTool` - Show recipe details  
+- `ApplyRecipeTool` - Execute recipes
+- `ListIngredientsTool` - List all ingredients
+- `ShowIngredientTool` - Show ingredient details
+- `StatusTool` - Plugin status
 
 ### Registration Flow
 
@@ -31,6 +52,7 @@ Educational WordPress plugin demonstrating PHP 7.4 → 8.3 evolution through pra
 - Manual DI (no container)
 - Hook-based registration
 - Lazy loading via class names
+- Tool-based feature implementation
 - WordPress integration (Brain Monkey for tests)
 
 ---
@@ -146,6 +168,114 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $r ) {
 ```
 
 Recipe files live in `src/Recipes/` and are auto-loaded.
+
+---
+
+## Tool Development
+
+Tools encapsulate REST/CLI features with shared business logic.
+
+### When to Create a Tool
+
+Create a tool when you want to add a new REST endpoint + CLI command that:
+- Lists or shows data from registries
+- Executes operations (recipes, validation)
+- Provides plugin status or metadata
+
+### Required Structure
+
+```php
+<?php
+declare( strict_types = 1 );
+
+namespace Whiskey\Tools;
+
+use Exception;
+
+class MyTool extends WhiskeyTool {
+	
+	protected function get_rest_config(): ?array {
+		return [
+			'method' => 'GET',
+			'path'   => '/my-endpoint',
+			'args'   => [], // Optional REST args validation
+		];
+	}
+	
+	protected function get_cli_config(): ?array {
+		return [
+			'command'  => 'whiskey my-command',
+			'synopsis' => 'Description of what this does',
+			'when'     => 'after_wp_load', // Optional
+		];
+	}
+	
+	protected function handle_logic( array $args ): array {
+		// Extract args from REST or CLI (already normalized)
+		$name = $args['name'] ?? $args[0] ?? null;
+		
+		// Validate input
+		if ( ! $name ) {
+			throw new Exception( 'Name is required.' );
+		}
+		
+		// Do the work using $this->recipes, $this->ingredients, $this->executor
+		$data = $this->recipes->get( $name );
+		
+		if ( ! $data ) {
+			throw new Exception( sprintf( 'Not found: %s', $name ) );
+		}
+		
+		// Return data array (will be formatted for REST/CLI automatically)
+		return [
+			'name' => $name,
+			'data' => $data,
+		];
+	}
+	
+	// Optional: Customize CLI output format
+	protected function format_cli_output( array $data ): void {
+		WP_CLI::log( sprintf( 'Found: %s', $data['name'] ) );
+		// ... custom formatting
+	}
+}
+```
+
+### Critical Rules
+
+**Configuration:**
+- Return `null` from config methods to skip REST or CLI registration
+- REST paths can use regex patterns: `(?P<name>[a-zA-Z0-9-_]+)`
+- CLI commands are strings: `'whiskey my command'`
+
+**Business Logic:**
+- Always throw `Exception` on validation/execution errors
+- Return associative array with result data on success
+- Base class handles exception → REST error response / CLI error display
+- Use `$this->recipes`, `$this->ingredients`, `$this->executor` as needed
+
+**Argument Extraction:**
+- REST: `$args['name']` gets URL parameter `(?P<name>...)`
+- CLI: `$args[0]` gets first positional argument
+- Override `extract_rest_args()` or `extract_cli_args()` for custom logic
+
+**Output Formatting:**
+- Default REST: `{ success: true, data: {...} }`
+- Default CLI: Simple key-value output
+- Override `format_rest_success()`, `format_cli_output()` for custom formatting
+- HTTP error codes auto-detected from exception messages ("not found" → 404)
+
+### Adding Tools to Plugin
+
+After creating a tool, register it in `whiskey.php`:
+
+```php
+$tools = [
+	new ListRecipesTool( $recipes, $ingredients, $executor ),
+	new MyTool( $recipes, $ingredients, $executor ), // Add your tool
+	// ...
+];
+```
 
 ---
 

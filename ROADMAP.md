@@ -79,6 +79,25 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] `wp whiskey status` - Plugin status
 - [x] Unified with REST API pattern
 
+#### Tool-Based Architecture Refactoring
+
+- [x] Create `WhiskeyTool` base class (handles REST/CLI registration and error handling)
+- [x] Extract behavior into self-contained tool classes:
+  - [x] `ListRecipesTool` - List all recipes
+  - [x] `ShowRecipeTool` - Show recipe details
+  - [x] `ApplyRecipeTool` - Execute recipes with validation
+  - [x] `ListIngredientsTool` - List all ingredients
+  - [x] `ShowIngredientTool` - Show ingredient details
+  - [x] `StatusTool` - Plugin status
+- [x] Refactor `RestController` to thin registration layer (210 lines → 45 lines, 78% reduction)
+- [x] Refactor `CliController` to thin registration layer (339 lines → 35 lines, 90% reduction)
+- [x] Update DI in `whiskey.php` to instantiate tools
+- [x] Benefits achieved:
+  - Single source of truth for business logic (no REST/CLI duplication)
+  - Easy to add new features (just create a tool class)
+  - Clear separation of concerns (registration vs logic)
+  - Perfect foundation for PHP evolution demos
+
 #### Additional Ingredients
 
 - [x] WordPress ingredients (4/5 operations completed)
