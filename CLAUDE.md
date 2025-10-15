@@ -53,7 +53,7 @@ Controllers delegate all business logic to **tool classes**. Each tool:
 - Hook-based registration
 - Lazy loading via class names
 - Tool-based feature implementation
-- WordPress integration (Brain Monkey for tests)
+- Custom WordPress function stubs for testing
 
 ---
 
@@ -281,7 +281,18 @@ $tools = [
 
 ## Testing
 
+**See `tests/TESTING.md` for complete testing guidelines.**
+
+### Quick Start
+
+```bash
+composer test              # Run tests
+composer coverage          # Run with coverage report
+```
+
 ### Test Structure
+
+All tests extend `WhiskeyTest` which provides WordPress hook reset between tests.
 
 ```php
 <?php
@@ -293,7 +304,7 @@ use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\MyIngredient;
 
 class MyIngredientTest extends WhiskeyTest {
-	private ?MyIngredient $ingredient = null;
+	private MyIngredient $ingredient;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -309,8 +320,9 @@ class MyIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteSuccess(): void {
-		when( 'update_option' )->justReturn( true );
-
+		// Mock WordPress functions as needed
+		// See tests/helpers/wp-functions.php for available stubs
+		
 		$result = $this->ingredient->execute( 'value' );
 
 		$this->assertTrue( $result->is_success() );
@@ -319,22 +331,31 @@ class MyIngredientTest extends WhiskeyTest {
 }
 ```
 
-### Brain Monkey Mocking
+### PHPUnit Mocking
+
+Use PHPUnit's native mocking - no external libraries needed:
 
 ```php
-use function Brain\Monkey\Functions\when;
-use function Brain\Monkey\Functions\expect;
+// Stub - when you don't care about method calls
+$stub = $this->createStub( Registry::class );
 
-// Simple stub
-when( 'get_option' )->justReturn( 'value' );
-
-// Conditional
-when( 'get_post' )->alias( fn( $id ) => $id === 123 ? (object)['ID' => 123] : null );
-
-// Expectation
-expect( 'update_option' )->once()->with( 'key', 'val' )->andReturn( true );
-$this->assertedByMockery();
+// Mock - when you need to verify behavior
+$mock = $this->createMock( Registry::class );
+$mock->expects( $this->once() )
+	->method( 'init' )
+	->willReturn( true );
 ```
+
+### WordPress Functions
+
+Custom stubs available in `tests/helpers/wp-functions.php`:
+- `add_action()` / `do_action()` - Hook system with priority support
+- `add_filter()` / `apply_filters()` - Filter system
+- Add more as needed
+
+**Note:** PHPUnit version must match PHP version:
+- PHP 7.4 → PHPUnit 9.x
+- PHP 8.1+ → PHPUnit 10.x+
 
 ---
 

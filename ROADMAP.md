@@ -121,12 +121,13 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 #### Testing Setup
 
 - [x] PHPUnit configuration
-- [x] Brain Monkey for WordPress function mocking
-- [x] Test RecipeRegistry
-- [x] Test Main class
+- [x] Custom WordPress function stubs (add_action, do_action, add_filter, apply_filters)
+- [x] Test Main class (100% coverage)
+- [x] Test RecipeExecutor (100% coverage)
 - [x] PHP stubs for IDE support (wordpress-stubs, wp-cli-stubs)
+- [x] Testing guidelines documentation (tests/TESTING.md)
 - [ ] Test IngredientRegistry
-- [ ] Test RecipeExecutor
+- [ ] Test RecipeRegistry
 - [ ] Test individual ingredients
 - [ ] Test REST endpoints
 - [ ] Test CLI commands
