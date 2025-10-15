@@ -24,4 +24,19 @@ class MainTest extends WhiskeyTest {
 
 		$this->assertInstanceOf( Main::class, $main );
 	}
+
+	public function testInitHookExecutesWithoutErrors(): void {
+		$recipes     = $this->createStub( RecipeRegistry::class );
+		$ingredients = $this->createStub( IngredientRegistry::class );
+		$rest        = $this->createStub( RestController::class );
+		$cli         = $this->createStub( CliController::class );
+
+		new Main( $recipes, $ingredients, $rest, $cli );
+
+		// Fire the init hook to execute load methods
+		do_action( 'init' );
+
+		// If we get here without errors, the load methods executed
+		$this->assertTrue( true );
+	}
 }
