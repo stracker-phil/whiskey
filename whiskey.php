@@ -58,11 +58,9 @@ $tools = [
 $rest_controller = new RestController( $tools );
 $cli_controller  = new CliController( $tools );
 
-$main = new Main(
+new Main(
 	$recipes,
 	$ingredients,
 	$rest_controller,
 	$cli_controller
 );
-
-$main->init();

@@ -102,6 +102,21 @@ composer install
 composer test
 ```
 
+### See test coverage
+
+The "Code Coverage Report" requires XDebug to function, so a little extra step is needed:
+
+```bash
+# Enable Xdebug
+ddev xdebug on
+
+# Run tests & generate coverage report
+ddev composer coverage
+
+# When done, consider disabling xdebug again
+ddev xdebug off
+```
+
 ### Creating New Ingredients
 
 Ingredients are individual configuration operations that recipes can use.

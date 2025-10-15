@@ -33,28 +33,27 @@ class Main {
 		$this->ingredients     = $ingredients;
 		$this->rest_controller = $rest_controller;
 		$this->cli_controller  = $cli_controller;
+
+		$this->init();
 	}
 
-	public function init(): void {
-		add_action( 'init', [ $this, 'register_components' ], 11 );
-		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
-		add_action( 'cli_init', [ $this, 'register_cli_commands' ] );
-	}
+	/**
+	 * Wire up the app modules.
+	 */
+	protected function init(): void {
+		add_action( 'init', function () {
+			$this->load_builtin_ingredients();
+			$this->load_builtin_recipes();
+			$this->ingredients->init();
+			$this->recipes->init();
+		}, 11 );
 
-	public function register_components(): void {
-		$this->load_builtin_ingredients();
-		$this->load_builtin_recipes();
-
-		$this->ingredients->init();
-		$this->recipes->init();
-	}
-
-	public function register_rest_routes(): void {
-		$this->rest_controller->register_routes();
-	}
-
-	public function register_cli_commands(): void {
-		$this->cli_controller->register_commands();
+		add_action( 'rest_api_init', function () {
+			$this->rest_controller->register_routes();
+		} );
+		add_action( 'cli_init', function () {
+			$this->cli_controller->register_commands();
+		} );
 	}
 
 	/**
