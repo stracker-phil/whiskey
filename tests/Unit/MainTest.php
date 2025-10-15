@@ -11,34 +11,16 @@ use Whiskey\Controllers\RestController;
 use Whiskey\Controllers\CliController;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
-use Mockery;
-use Mockery\MockInterface;
 
 class MainTest extends WhiskeyTest {
 
-	/** @var MockInterface&RecipeRegistry */
-	private MockInterface $recipes;
-
-	/** @var MockInterface&IngredientRegistry */
-	private MockInterface $ingredients;
-
-	/** @var MockInterface&RestController */
-	private MockInterface $rest;
-
-	/** @var MockInterface&CliController */
-	private MockInterface $cli;
-
-	protected function setUp(): void {
-		parent::setUp();
-
-		$this->recipes     = Mockery::mock( RecipeRegistry::class );
-		$this->ingredients = Mockery::mock( IngredientRegistry::class );
-		$this->rest        = Mockery::mock( RestController::class );
-		$this->cli         = Mockery::mock( CliController::class );
-	}
-
 	public function testConstructorCreatesInstance(): void {
-		$main = new Main( $this->recipes, $this->ingredients, $this->rest, $this->cli );
+		$recipes     = $this->createStub( RecipeRegistry::class );
+		$ingredients = $this->createStub( IngredientRegistry::class );
+		$rest        = $this->createStub( RestController::class );
+		$cli         = $this->createStub( CliController::class );
+
+		$main = new Main( $recipes, $ingredients, $rest, $cli );
 
 		$this->assertInstanceOf( Main::class, $main );
 	}
