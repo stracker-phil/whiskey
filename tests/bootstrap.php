@@ -15,3 +15,4 @@ require_once __DIR__ . '/helpers/wp-functions.php';
 
 // Load functional stubs.
 require_once __DIR__ . '/stubs/WP_REST_Response.php';
+require_once __DIR__ . '/stubs/WP_Post.php';

@@ -12,6 +12,13 @@ use Whiskey\Tools\WhiskeyTool;
 
 class CliControllerTest extends WhiskeyTest {
 
+	public function testConstructorCreatesInstance(): void {
+		$tool = $this->createStub( WhiskeyTool::class );
+		$controller = new CliController( array( $tool ) );
+
+		$this->assertInstanceOf( CliController::class, $controller );
+	}
+
 	public function testRegisterCommandsCallsInitCliOnEachTool(): void {
 		$tool1 = $this->createMock( WhiskeyTool::class );
 		$tool2 = $this->createMock( WhiskeyTool::class );

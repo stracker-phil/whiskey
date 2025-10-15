@@ -12,6 +12,13 @@ use Whiskey\Tools\WhiskeyTool;
 
 class RestControllerTest extends WhiskeyTest {
 
+	public function testConstructorCreatesInstance(): void {
+		$tool = $this->createStub( WhiskeyTool::class );
+		$controller = new RestController( array( $tool ) );
+
+		$this->assertInstanceOf( RestController::class, $controller );
+	}
+
 	public function testRegisterRoutesCallsInitRestOnEachTool(): void {
 		$tool1 = $this->createMock( WhiskeyTool::class );
 		$tool2 = $this->createMock( WhiskeyTool::class );

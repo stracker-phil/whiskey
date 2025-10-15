@@ -66,7 +66,7 @@ abstract class WhiskeyTool {
 	/**
 	 * Register REST endpoint if configuration is provided.
 	 */
-	final public function init_rest( string $namespace, callable $permission_callback ): void {
+	public function init_rest( string $namespace, callable $permission_callback ): void {
 		$config = $this->get_rest_config();
 		if ( ! $config ) {
 			return;
@@ -87,7 +87,7 @@ abstract class WhiskeyTool {
 	/**
 	 * Register CLI command if configuration is provided.
 	 */
-	final public function init_cli(): void {
+	public function init_cli(): void {
 		if ( ! class_exists( 'WP_CLI' ) ) {
 			return;
 		}
@@ -110,7 +110,7 @@ abstract class WhiskeyTool {
 	/**
 	 * Handle REST API request.
 	 */
-	final public function handle_rest( WP_REST_Request $request ): WP_REST_Response {
+	public function handle_rest( WP_REST_Request $request ): WP_REST_Response {
 		try {
 			$args = $this->extract_rest_args( $request );
 			$data = $this->handle_logic( $args );
@@ -124,7 +124,7 @@ abstract class WhiskeyTool {
 	/**
 	 * Handle CLI command.
 	 */
-	final public function handle_cli( array $args, array $assoc_args ): void {
+	public function handle_cli( array $args, array $assoc_args ): void {
 		try {
 			$normalized = $this->extract_cli_args( $args, $assoc_args );
 			$data       = $this->handle_logic( $normalized );
