@@ -28,8 +28,6 @@ class MainTest extends WhiskeyTest {
 	/** @var MockInterface&CliController */
 	private MockInterface $cli;
 
-	private Main $main;
-
 	protected function setUp(): void {
 		parent::setUp();
 
@@ -37,54 +35,46 @@ class MainTest extends WhiskeyTest {
 		$this->ingredients = Mockery::mock( IngredientRegistry::class );
 		$this->rest        = Mockery::mock( RestController::class );
 		$this->cli         = Mockery::mock( CliController::class );
-
-		$this->main = new Main(
-			$this->recipes,
-			$this->ingredients,
-			$this->rest,
-			$this->cli
-		);
 	}
 
-	public function testRegisterRestRoutesCallsController(): void {
+	public function testRestApiInitHookRegistersRoutes(): void {
 		$this->rest->shouldReceive( 'register_routes' )->once();
 
-		$this->main->register_rest_routes();
+		new Main( $this->recipes, $this->ingredients, $this->rest, $this->cli );
+
+		do_action( 'rest_api_init' );
 
 		$this->assertedByMockery();
 	}
 
-	public function testRegisterCliCommandsCallsController(): void {
+	public function testCliInitHookRegistersCommands(): void {
 		$this->cli->shouldReceive( 'register_commands' )->once();
 
-		$this->main->register_cli_commands();
+		new Main( $this->recipes, $this->ingredients, $this->rest, $this->cli );
+
+		do_action( 'cli_init' );
 
 		$this->assertedByMockery();
 	}
 
-	public function testRegisterComponentsInitializesIngredientRegistry(): void {
+	public function testInitHookInitializesRegistries(): void {
 		$this->ingredients->shouldReceive( 'init' )->once();
 		$this->recipes->shouldReceive( 'init' )->once();
 
-		$this->main->register_components();
+		new Main( $this->recipes, $this->ingredients, $this->rest, $this->cli );
+
+		do_action( 'init' );
 
 		$this->assertedByMockery();
 	}
 
-	public function testRegisterComponentsInitializesRecipeRegistry(): void {
-		$this->ingredients->shouldReceive( 'init' )->once();
-		$this->recipes->shouldReceive( 'init' )->once();
-
-		$this->main->register_components();
-
-		$this->assertedByMockery();
-	}
-
-	public function testRegisterComponentsInitializesRegistriesInCorrectOrder(): void {
+	public function testInitHookInitializesRegistriesInCorrectOrder(): void {
 		$this->ingredients->shouldReceive( 'init' )->once()->globally()->ordered();
 		$this->recipes->shouldReceive( 'init' )->once()->globally()->ordered();
 
-		$this->main->register_components();
+		new Main( $this->recipes, $this->ingredients, $this->rest, $this->cli );
+
+		do_action( 'init' );
 
 		$this->assertedByMockery();
 	}
