@@ -14,54 +14,47 @@ use Whiskey\Registry\IngredientRegistry;
 
 class MainTest extends WhiskeyTest {
 
+	private RecipeRegistry $recipes;
+	private IngredientRegistry $ingredients;
+	private RestController $rest;
+	private CliController $cli;
+	private Main $main;
+
+	protected function setUp(): void {
+		parent::setUp();
+
+		$this->recipes     = $this->createMock( RecipeRegistry::class );
+		$this->ingredients = $this->createMock( IngredientRegistry::class );
+		$this->rest        = $this->createMock( RestController::class );
+		$this->cli         = $this->createMock( CliController::class );
+
+		$this->main = new Main(
+			$this->recipes,
+			$this->ingredients,
+			$this->rest,
+			$this->cli
+		);
+	}
+
 	public function testConstructorCreatesInstance(): void {
-		$recipes     = $this->createStub( RecipeRegistry::class );
-		$ingredients = $this->createStub( IngredientRegistry::class );
-		$rest        = $this->createStub( RestController::class );
-		$cli         = $this->createStub( CliController::class );
-
-		$main = new Main( $recipes, $ingredients, $rest, $cli );
-
-		$this->assertInstanceOf( Main::class, $main );
+		$this->assertInstanceOf( Main::class, $this->main );
 	}
 
 	public function testInitHookInitializesRegistries(): void {
-		$recipes     = $this->createMock( RecipeRegistry::class );
-		$ingredients = $this->createMock( IngredientRegistry::class );
-		$rest        = $this->createStub( RestController::class );
-		$cli         = $this->createStub( CliController::class );
+		$this->ingredients->expects( $this->once() )->method( 'init' );
+		$this->recipes->expects( $this->once() )->method( 'init' );
 
-		$ingredients->expects( $this->once() )->method( 'init' );
-		$recipes->expects( $this->once() )->method( 'init' );
-
-		new Main( $recipes, $ingredients, $rest, $cli );
-
-		// Fire the init hook - should execute the closure
 		do_action( 'init' );
 	}
 
 	public function testRestApiInitHookRegistersRoutes(): void {
-		$recipes     = $this->createStub( RecipeRegistry::class );
-		$ingredients = $this->createStub( IngredientRegistry::class );
-		$rest        = $this->createMock( RestController::class );
-		$cli         = $this->createStub( CliController::class );
-
-		$rest->expects( $this->once() )->method( 'register_routes' );
-
-		new Main( $recipes, $ingredients, $rest, $cli );
+		$this->rest->expects( $this->once() )->method( 'register_routes' );
 
 		do_action( 'rest_api_init' );
 	}
 
 	public function testCliInitHookRegistersCommands(): void {
-		$recipes     = $this->createStub( RecipeRegistry::class );
-		$ingredients = $this->createStub( IngredientRegistry::class );
-		$rest        = $this->createStub( RestController::class );
-		$cli         = $this->createMock( CliController::class );
-
-		$cli->expects( $this->once() )->method( 'register_commands' );
-
-		new Main( $recipes, $ingredients, $rest, $cli );
+		$this->cli->expects( $this->once() )->method( 'register_commands' );
 
 		do_action( 'cli_init' );
 	}
