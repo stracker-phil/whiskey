@@ -145,7 +145,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 
 		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
 		WP_Functions::mock( 'wp_get_nav_menu_items', false );
-		WP_Functions::mock( 'get_page_by_path', static fn( $slug ) => $slug === 'nonexistent' ? null : $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'get_page_by_path', fn( $slug ) => $slug === 'nonexistent' ? null : $this->createMockPost( 10 ) );
 		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
 		WP_Functions::mock( 'get_theme_mod', [] );
 		WP_Functions::mock( 'set_theme_mod' );

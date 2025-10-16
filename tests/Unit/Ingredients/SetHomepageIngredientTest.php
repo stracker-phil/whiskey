@@ -49,7 +49,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteWithValidPostId(): void {
-		WP_Functions::mock( 'get_post', static fn( $id ) => $this->createMockPost( $id, 'page' ) );
+		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'page' ) );
 		WP_Functions::mock( 'update_option', true );
 
 		$result = $this->ingredient->execute( 456 );
@@ -74,7 +74,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteFailsWhenPostIsNotAPage(): void {
-		WP_Functions::mock( 'get_post', static fn( $id ) => $this->createMockPost( $id, 'post' ) );
+		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'post' ) );
 
 		$result = $this->ingredient->execute( 789 );
 
