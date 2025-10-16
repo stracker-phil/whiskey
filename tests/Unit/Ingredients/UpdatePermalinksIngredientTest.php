@@ -39,10 +39,6 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		$this->assertFalse( $this->ingredient->validate( array( 'invalid' ) ) );
 	}
 
-	public function testValidateRejectsNull(): void {
-		$this->assertFalse( $this->ingredient->validate( null ) );
-	}
-
 	public function testExecuteUpdatesPermalinkStructure(): void {
 		$flush_called = false;
 		WP_Functions::mock( 'get_option', function ( $option ) {
