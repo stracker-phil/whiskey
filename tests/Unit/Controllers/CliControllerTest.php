@@ -48,21 +48,21 @@ class CliControllerTest extends WhiskeyTest {
 		$tool1 = $this->createMock( WhiskeyTool::class );
 		$tool1->expects( $this->once() )
 			->method( 'init_cli' )
-			->willReturnCallback( function () use ( &$callOrder ) {
+			->willReturnCallback( static function () use ( &$callOrder ) {
 				$callOrder[] = 'tool1';
 			} );
 
 		$tool2 = $this->createMock( WhiskeyTool::class );
 		$tool2->expects( $this->once() )
 			->method( 'init_cli' )
-			->willReturnCallback( function () use ( &$callOrder ) {
+			->willReturnCallback( static function () use ( &$callOrder ) {
 				$callOrder[] = 'tool2';
 			} );
 
 		$tool3 = $this->createMock( WhiskeyTool::class );
 		$tool3->expects( $this->once() )
 			->method( 'init_cli' )
-			->willReturnCallback( function () use ( &$callOrder ) {
+			->willReturnCallback( static function () use ( &$callOrder ) {
 				$callOrder[] = 'tool3';
 			} );
 

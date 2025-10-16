@@ -34,7 +34,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function testInitOnlyRunsOnce(): void {
 		$callCount = 0;
-		add_action( 'whiskey:register_ingredient', function () use ( &$callCount ) {
+		add_action( 'whiskey:register_ingredient', static function () use ( &$callCount ) {
 			$callCount ++;
 		} );
 
@@ -79,7 +79,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function testGetCallsInit(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', function () use ( &$hookFired ) {
+		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
 		} );
 
@@ -103,7 +103,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function testAllCallsInit(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', function () use ( &$hookFired ) {
+		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
 		} );
 
@@ -124,7 +124,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function testHasCallsInit(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', function () use ( &$hookFired ) {
+		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
 		} );
 

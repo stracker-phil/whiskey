@@ -48,7 +48,7 @@ class RestControllerTest extends WhiskeyTest {
 		$capturedCallback = null;
 		$tool->expects( $this->once() )
 			->method( 'init_rest' )
-			->willReturnCallback( function ( $namespace, $callback ) use ( &$capturedCallback ) {
+			->willReturnCallback( static function ( $namespace, $callback ) use ( &$capturedCallback ) {
 				$capturedCallback = $callback;
 			} );
 

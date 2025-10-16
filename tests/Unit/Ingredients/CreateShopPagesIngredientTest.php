@@ -7,7 +7,6 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit\Ingredients;
 
 use Whiskey\Ingredients\CreateShopPagesIngredient;
-use WP_Post;
 use WP_Functions;
 
 class CreateShopPagesIngredientTest extends IngredientTest {
