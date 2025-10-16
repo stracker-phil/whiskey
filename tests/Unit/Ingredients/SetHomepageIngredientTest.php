@@ -11,11 +11,17 @@ use WP_Post;
 use WP_Functions;
 
 class SetHomepageIngredientTest extends IngredientTest {
-	private SetHomepageIngredient $ingredient;
 
-	protected function setUp(): void {
-		parent::setUp();
-		$this->ingredient = new SetHomepageIngredient();
+	protected function getIngredientClass(): string {
+		return SetHomepageIngredient::class;
+	}
+
+	protected function getExpectedName(): string {
+		return 'set_homepage';
+	}
+
+	protected function getExpectedCategory(): string {
+		return 'wordpress';
 	}
 
 	public function testValidateAcceptsString(): void {
