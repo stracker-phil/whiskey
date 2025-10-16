@@ -50,8 +50,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( 'home' );
 
-		$this->assertTrue( $result->is_success() );
-		$this->assertStringContainsString( '123', $result->get_message() );
+		$this->assertExecutionSuccess( $result, '123' );
 	}
 
 	public function testExecuteWithValidPostId(): void {
@@ -64,8 +63,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( 456 );
 
-		$this->assertTrue( $result->is_success() );
-		$this->assertStringContainsString( '456', $result->get_message() );
+		$this->assertExecutionSuccess( $result, '456' );
 	}
 
 	public function testExecuteFailsWithInvalidSlug(): void {
