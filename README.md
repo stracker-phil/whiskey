@@ -99,22 +99,27 @@ Think of it this way:
 composer install
 
 # Run PHPUnit tests
-composer test
+ddev composer test
 ```
 
 ### See test coverage
 
-The "Code Coverage Report" requires XDebug to function, so a little extra step is needed:
+**Option 1**
 
 ```bash
-# Enable Xdebug
-ddev xdebug on
+# Run tests and generate a detailed coverage report
+ddev composer test
+```
 
-# Run tests & generate coverage report
+The report is available at: https://whiskey.ddev.site/coverage
+
+**Option 2**
+
+During development, a direct coverage output in the terminal is often more helpful than checking the HTML report:
+
+```bash
+# Run tests and display code coverage details in the terminal
 ddev composer coverage
-
-# When done, consider disabling xdebug again
-ddev xdebug off
 ```
 
 ### Creating New Ingredients

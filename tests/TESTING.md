@@ -5,6 +5,7 @@
 **Use PHPUnit native features only** - no external mocking libraries (Brain Monkey, Mockery)
 
 **PHPUnit version must match PHP version:**
+
 - PHP 7.4 → PHPUnit 9.x (`^9.6`)
 - PHP 8.1+ → PHPUnit 10.x+
 
@@ -13,6 +14,7 @@
 **Extend `WhiskeyTest`** - provides WordPress hook reset between tests
 
 **Use `setUp()` to eliminate duplication:**
+
 ```php
 protected function setUp(): void {
     parent::setUp();
@@ -22,6 +24,7 @@ protected function setUp(): void {
 ```
 
 **Test file location mirrors source:**
+
 - `src/RecipeExecutor.php` → `tests/Unit/RecipeExecutorTest.php`
 - `src/Ingredients/SetHomepage.php` → `tests/Unit/Ingredients/SetHomepageTest.php`
 
@@ -45,7 +48,8 @@ $mock->expects( $this->once() )->method( 'init' );
 **Custom stubs in `tests/helpers/`** - no external dependencies
 
 **Available functions:**
-- `add_action()` / `do_action()` 
+
+- `add_action()` / `do_action()`
 - `add_filter()` / `apply_filters()`
 - Add more as needed in `tests/helpers/wp-functions.php`
 
@@ -56,6 +60,7 @@ $mock->expects( $this->once() )->method( 'init' );
 **Target: 100% coverage for all business logic**
 
 **Acceptable exceptions:**
+
 - WordPress glue code (Main class with side effects)
 - Filesystem operations (`glob()`, `include_once`)
 - Integration points requiring real WordPress
@@ -64,17 +69,27 @@ $mock->expects( $this->once() )->method( 'init' );
 
 ## Quick Reference
 
+**Run unit tests**
+
 ```bash
-# Run tests
 ddev composer test
+```
 
-# Run with coverage
-ddev xdebug on
-ddev composer coverage
+This command generates a detailed test coverage report at:
+https://whiskey.ddev.site/coverage
 
-# Run specific test
+**Run a single test**
+
+```bash
 ddev exec vendor/bin/phpunit --filter RecipeExecutor
 ```
+
+**Output test coverage to terminal**
+
+```bash
+ddev composer coverage
+```
+
 
 ## Example Test
 
