@@ -272,7 +272,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] **Criterion 1**: Functional plugin across 5 PHP versions
 - [ ] **Criterion 2**: Document 15+ PHP improvements with examples
 - [ ] **Criterion 3**: Achieve 20% complexity reduction (7.4 → 8.3)
-- [ ] **Criterion 4**: 100% unit test coverage
+- [ ] **Criterion 4**: Excellent unit test coverage (90% methods)
 - [ ] **Criterion 5**: Comprehensive blog post published
 
 ### Metrics to Track
