@@ -23,7 +23,7 @@ class ShowRecipeToolTest extends ToolTest {
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'GET', $config['method'] );
-		$this->assertSame( '/recipe/(?P<n>[a-zA-Z0-9-_]+)', $config['path'] );
+		$this->assertSame( '/recipe/(?P<name>[a-zA-Z0-9-_]+)', $config['path'] );
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
