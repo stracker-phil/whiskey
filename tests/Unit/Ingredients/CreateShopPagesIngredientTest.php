@@ -6,53 +6,52 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Ingredients;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\CreateShopPagesIngredient;
 use WP_Post;
 use WP_Functions;
 
-class CreateShopPagesIngredientTest extends WhiskeyTest {
-	private CreateShopPagesIngredient $ingredient;
+class CreateShopPagesIngredientTest extends IngredientTest {
 
-	protected function setUp(): void {
-		parent::setUp();
-		$this->ingredient = new CreateShopPagesIngredient();
+	protected function getIngredientClass(): string {
+		return CreateShopPagesIngredient::class;
 	}
 
+	protected function getExpectedName(): string {
+		return 'create_shop_pages';
+	}
+
+	protected function getExpectedCategory(): string {
+		return 'woocommerce';
+	}
+
+	// ===== Validation Tests =====
+
 	public function testValidateAcceptsArrayOfStrings(): void {
-		$this->assertTrue( $this->ingredient->validate( array( 'shop', 'cart' ) ) );
+		$this->assertValidationAccepts( array( 'shop', 'cart' ) );
 	}
 
 	public function testValidateAcceptsEmptyArray(): void {
-		$this->assertTrue( $this->ingredient->validate( array() ) );
+		$this->assertValidationAccepts( array() );
 	}
 
 	public function testValidateRejectsString(): void {
-		$this->assertFalse( $this->ingredient->validate( 'shop' ) );
+		$this->assertValidationRejects( 'shop' );
 	}
 
 	public function testValidateRejectsArrayWithNonStringValue(): void {
-		$this->assertFalse( $this->ingredient->validate( array( 'shop', 123 ) ) );
+		$this->assertValidationRejects( array( 'shop', 123 ) );
 	}
 
 	public function testValidateRejectsArrayWithNestedArray(): void {
-		$this->assertFalse( $this->ingredient->validate( array( 'shop', array( 'nested' ) ) ) );
+		$this->assertValidationRejects( array( 'shop', array( 'nested' ) ) );
 	}
 
-	public function testValidateRejectsNull(): void {
-		$this->assertFalse( $this->ingredient->validate( null ) );
-	}
+	// ===== Execution Tests =====
 
 	public function testExecuteCreatesNewPage(): void {
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null; // Page doesn't exist
-		} );
-		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
-			return 123; // New post ID
-		} );
-		WP_Functions::mock( 'update_post_meta', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
+		WP_Functions::mock( 'wp_insert_post', fn( $data ) => 123 );
+		WP_Functions::mock( 'update_post_meta', fn() => true );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -71,24 +70,17 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
 		$this->assertSame( 123, $data['pages']['test-page'] );
 	}
 
 	public function testExecuteUpdatesExistingPage(): void {
-		$existing_page     = new WP_Post();
-		$existing_page->ID = 456;
+		$existing_page = $this->createMockPost( 456 );
 
-		WP_Functions::mock( 'get_page_by_path', function () use ( $existing_page ) {
-			return $existing_page;
-		} );
-		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
-			return $data['ID']; // Return the ID from update
-		} );
-		WP_Functions::mock( 'update_post_meta', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => $existing_page );
+		WP_Functions::mock( 'wp_insert_post', fn( $data ) => $data['ID'] );
+		WP_Functions::mock( 'update_post_meta', fn() => true );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -107,7 +99,7 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
 		$this->assertSame( 456, $data['pages']['test-page'] );
 	}
@@ -115,19 +107,14 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 	public function testExecuteHandlesMissingTemplate(): void {
 		$result = $this->ingredient->execute( array( 'nonexistent-page' ) );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Failed', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Failed' );
 		$data = $result->get_data();
 		$this->assertSame( 0, $data['pages']['nonexistent-page'] );
 	}
 
 	public function testExecuteHandlesWpInsertPostFailure(): void {
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
-		WP_Functions::mock( 'wp_insert_post', function () {
-			return 0; // Failure
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
+		WP_Functions::mock( 'wp_insert_post', fn() => 0 );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -146,22 +133,16 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Failed', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Failed' );
 	}
 
 	public function testExecuteProcessesMultiplePages(): void {
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
 		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
 			static $id = 100;
-
 			return ++ $id;
 		} );
-		WP_Functions::mock( 'update_post_meta', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'update_post_meta', fn() => true );
 
 		// Create test template files
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -184,7 +165,7 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		unlink( $template_dir . '/page1.php' );
 		unlink( $template_dir . '/page2.php' );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
 		$this->assertSame( 101, $data['pages']['page1'] );
 		$this->assertSame( 102, $data['pages']['page2'] );
@@ -192,15 +173,10 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 
 	public function testExecuteHandlesPostMetaInTemplate(): void {
 		$meta_calls = array();
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
-		WP_Functions::mock( 'wp_insert_post', function () {
-			return 123;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
+		WP_Functions::mock( 'wp_insert_post', fn() => 123 );
 		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
 			$meta_calls[] = array( $post_id, $key, $value );
-
 			return true;
 		} );
 
@@ -221,16 +197,10 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$this->assertCount( 2, $meta_calls );
 		$this->assertSame( 123, $meta_calls[0][0] );
 		$this->assertSame( 'key1', $meta_calls[0][1] );
-	}
-
-	public function testConstantsAreDefined(): void {
-		$this->assertSame( 'create_shop_pages', CreateShopPagesIngredient::NAME );
-		$this->assertSame( 'woocommerce', CreateShopPagesIngredient::CATEGORY );
-		$this->assertNotEmpty( CreateShopPagesIngredient::DESCRIPTION );
 	}
 
 	public function testExecuteHandlesInvalidTemplateFormat(): void {
@@ -251,7 +221,7 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertFalse( $result->is_success() );
+		$this->assertExecutionFailure( $result );
 		$data = $result->get_data();
 		$this->assertSame( 0, $data['pages']['invalid-template'] );
 	}
@@ -271,22 +241,17 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertFalse( $result->is_success() );
+		$this->assertExecutionFailure( $result );
 	}
 
 	public function testExecuteAppliesDefaultPostTypeWhenNotSpecified(): void {
 		$captured_post_data = null;
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
 		WP_Functions::mock( 'wp_insert_post', function ( $data ) use ( &$captured_post_data ) {
 			$captured_post_data = $data;
-
 			return 123;
 		} );
-		WP_Functions::mock( 'update_post_meta', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'update_post_meta', fn() => true );
 
 		// Create template without post_type
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -305,21 +270,16 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$this->assertSame( 'page', $captured_post_data['post_type'] );
 	}
 
 	public function testExecuteAppliesDefaultPostMetaWhenNotSpecified(): void {
 		$meta_calls = array();
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
-		WP_Functions::mock( 'wp_insert_post', function () {
-			return 123;
-		} );
+		WP_Functions::mock( 'get_page_by_path', fn() => null );
+		WP_Functions::mock( 'wp_insert_post', fn() => 123 );
 		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
 			$meta_calls[] = array( $post_id, $key, $value );
-
 			return true;
 		} );
 
@@ -340,7 +300,7 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		// Clean up
 		unlink( $template_file );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$this->assertEmpty( $meta_calls );
 	}
 }

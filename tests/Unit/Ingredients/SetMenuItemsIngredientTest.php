@@ -268,12 +268,6 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 42, $theme_mod_calls[0][1]['primary'] );
 	}
 
-	public function testConstantsAreDefined(): void {
-		$this->assertSame( 'set_menu_items', SetMenuItemsIngredient::NAME );
-		$this->assertSame( 'wordpress', SetMenuItemsIngredient::CATEGORY );
-		$this->assertNotEmpty( SetMenuItemsIngredient::DESCRIPTION );
-	}
-
 	public function testExecuteHandlesWpUpdateNavMenuItemFailure(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
