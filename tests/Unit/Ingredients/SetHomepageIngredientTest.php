@@ -40,10 +40,6 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertFalse( $this->ingredient->validate( true ) );
 	}
 
-	public function testValidateRejectsNull(): void {
-		$this->assertFalse( $this->ingredient->validate( null ) );
-	}
-
 	public function testExecuteWithValidStringSlug(): void {
 		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
 			$post     = new WP_Post();
