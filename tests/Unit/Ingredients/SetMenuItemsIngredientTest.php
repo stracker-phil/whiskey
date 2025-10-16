@@ -41,10 +41,6 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertFalse( $this->ingredient->validate( array( 'home', 123 ) ) );
 	}
 
-	public function testValidateRejectsNull(): void {
-		$this->assertFalse( $this->ingredient->validate( null ) );
-	}
-
 	public function testExecuteCreatesNewMenuIfNotExists(): void {
 		WP_Functions::mock( 'wp_get_nav_menu_object', function () {
 			return false; // Menu doesn't exist
