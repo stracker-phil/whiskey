@@ -6,13 +6,12 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Ingredients;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\SetMenuItemsIngredient;
 use WP_Post;
 use stdClass;
 use WP_Functions;
 
-class SetMenuItemsIngredientTest extends WhiskeyTest {
+class SetMenuItemsIngredientTest extends IngredientTest {
 	private SetMenuItemsIngredient $ingredient;
 
 	protected function setUp(): void {
