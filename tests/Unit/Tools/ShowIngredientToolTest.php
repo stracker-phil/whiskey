@@ -6,34 +6,20 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Tools;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Tools\ShowIngredientTool;
-use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
-use Whiskey\RecipeExecutor;
 use Exception;
-use ReflectionClass;
 
-class ShowIngredientToolTest extends WhiskeyTest {
+class ShowIngredientToolTest extends ToolTest {
 	private ShowIngredientTool $tool;
-	private RecipeRegistry $recipes;
-	private IngredientRegistry $ingredients;
-	private RecipeExecutor $executor;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->recipes     = $this->createStub( RecipeRegistry::class );
-		$this->ingredients = $this->createStub( IngredientRegistry::class );
-		$this->executor    = $this->createStub( RecipeExecutor::class );
-		$this->tool        = new ShowIngredientTool( $this->recipes, $this->ingredients, $this->executor );
+		$this->tool = new ShowIngredientTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_rest_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'GET', $config['method'] );
@@ -41,11 +27,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_cli_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'whiskey ingredient', $config['command'] );
@@ -63,11 +45,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$tool = new ShowIngredientTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [ 'name' => 'test-ingredient' ] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-ingredient' ] ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'name', $result );
@@ -89,11 +67,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$tool = new ShowIngredientTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [ 0 => 'my-ingredient' ] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 0 => 'my-ingredient' ] ] );
 
 		$this->assertSame( 'my-ingredient', $result['name'] );
 	}
@@ -102,11 +76,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Ingredient name is required' );
 
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $this->tool, [] );
+		$this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenIngredientNotFound(): void {
@@ -118,22 +88,17 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Ingredient not found: nonexistent' );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $tool, [ 'name' => 'nonexistent' ] );
+		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'nonexistent' ] ] );
 	}
 
 	public function testExtractCliArgsIncludesFormatParameter(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'extract_cli_args' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke(
+		$result = $this->invoke_protected_method(
 			$this->tool,
-			[ 'test-ingredient' ],
-			[ 'format' => 'json' ]
+			'extract_cli_args',
+			[
+				[ 'test-ingredient' ],
+				[ 'format' => 'json' ],
+			]
 		);
 
 		$this->assertArrayHasKey( 'format', $result );
@@ -141,14 +106,13 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testExtractCliArgsDefaultsToTableFormat(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'extract_cli_args' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke(
+		$result = $this->invoke_protected_method(
 			$this->tool,
-			[ 'test-ingredient' ],
-			[]
+			'extract_cli_args',
+			[
+				[ 'test-ingredient' ],
+				[],
+			]
 		);
 
 		$this->assertArrayHasKey( 'format', $result );
@@ -156,18 +120,17 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithTableFormat(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		// Test with table format - should not throw exception
-		$method->invoke(
+		$this->invoke_protected_method(
 			$this->tool,
+			'format_cli_output',
 			[
-				'format'      => 'table',
-				'name'        => 'test-ingredient',
-				'category'    => 'wordpress',
-				'description' => 'Test description',
+				[
+					'format'      => 'table',
+					'name'        => 'test-ingredient',
+					'category'    => 'wordpress',
+					'description' => 'Test description',
+				],
 			]
 		);
 
@@ -175,18 +138,17 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithJsonFormat(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		// Test with json format - should call WP_CLI\Utils\format_items
-		$method->invoke(
+		$this->invoke_protected_method(
 			$this->tool,
+			'format_cli_output',
 			[
-				'format'      => 'json',
-				'name'        => 'test-ingredient',
-				'category'    => 'wordpress',
-				'description' => 'Test description',
+				[
+					'format'      => 'json',
+					'name'        => 'test-ingredient',
+					'category'    => 'wordpress',
+					'description' => 'Test description',
+				],
 			]
 		);
 
@@ -194,18 +156,17 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithYamlFormat(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		// Test with yaml format - should call WP_CLI\Utils\format_items
-		$method->invoke(
+		$this->invoke_protected_method(
 			$this->tool,
+			'format_cli_output',
 			[
-				'format'      => 'yaml',
-				'name'        => 'test-ingredient',
-				'category'    => 'wordpress',
-				'description' => 'Test description',
+				[
+					'format'      => 'yaml',
+					'name'        => 'test-ingredient',
+					'category'    => 'wordpress',
+					'description' => 'Test description',
+				],
 			]
 		);
 
