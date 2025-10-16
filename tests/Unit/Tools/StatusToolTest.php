@@ -6,33 +6,20 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Tools;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Tools\StatusTool;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
-use Whiskey\RecipeExecutor;
-use ReflectionClass;
 
-class StatusToolTest extends WhiskeyTest {
+class StatusToolTest extends ToolTest {
 	private StatusTool $tool;
-	private RecipeRegistry $recipes;
-	private IngredientRegistry $ingredients;
-	private RecipeExecutor $executor;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->recipes     = $this->createStub( RecipeRegistry::class );
-		$this->ingredients = $this->createStub( IngredientRegistry::class );
-		$this->executor    = $this->createStub( RecipeExecutor::class );
-		$this->tool        = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
+		$this->tool = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_rest_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'GET', $config['method'] );
@@ -40,11 +27,7 @@ class StatusToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_cli_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'whiskey status', $config['command'] );
@@ -52,11 +35,7 @@ class StatusToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicReturnsPhpVersion(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [] );
+		$result = $this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'php_version', $result );
@@ -72,11 +51,7 @@ class StatusToolTest extends WhiskeyTest {
 
 		$tool = new StatusTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [] ] );
 
 		$this->assertArrayHasKey( 'recipes', $result );
 		$this->assertSame( 2, $result['recipes'] );
@@ -92,28 +67,23 @@ class StatusToolTest extends WhiskeyTest {
 
 		$tool = new StatusTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [] ] );
 
 		$this->assertArrayHasKey( 'ingredients', $result );
 		$this->assertSame( 3, $result['ingredients'] );
 	}
 
 	public function testFormatCliOutput(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		// Test with data - should not throw exception
-		$method->invoke(
+		$this->invoke_protected_method(
 			$this->tool,
+			'format_cli_output',
 			[
-				'php_version' => '7.4.0',
-				'recipes'     => 5,
-				'ingredients' => 10,
+				[
+					'php_version' => '7.4.0',
+					'recipes'     => 5,
+					'ingredients' => 10,
+				],
 			]
 		);
 
