@@ -6,11 +6,10 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Ingredients;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\UpdatePermalinksIngredient;
 use WP_Functions;
 
-class UpdatePermalinksIngredientTest extends WhiskeyTest {
+class UpdatePermalinksIngredientTest extends IngredientTest {
 	private UpdatePermalinksIngredient $ingredient;
 
 	protected function setUp(): void {
