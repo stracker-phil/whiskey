@@ -10,11 +10,17 @@ use Whiskey\Ingredients\UpdatePermalinksIngredient;
 use WP_Functions;
 
 class UpdatePermalinksIngredientTest extends IngredientTest {
-	private UpdatePermalinksIngredient $ingredient;
 
-	protected function setUp(): void {
-		parent::setUp();
-		$this->ingredient = new UpdatePermalinksIngredient();
+	protected function getIngredientClass(): string {
+		return UpdatePermalinksIngredient::class;
+	}
+
+	protected function getExpectedName(): string {
+		return 'permalink_structure';
+	}
+
+	protected function getExpectedCategory(): string {
+		return 'wordpress';
 	}
 
 	public function testValidateAcceptsString(): void {
