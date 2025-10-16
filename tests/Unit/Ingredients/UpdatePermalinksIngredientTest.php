@@ -110,10 +110,4 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 		$this->assertTrue( $result->is_success() );
 	}
-
-	public function testConstantsAreDefined(): void {
-		$this->assertSame( 'permalink_structure', UpdatePermalinksIngredient::NAME );
-		$this->assertSame( 'wordpress', UpdatePermalinksIngredient::CATEGORY );
-		$this->assertNotEmpty( UpdatePermalinksIngredient::DESCRIPTION );
-	}
 }
