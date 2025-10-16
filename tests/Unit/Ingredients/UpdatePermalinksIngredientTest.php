@@ -53,7 +53,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$this->assertTrue( $flush_called );
 		$this->assertStringContainsString( 'updated', $result->get_message() );
 	}
@@ -70,7 +70,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
 		$this->assertSame( '/old-structure/', $data['previous'] );
 		$this->assertSame( '/%postname%/', $data['current'] );
@@ -104,6 +104,6 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
-		$this->assertTrue( $result->is_success() );
+		$this->assertExecutionSuccess( $result );
 	}
 }
