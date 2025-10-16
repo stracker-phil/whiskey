@@ -12,11 +12,17 @@ use stdClass;
 use WP_Functions;
 
 class SetMenuItemsIngredientTest extends IngredientTest {
-	private SetMenuItemsIngredient $ingredient;
 
-	protected function setUp(): void {
-		parent::setUp();
-		$this->ingredient = new SetMenuItemsIngredient();
+	protected function getIngredientClass(): string {
+		return SetMenuItemsIngredient::class;
+	}
+
+	protected function getExpectedName(): string {
+		return 'set_menu_items';
+	}
+
+	protected function getExpectedCategory(): string {
+		return 'wordpress';
 	}
 
 	public function testValidateAcceptsArrayOfStrings(): void {
