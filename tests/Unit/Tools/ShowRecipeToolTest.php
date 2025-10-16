@@ -118,4 +118,24 @@ class ShowRecipeToolTest extends WhiskeyTest {
 
 		$method->invoke( $tool, array( 'name' => 'nonexistent' ) );
 	}
+
+	public function testFormatCliOutput(): void {
+		$reflection = new \ReflectionClass( $this->tool );
+		$method     = $reflection->getMethod( 'format_cli_output' );
+		$method->setAccessible( true );
+
+		// Test with data - should not throw exception
+		$method->invoke(
+			$this->tool,
+			array(
+				'name'   => 'test-recipe',
+				'config' => array(
+					'ingredient1' => 'value1',
+					'ingredient2' => array( 'nested' => 'value' ),
+				),
+			)
+		);
+
+		$this->assertTrue( true );
+	}
 }

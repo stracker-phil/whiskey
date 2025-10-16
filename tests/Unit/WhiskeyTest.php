@@ -5,6 +5,7 @@ namespace Whiskey\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use WP_Hooks;
+use WP_Functions;
 
 /**
  * Base class for tests
@@ -15,6 +16,12 @@ abstract class WhiskeyTest extends TestCase {
 
 		// Reset WordPress hooks before each test
 		WP_Hooks::reset();
+
+		// Reset WordPress function mocks before each test
+		WP_Functions::reset();
+
+		// Reset WP_CLI messages before each test
+		\WP_CLI::reset();
 	}
 
 	protected function tearDown(): void {

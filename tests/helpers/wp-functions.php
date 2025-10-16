@@ -45,6 +45,33 @@ class WP_Hooks {
 	}
 }
 
+/**
+ * WordPress function mocking for tests
+ */
+class WP_Functions {
+	private static array $mocks = [];
+
+	public static function reset(): void {
+		self::$mocks = [];
+	}
+
+	public static function mock( string $function, callable $implementation ): void {
+		self::$mocks[ $function ] = $implementation;
+	}
+
+	public static function call( string $function, ...$args ) {
+		if ( isset( self::$mocks[ $function ] ) ) {
+			return call_user_func_array( self::$mocks[ $function ], $args );
+		}
+
+		return null; // Default behavior for unmocked functions
+	}
+
+	public static function is_mocked( string $function ): bool {
+		return isset( self::$mocks[ $function ] );
+	}
+}
+
 function add_action( string $hook, callable $callback, int $priority = 10, int $accepted_args = 1 ): bool {
 	WP_Hooks::add( $hook, $callback, $priority );
 
@@ -65,69 +92,37 @@ function apply_filters( string $hook, $value, ...$args ) {
 	return WP_Hooks::call( $hook, $value, ...$args );
 }
 
-// WordPress function stubs for ingredient tests
-global $wp_functions_mock;
-$wp_functions_mock = array();
-
+// WordPress function stubs using WP_Functions class
 function get_page_by_path( string $path ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['get_page_by_path'] ) ) {
-		return $wp_functions_mock['get_page_by_path']( $path );
-	}
-
-	return null;
+	return WP_Functions::call( 'get_page_by_path', $path );
 }
 
 function get_post( int $id ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['get_post'] ) ) {
-		return $wp_functions_mock['get_post']( $id );
-	}
-
-	return null;
+	return WP_Functions::call( 'get_post', $id );
 }
 
 function update_option( string $option, $value ): bool {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['update_option'] ) ) {
-		return $wp_functions_mock['update_option']( $option, $value );
-	}
-
-	return true;
+	$result = WP_Functions::call( 'update_option', $option, $value );
+	return $result !== null ? $result : true;
 }
 
 function get_option( string $option, $default = false ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['get_option'] ) ) {
-		return $wp_functions_mock['get_option']( $option, $default );
-	}
-
-	return $default;
+	$result = WP_Functions::call( 'get_option', $option, $default );
+	return $result !== null ? $result : $default;
 }
 
 function flush_rewrite_rules(): void {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['flush_rewrite_rules'] ) ) {
-		$wp_functions_mock['flush_rewrite_rules']();
-	}
+	WP_Functions::call( 'flush_rewrite_rules' );
 }
 
 function wp_insert_post( array $data, bool $wp_error = false ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_insert_post'] ) ) {
-		return $wp_functions_mock['wp_insert_post']( $data, $wp_error );
-	}
-
-	return 0;
+	$result = WP_Functions::call( 'wp_insert_post', $data, $wp_error );
+	return $result !== null ? $result : 0;
 }
 
 function update_post_meta( int $post_id, string $key, $value ): bool {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['update_post_meta'] ) ) {
-		return $wp_functions_mock['update_post_meta']( $post_id, $key, $value );
-	}
-
-	return true;
+	$result = WP_Functions::call( 'update_post_meta', $post_id, $key, $value );
+	return $result !== null ? $result : true;
 }
 
 function is_wp_error( $thing ): bool {
@@ -135,66 +130,57 @@ function is_wp_error( $thing ): bool {
 }
 
 function wp_get_nav_menu_object( string $menu ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_get_nav_menu_object'] ) ) {
-		return $wp_functions_mock['wp_get_nav_menu_object']( $menu );
-	}
-
-	return false;
+	return WP_Functions::call( 'wp_get_nav_menu_object', $menu );
 }
 
 function wp_create_nav_menu( string $name ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_create_nav_menu'] ) ) {
-		return $wp_functions_mock['wp_create_nav_menu']( $name );
-	}
-
-	return 0;
+	$result = WP_Functions::call( 'wp_create_nav_menu', $name );
+	return $result !== null ? $result : 0;
 }
 
 function wp_get_nav_menu_items( int $menu_id ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_get_nav_menu_items'] ) ) {
-		return $wp_functions_mock['wp_get_nav_menu_items']( $menu_id );
-	}
-
-	return false;
+	return WP_Functions::call( 'wp_get_nav_menu_items', $menu_id );
 }
 
 function wp_delete_post( int $post_id, bool $force_delete = false ): bool {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_delete_post'] ) ) {
-		return $wp_functions_mock['wp_delete_post']( $post_id, $force_delete );
-	}
-
-	return true;
+	$result = WP_Functions::call( 'wp_delete_post', $post_id, $force_delete );
+	return $result !== null ? $result : true;
 }
 
 function wp_update_nav_menu_item( int $menu_id, int $menu_item_db_id, array $menu_item_data ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['wp_update_nav_menu_item'] ) ) {
-		return $wp_functions_mock['wp_update_nav_menu_item']( $menu_id, $menu_item_db_id, $menu_item_data );
-	}
-
-	return 0;
+	$result = WP_Functions::call( 'wp_update_nav_menu_item', $menu_id, $menu_item_db_id, $menu_item_data );
+	return $result !== null ? $result : 0;
 }
 
 function get_theme_mod( string $name, $default = false ) {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['get_theme_mod'] ) ) {
-		return $wp_functions_mock['get_theme_mod']( $name, $default );
-	}
-
-	return $default;
+	$result = WP_Functions::call( 'get_theme_mod', $name, $default );
+	return $result !== null ? $result : $default;
 }
 
 function set_theme_mod( string $name, $value ): void {
-	global $wp_functions_mock;
-	if ( isset( $wp_functions_mock['set_theme_mod'] ) ) {
-		$wp_functions_mock['set_theme_mod']( $name, $value );
-	}
+	WP_Functions::call( 'set_theme_mod', $name, $value );
 }
 
 function wp_json_encode( $data, int $options = 0, int $depth = 512 ) {
 	return json_encode( $data, $options, $depth );
 }
+
+// Track REST route registrations for testing
+global $registered_rest_routes;
+$registered_rest_routes = [];
+
+function register_rest_route( string $namespace, string $route, array $args = [] ): bool {
+	global $registered_rest_routes;
+	$registered_rest_routes[] = [
+		'namespace' => $namespace,
+		'route'     => $route,
+		'args'      => $args,
+	];
+
+	return true;
+}
+
+// Track CLI command registrations for testing
+global $registered_cli_commands;
+$registered_cli_commands = [];
+

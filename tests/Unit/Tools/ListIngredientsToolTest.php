@@ -89,4 +89,26 @@ class ListIngredientsToolTest extends WhiskeyTest {
 		$this->assertArrayHasKey( 'ingredients', $result );
 		$this->assertSame( array(), $result['ingredients'] );
 	}
+
+	public function testFormatCliOutputWithIngredients(): void {
+		$reflection = new \ReflectionClass( $this->tool );
+		$method     = $reflection->getMethod( 'format_cli_output' );
+		$method->setAccessible( true );
+
+		// Test with ingredients - should not throw exception
+		$method->invoke( $this->tool, array( 'ingredients' => array( 'ingredient1', 'ingredient2' ) ) );
+
+		$this->assertTrue( true );
+	}
+
+	public function testFormatCliOutputWithEmptyIngredients(): void {
+		$reflection = new \ReflectionClass( $this->tool );
+		$method     = $reflection->getMethod( 'format_cli_output' );
+		$method->setAccessible( true );
+
+		// Test with empty ingredients - should not throw exception
+		$method->invoke( $this->tool, array( 'ingredients' => array() ) );
+
+		$this->assertTrue( true );
+	}
 }

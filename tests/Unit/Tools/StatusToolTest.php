@@ -93,4 +93,22 @@ class StatusToolTest extends WhiskeyTest {
 		$this->assertArrayHasKey( 'ingredients', $result );
 		$this->assertSame( 3, $result['ingredients'] );
 	}
+
+	public function testFormatCliOutput(): void {
+		$reflection = new \ReflectionClass( $this->tool );
+		$method     = $reflection->getMethod( 'format_cli_output' );
+		$method->setAccessible( true );
+
+		// Test with data - should not throw exception
+		$method->invoke(
+			$this->tool,
+			array(
+				'php_version' => '7.4.0',
+				'recipes'     => 5,
+				'ingredients' => 10,
+			)
+		);
+
+		$this->assertTrue( true );
+	}
 }

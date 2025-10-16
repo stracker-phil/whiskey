@@ -292,4 +292,119 @@ class SetMenuItemsIngredientTest extends WhiskeyTest {
 		$this->assertSame( 'wordpress', SetMenuItemsIngredient::CATEGORY );
 		$this->assertNotEmpty( SetMenuItemsIngredient::DESCRIPTION );
 	}
+
+	public function testExecuteHandlesWpUpdateNavMenuItemFailure(): void {
+		global $wp_functions_mock;
+		$menu          = new stdClass();
+		$menu->term_id = 42;
+
+		$wp_functions_mock = array(
+			'wp_get_nav_menu_object'  => function () use ( $menu ) {
+				return $menu;
+			},
+			'wp_get_nav_menu_items'   => function () {
+				return false;
+			},
+			'get_page_by_path'        => function () {
+				$page     = new WP_Post();
+				$page->ID = 10;
+
+				return $page;
+			},
+			'wp_update_nav_menu_item' => function () {
+				return 0; // Failure
+			},
+			'get_theme_mod'           => function () {
+				return array();
+			},
+			'set_theme_mod'           => function () {
+			},
+		);
+
+		$result = $this->ingredient->execute( array( 'home' ) );
+
+		$this->assertFalse( $result->is_success() );
+		$this->assertStringContainsString( 'Failed to add 1 menu item', $result->get_message() );
+		$data = $result->get_data();
+		$this->assertSame( 0, $data['items']['home'] );
+	}
+
+	public function testExecuteHandlesEmptyMenuItems(): void {
+		global $wp_functions_mock;
+		$menu          = new stdClass();
+		$menu->term_id = 42;
+
+		$wp_functions_mock = array(
+			'wp_get_nav_menu_object'  => function () use ( $menu ) {
+				return $menu;
+			},
+			'wp_get_nav_menu_items'   => function () {
+				return false; // No existing items
+			},
+			'get_page_by_path'        => function () {
+				$page     = new WP_Post();
+				$page->ID = 10;
+
+				return $page;
+			},
+			'wp_update_nav_menu_item' => function () {
+				return 100;
+			},
+			'get_theme_mod'           => function () {
+				return array();
+			},
+			'set_theme_mod'           => function () {
+			},
+		);
+
+		$result = $this->ingredient->execute( array( 'home' ) );
+
+		$this->assertTrue( $result->is_success() );
+	}
+
+	public function testExecutePreservesExistingMenuLocations(): void {
+		global $wp_functions_mock;
+		$existing_locations = array(
+			'secondary' => 99,
+			'footer'    => 88,
+		);
+		$theme_mod_calls    = array();
+		$menu               = new stdClass();
+		$menu->term_id      = 42;
+
+		$wp_functions_mock = array(
+			'wp_get_nav_menu_object'  => function () use ( $menu ) {
+				return $menu;
+			},
+			'wp_get_nav_menu_items'   => function () {
+				return false;
+			},
+			'get_page_by_path'        => function () {
+				$page     = new WP_Post();
+				$page->ID = 10;
+
+				return $page;
+			},
+			'wp_update_nav_menu_item' => function () {
+				return 100;
+			},
+			'get_theme_mod'           => function () use ( $existing_locations ) {
+				return $existing_locations;
+			},
+			'set_theme_mod'           => function ( $name, $value ) use ( &$theme_mod_calls ) {
+				$theme_mod_calls[] = array( $name, $value );
+			},
+		);
+
+		$result = $this->ingredient->execute( array( 'home' ) );
+
+		$this->assertTrue( $result->is_success() );
+		$this->assertCount( 1, $theme_mod_calls );
+
+		// Check that existing locations are preserved
+		$updated_locations = $theme_mod_calls[0][1];
+		$this->assertSame( 42, $updated_locations['primary'] );
+		$this->assertSame( 99, $updated_locations['secondary'] );
+		$this->assertSame( 88, $updated_locations['footer'] );
+	}
 }
