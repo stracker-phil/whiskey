@@ -6,35 +6,22 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Tools;
 
-use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Tools\ApplyRecipeTool;
 use Whiskey\Registry\RecipeRegistry;
-use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
 use Whiskey\ExecutionResult;
 use Exception;
-use ReflectionClass;
 
-class ApplyRecipeToolTest extends WhiskeyTest {
+class ApplyRecipeToolTest extends ToolTest {
 	private ApplyRecipeTool $tool;
-	private RecipeRegistry $recipes;
-	private IngredientRegistry $ingredients;
-	private RecipeExecutor $executor;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->recipes     = $this->createStub( RecipeRegistry::class );
-		$this->ingredients = $this->createStub( IngredientRegistry::class );
-		$this->executor    = $this->createStub( RecipeExecutor::class );
-		$this->tool        = new ApplyRecipeTool( $this->recipes, $this->ingredients, $this->executor );
+		$this->tool = new ApplyRecipeTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_rest_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'POST', $config['method'] );
@@ -43,11 +30,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'get_cli_config' );
-		$method->setAccessible( true );
-
-		$config = $method->invoke( $this->tool );
+		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
 
 		$this->assertIsArray( $config );
 		$this->assertSame( 'whiskey apply', $config['command'] );
@@ -58,11 +41,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe name is required' );
 
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $this->tool, [] );
+		$this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenRecipeNotFound(): void {
@@ -74,11 +53,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe not found: nonexistent' );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $tool, [ 'name' => 'nonexistent' ] );
+		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'nonexistent' ] ] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenConfigInvalid(): void {
@@ -95,11 +70,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Invalid recipe configuration' );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $tool, [ 'name' => 'test-recipe' ] );
+		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe' ] ] );
 	}
 
 	public function testHandleLogicReturnsDryRunResultWhenFlagSet(): void {
@@ -113,11 +84,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [ 'name' => 'test-recipe', 'dry-run' => true ] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe', 'dry-run' => true ] ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'dry_run', $result );
@@ -144,11 +111,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [ 'name' => 'test-recipe' ] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe' ] ] );
 
 		$this->assertIsArray( $result );
 		$this->assertTrue( $result['success'] );
@@ -173,11 +136,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe execution failed: Ingredient failed' );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$method->invoke( $tool, [ 'name' => 'test-recipe' ] );
+		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe' ] ] );
 	}
 
 	public function testHandleLogicExtractsNameFromPositionalArg(): void {
@@ -194,20 +153,12 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new ReflectionClass( $tool );
-		$method     = $reflection->getMethod( 'handle_logic' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $tool, [ 0 => 'my-recipe' ] );
+		$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 0 => 'my-recipe' ] ] );
 
 		$this->assertSame( 'my-recipe', $result['name'] );
 	}
 
 	public function testFormatRestSuccessReturnsCustomFormat(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_rest_success' );
-		$method->setAccessible( true );
-
 		$data = [
 			'name'    => 'test-recipe',
 			'success' => true,
@@ -215,7 +166,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 			'data'    => [ 'key' => 'value' ],
 		];
 
-		$response = $method->invoke( $this->tool, $data );
+		$response = $this->invoke_protected_method( $this->tool, 'format_rest_success', [ $data ] );
 
 		$this->assertInstanceOf( \WP_REST_Response::class, $response );
 		$this->assertSame( 200, $response->get_status() );
@@ -227,13 +178,9 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatRestSuccessHandlesMissingOptionalFields(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_rest_success' );
-		$method->setAccessible( true );
-
 		$data = [ 'name' => 'test' ];
 
-		$response      = $method->invoke( $this->tool, $data );
+		$response      = $this->invoke_protected_method( $this->tool, 'format_rest_success', [ $data ] );
 		$response_data = $response->get_data();
 
 		$this->assertTrue( $response_data['success'] );
@@ -242,10 +189,6 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithDryRunMode(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		$data = [
 			'name'    => 'test-recipe',
 			'dry_run' => true,
@@ -253,17 +196,13 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		];
 
 		// Should not throw exception
-		$method->invoke( $this->tool, $data );
+		$this->invoke_protected_method( $this->tool, 'format_cli_output', [ $data ] );
 
 		$messages = \WP_CLI::get_log_messages();
 		$this->assertContains( 'Recipe: test-recipe', $messages );
 	}
 
 	public function testFormatCliOutputWithSuccessfulExecution(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_cli_output' );
-		$method->setAccessible( true );
-
 		$data = [
 			'name'    => 'test-recipe',
 			'message' => 'Recipe applied successfully',
@@ -280,7 +219,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 			],
 		];
 
-		$method->invoke( $this->tool, $data );
+		$this->invoke_protected_method( $this->tool, 'format_cli_output', [ $data ] );
 
 		$messages = \WP_CLI::get_log_messages();
 		$this->assertContains( 'Recipe: test-recipe', $messages );
@@ -288,26 +227,18 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatIngredientDataWithSimpleList(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_ingredient_data' );
-		$method->setAccessible( true );
-
 		$data = [
 			'items' => [ 'item1', 'item2', 'item3' ],
 		];
 
 		// Should not throw exception
-		$method->invoke( $this->tool, $data, 2 );
+		$this->invoke_protected_method( $this->tool, 'format_ingredient_data', [ $data, 2 ] );
 
 		$messages = \WP_CLI::get_log_messages();
 		$this->assertNotEmpty( $messages );
 	}
 
 	public function testFormatIngredientDataWithNestedStructure(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'format_ingredient_data' );
-		$method->setAccessible( true );
-
 		$data = [
 			'config' => [
 				'setting1' => 'value1',
@@ -316,57 +247,37 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		];
 
 		// Should not throw exception
-		$method->invoke( $this->tool, $data, 2 );
+		$this->invoke_protected_method( $this->tool, 'format_ingredient_data', [ $data, 2 ] );
 
 		$this->assertTrue( true );
 	}
 
 	public function testIsSimpleListReturnsTrueForEmptyArray(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'is_simple_list' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [] );
+		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [] ] );
 
 		$this->assertTrue( $result );
 	}
 
 	public function testIsSimpleListReturnsTrueForScalarArray(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'is_simple_list' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [ 'a', 'b', 'c' ] );
+		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ 'a', 'b', 'c' ] ] );
 
 		$this->assertTrue( $result );
 	}
 
 	public function testIsSimpleListReturnsFalseForAssociativeArray(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'is_simple_list' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [ 'key' => 'value' ] );
+		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ 'key' => 'value' ] ] );
 
 		$this->assertFalse( $result );
 	}
 
 	public function testIsSimpleListReturnsFalseForNestedArray(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'is_simple_list' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [ [ 'nested' ] ] );
+		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ [ 'nested' ] ] ] );
 
 		$this->assertFalse( $result );
 	}
 
 	public function testIsSimpleListReturnsFalseForObjectInArray(): void {
-		$reflection = new ReflectionClass( $this->tool );
-		$method     = $reflection->getMethod( 'is_simple_list' );
-		$method->setAccessible( true );
-
-		$result = $method->invoke( $this->tool, [ new \stdClass() ] );
+		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ new \stdClass() ] ] );
 
 		$this->assertFalse( $result );
 	}
