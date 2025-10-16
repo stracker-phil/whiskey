@@ -88,8 +88,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Failed', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Failed' );
 	}
 
 	public function testExecuteSucceedsWhenStructureUnchanged(): void {
