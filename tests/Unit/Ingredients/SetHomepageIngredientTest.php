@@ -73,8 +73,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( 'nonexistent' );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Did not find', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
 
 	public function testExecuteFailsWithInvalidPostId(): void {
@@ -84,8 +83,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( 999 );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Did not find', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
 
 	public function testExecuteFailsWhenPostIsNotAPage(): void {
@@ -95,7 +93,6 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 		$result = $this->ingredient->execute( 789 );
 
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Did not find', $result->get_message() );
+		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
 }
