@@ -14,7 +14,7 @@ class RestControllerTest extends WhiskeyTest {
 
 	public function testConstructorCreatesInstance(): void {
 		$tool       = $this->createStub( WhiskeyTool::class );
-		$controller = new RestController( array( $tool ) );
+		$controller = new RestController( [ $tool ] );
 
 		$this->assertInstanceOf( RestController::class, $controller );
 	}
@@ -24,7 +24,7 @@ class RestControllerTest extends WhiskeyTest {
 		$tool2 = $this->createMock( WhiskeyTool::class );
 		$tool3 = $this->createMock( WhiskeyTool::class );
 
-		$controller = new RestController( array( $tool1, $tool2, $tool3 ) );
+		$controller = new RestController( [ $tool1, $tool2, $tool3 ] );
 
 		$tool1->expects( $this->once() )
 			->method( 'init_rest' )
@@ -43,7 +43,7 @@ class RestControllerTest extends WhiskeyTest {
 
 	public function testRegisterRoutesPassesPermissionCallback(): void {
 		$tool       = $this->createMock( WhiskeyTool::class );
-		$controller = new RestController( array( $tool ) );
+		$controller = new RestController( [ $tool ] );
 
 		$capturedCallback = null;
 		$tool->expects( $this->once() )
@@ -60,7 +60,7 @@ class RestControllerTest extends WhiskeyTest {
 	}
 
 	public function testRegisterRoutesHandlesEmptyToolsArray(): void {
-		$controller = new RestController( array() );
+		$controller = new RestController( [] );
 
 		// Should not throw exception
 		$controller->register_routes();
@@ -69,7 +69,7 @@ class RestControllerTest extends WhiskeyTest {
 	}
 
 	public function testPermissionCallbackReturnsTrue(): void {
-		$controller = new RestController( array() );
+		$controller = new RestController( [] );
 
 		$result = $controller->permission_callback();
 

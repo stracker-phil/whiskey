@@ -24,7 +24,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 	}
 
 	public function testValidateReturnsFalseForEmptyConfig(): void {
-		$result = $this->executor->validate( array() );
+		$result = $this->executor->validate( [] );
 
 		$this->assertFalse( $result );
 	}
@@ -41,7 +41,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 			->with( 'ingredient_name' )
 			->willReturn( $ingredient );
 
-		$result = $this->executor->validate( array( 'ingredient_name' => 'value' ) );
+		$result = $this->executor->validate( [ 'ingredient_name' => 'value' ] );
 
 		$this->assertTrue( $result );
 	}
@@ -56,17 +56,17 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
 			->willReturnMap(
-				array(
-					array( 'unknown', null ),
-					array( 'known', $ingredient ),
-				)
+				[
+					[ 'unknown', null ],
+					[ 'known', $ingredient ],
+				]
 			);
 
 		$result = $this->executor->validate(
-			array(
+			[
 				'unknown' => 'value',
 				'known'   => 'valid_value',
-			)
+			]
 		);
 
 		$this->assertTrue( $result );
@@ -84,7 +84,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 			->with( 'ingredient_name' )
 			->willReturn( $ingredient );
 
-		$result = $this->executor->validate( array( 'ingredient_name' => 'invalid_value' ) );
+		$result = $this->executor->validate( [ 'ingredient_name' => 'invalid_value' ] );
 
 		$this->assertFalse( $result );
 	}
@@ -93,17 +93,17 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
 			->willReturnMap(
-				array(
-					array( 'unknown1', null ),
-					array( 'unknown2', null ),
-				)
+				[
+					[ 'unknown1', null ],
+					[ 'unknown2', null ],
+				]
 			);
 
 		$result = $this->executor->validate(
-			array(
+			[
 				'unknown1' => 'value1',
 				'unknown2' => 'value2',
-			)
+			]
 		);
 
 		$this->assertTrue( $result );
@@ -114,22 +114,22 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )
 			->with( 'value' )
-			->willReturn( new ExecutionResult( true, 'Success', array( 'data' => 'result' ) ) );
+			->willReturn( new ExecutionResult( true, 'Success', [ 'data' => 'result' ] ) );
 
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
 			->willReturnMap(
-				array(
-					array( 'unknown', null ),
-					array( 'known', $ingredient ),
-				)
+				[
+					[ 'unknown', null ],
+					[ 'known', $ingredient ],
+				]
 			);
 
 		$result = $this->executor->execute(
-			array(
+			[
 				'unknown' => 'ignored',
 				'known'   => 'value',
-			)
+			]
 		);
 
 		$this->assertTrue( $result->is_success() );
@@ -143,28 +143,28 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient1->expects( $this->once() )
 			->method( 'execute' )
 			->with( 'value1' )
-			->willReturn( new ExecutionResult( true, 'Success 1', array( 'data' => 'result1' ) ) );
+			->willReturn( new ExecutionResult( true, 'Success 1', [ 'data' => 'result1' ] ) );
 
 		$ingredient2 = $this->createMock( Ingredient::class );
 		$ingredient2->expects( $this->once() )
 			->method( 'execute' )
 			->with( 'value2' )
-			->willReturn( new ExecutionResult( true, 'Success 2', array( 'data' => 'result2' ) ) );
+			->willReturn( new ExecutionResult( true, 'Success 2', [ 'data' => 'result2' ] ) );
 
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
 			->willReturnMap(
-				array(
-					array( 'ingredient1', $ingredient1 ),
-					array( 'ingredient2', $ingredient2 ),
-				)
+				[
+					[ 'ingredient1', $ingredient1 ],
+					[ 'ingredient2', $ingredient2 ],
+				]
 			);
 
 		$result = $this->executor->execute(
-			array(
+			[
 				'ingredient1' => 'value1',
 				'ingredient2' => 'value2',
-			)
+			]
 		);
 
 		$this->assertTrue( $result->is_success() );
@@ -178,13 +178,13 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )
-			->willReturn( new ExecutionResult( true, 'Success', array() ) );
+			->willReturn( new ExecutionResult( true, 'Success', [] ) );
 
 		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
 			->willReturn( $ingredient );
 
-		$result = $this->executor->execute( array( 'test' => 'value' ) );
+		$result = $this->executor->execute( [ 'test' => 'value' ] );
 
 		$this->assertTrue( $result->is_success() );
 		$this->assertSame( 'Recipe executed successfully', $result->get_message() );
@@ -195,14 +195,14 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )
 			->with( 'value' )
-			->willReturn( new ExecutionResult( false, 'Failed', array( 'error' => 'details' ) ) );
+			->willReturn( new ExecutionResult( false, 'Failed', [ 'error' => 'details' ] ) );
 
 		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
 			->with( 'ingredient_name' )
 			->willReturn( $ingredient );
 
-		$result = $this->executor->execute( array( 'ingredient_name' => 'value' ) );
+		$result = $this->executor->execute( [ 'ingredient_name' => 'value' ] );
 
 		$data = $result->get_data();
 		$this->assertIsArray( $data['ingredient_name'] );

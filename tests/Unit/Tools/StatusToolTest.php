@@ -21,10 +21,10 @@ class StatusToolTest extends WhiskeyTest {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->recipes = $this->createStub( RecipeRegistry::class );
+		$this->recipes     = $this->createStub( RecipeRegistry::class );
 		$this->ingredients = $this->createStub( IngredientRegistry::class );
-		$this->executor = $this->createStub( RecipeExecutor::class );
-		$this->tool = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
+		$this->executor    = $this->createStub( RecipeExecutor::class );
+		$this->tool        = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
@@ -56,7 +56,7 @@ class StatusToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array() );
+		$result = $method->invoke( $this->tool, [] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'php_version', $result );
@@ -65,10 +65,10 @@ class StatusToolTest extends WhiskeyTest {
 
 	public function testHandleLogicReturnsRecipeCount(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
-		$recipes->method( 'all' )->willReturn( array(
-			'recipe1' => array(),
-			'recipe2' => array(),
-		) );
+		$recipes->method( 'all' )->willReturn( [
+			'recipe1' => [],
+			'recipe2' => [],
+		] );
 
 		$tool = new StatusTool( $recipes, $this->ingredients, $this->executor );
 
@@ -76,7 +76,7 @@ class StatusToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertArrayHasKey( 'recipes', $result );
 		$this->assertSame( 2, $result['recipes'] );
@@ -84,11 +84,11 @@ class StatusToolTest extends WhiskeyTest {
 
 	public function testHandleLogicReturnsIngredientCount(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
-		$ingredients->method( 'all' )->willReturn( array(
+		$ingredients->method( 'all' )->willReturn( [
 			'ing1' => 'Class1',
 			'ing2' => 'Class2',
 			'ing3' => 'Class3',
-		) );
+		] );
 
 		$tool = new StatusTool( $this->recipes, $ingredients, $this->executor );
 
@@ -96,7 +96,7 @@ class StatusToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertArrayHasKey( 'ingredients', $result );
 		$this->assertSame( 3, $result['ingredients'] );
@@ -110,11 +110,11 @@ class StatusToolTest extends WhiskeyTest {
 		// Test with data - should not throw exception
 		$method->invoke(
 			$this->tool,
-			array(
+			[
 				'php_version' => '7.4.0',
 				'recipes'     => 5,
 				'ingredients' => 10,
-			)
+			]
 		);
 
 		$this->assertTrue( true );

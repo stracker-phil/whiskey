@@ -170,7 +170,7 @@ class TestIngredient extends Ingredient {
 	}
 
 	public function execute( $value ): ExecutionResult {
-		return new ExecutionResult( true, 'Success', array() );
+		return new ExecutionResult( true, 'Success', [] );
 	}
 }
 
@@ -187,7 +187,7 @@ class TestIngredient2 extends Ingredient {
 	}
 
 	public function execute( $value ): ExecutionResult {
-		return new ExecutionResult( true, 'Success', array() );
+		return new ExecutionResult( true, 'Success', [] );
 	}
 }
 
@@ -204,6 +204,6 @@ class TestIngredientEmptyName extends Ingredient {
 	}
 
 	public function execute( $value ): ExecutionResult {
-		return new ExecutionResult( true, 'Success', array() );
+		return new ExecutionResult( true, 'Success', [] );
 	}
 }

@@ -53,10 +53,10 @@ class ShowRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicReturnsRecipeData(): void {
-		$recipe_config = array(
+		$recipe_config = [
 			'ingredient1' => 'value1',
 			'ingredient2' => 'value2',
-		);
+		];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -67,7 +67,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 'name' => 'test-recipe' ) );
+		$result = $method->invoke( $tool, [ 'name' => 'test-recipe' ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'name', $result );
@@ -77,7 +77,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicExtractsNameFromPositionalArg(): void {
-		$recipe_config = array( 'ingredient1' => 'value1' );
+		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -88,7 +88,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 0 => 'my-recipe' ) );
+		$result = $method->invoke( $tool, [ 0 => 'my-recipe' ] );
 
 		$this->assertSame( 'my-recipe', $result['name'] );
 	}
@@ -101,7 +101,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $this->tool, array() );
+		$method->invoke( $this->tool, [] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenRecipeNotFound(): void {
@@ -117,7 +117,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'name' => 'nonexistent' ) );
+		$method->invoke( $tool, [ 'name' => 'nonexistent' ] );
 	}
 
 	public function testFormatCliOutput(): void {
@@ -128,13 +128,13 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		// Test with data - should not throw exception
 		$method->invoke(
 			$this->tool,
-			array(
+			[
 				'name'   => 'test-recipe',
-				'config' => array(
+				'config' => [
 					'ingredient1' => 'value1',
-					'ingredient2' => array( 'nested' => 'value' ),
-				),
-			)
+					'ingredient2' => [ 'nested' => 'value' ],
+				],
+			]
 		);
 
 		$this->assertTrue( true );

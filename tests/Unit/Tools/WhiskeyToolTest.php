@@ -16,7 +16,7 @@ use ReflectionClass;
 class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testInitRestSkipsWhenConfigIsNull(): void {
-		$tool = $this->createTestTool( null, array( 'command' => 'test', 'synopsis' => 'Test' ) );
+		$tool = $this->createTestTool( null, [ 'command' => 'test', 'synopsis' => 'Test' ] );
 
 		// Should not throw exception or register anything
 		$tool->init_rest( 'whiskey/v1', fn() => true );
@@ -25,7 +25,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 	}
 
 	public function testInitCliSkipsWhenConfigIsNull(): void {
-		$tool = $this->createTestTool( array( 'method' => 'GET', 'path' => '/test' ), null );
+		$tool = $this->createTestTool( [ 'method' => 'GET', 'path' => '/test' ], null );
 
 		// Should not throw exception or register anything
 		$tool->init_cli();
@@ -34,7 +34,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleRestReturnsSuccessResponse(): void {
-		$tool = $this->createTestToolWithLogic( array( 'result' => 'success' ) );
+		$tool = $this->createTestToolWithLogic( [ 'result' => 'success' ] );
 
 		$request  = $this->createStub( WP_REST_Request::class );
 		$response = $tool->handle_rest( $request );
@@ -73,12 +73,12 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testExtractRestArgsReturnsRequestParams(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$request = $this->createStub( WP_REST_Request::class );
-		$request->method( 'get_params' )->willReturn( array( 'key' => 'value' ) );
+		$request->method( 'get_params' )->willReturn( [ 'key' => 'value' ] );
 
 		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'extract_rest_args' );
@@ -86,13 +86,13 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 		$result = $method->invoke( $tool, $request );
 
-		$this->assertSame( array( 'key' => 'value' ), $result );
+		$this->assertSame( [ 'key' => 'value' ], $result );
 	}
 
 	public function testExtractCliArgsMergesArrays(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$reflection = new ReflectionClass( $tool );
@@ -101,37 +101,37 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 		$result = $method->invoke(
 			$tool,
-			array( 'arg1', 'arg2' ),
-			array( 'key' => 'value' )
+			[ 'arg1', 'arg2' ],
+			[ 'key' => 'value' ]
 		);
 
-		$this->assertSame( array( 'arg1', 'arg2', 'key' => 'value' ), $result );
+		$this->assertSame( [ 'arg1', 'arg2', 'key' => 'value' ], $result );
 	}
 
 	public function testFormatRestSuccessReturnsStandardFormat(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
-		$response = $method->invoke( $tool, array( 'key' => 'value' ) );
+		$response = $method->invoke( $tool, [ 'key' => 'value' ] );
 
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertSame( 200, $response->get_status() );
 
 		$data = $response->get_data();
 		$this->assertTrue( $data['success'] );
-		$this->assertSame( array( 'key' => 'value' ), $data['data'] );
+		$this->assertSame( [ 'key' => 'value' ], $data['data'] );
 	}
 
 	public function testFormatRestErrorReturnsErrorFormat(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$reflection = new ReflectionClass( $tool );
@@ -150,8 +150,8 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testGetHttpCodeReturns404ForNotFoundMessage(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$exception = new Exception( 'Recipe not found: test' );
@@ -167,8 +167,8 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testGetHttpCodeReturns400ForOtherErrors(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$exception = new Exception( 'Invalid input' );
@@ -183,10 +183,10 @@ class WhiskeyToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleCliCallsLogicAndFormatsOutput(): void {
-		$tool = $this->createTestToolWithLogic( array( 'key' => 'value' ) );
+		$tool = $this->createTestToolWithLogic( [ 'key' => 'value' ] );
 
 		// Should not throw exception
-		$tool->handle_cli( array(), array() );
+		$tool->handle_cli( [], [] );
 
 		// Verify WP_CLI::log was called (messages should be captured)
 		$messages = \WP_CLI::get_log_messages();
@@ -199,20 +199,20 @@ class WhiskeyToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'CLI error message' );
 
-		$tool->handle_cli( array(), array() );
+		$tool->handle_cli( [], [] );
 	}
 
 	public function testFormatCliOutputHandlesSimpleData(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'key' => 'value', 'number' => 42 ) );
+		$method->invoke( $tool, [ 'key' => 'value', 'number' => 42 ] );
 
 		$messages = \WP_CLI::get_log_messages();
 		$this->assertContains( 'key: value', $messages );
@@ -221,8 +221,8 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testFormatCliOutputHandlesArrays(): void {
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$reflection = new ReflectionClass( $tool );
@@ -231,9 +231,9 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 		$method->invoke(
 			$tool,
-			array(
-				'items' => array( 'item1', 'item2', 'item3' ),
-			)
+			[
+				'items' => [ 'item1', 'item2', 'item3' ],
+			]
 		);
 
 		$messages = \WP_CLI::get_log_messages();
@@ -245,15 +245,15 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testInitRestRegistersEndpoint(): void {
 		global $registered_rest_routes;
-		$registered_rest_routes = array();
+		$registered_rest_routes = [];
 
 		$tool = $this->createTestTool(
-			array(
+			[
 				'method' => 'POST',
 				'path'   => '/test/endpoint',
-				'args'   => array( 'param' => array( 'required' => true ) ),
-			),
-			array( 'command' => 'test', 'synopsis' => 'Test' )
+				'args'   => [ 'param' => [ 'required' => true ] ],
+			],
+			[ 'command' => 'test', 'synopsis' => 'Test' ]
 		);
 
 		$tool->init_rest( 'whiskey/v1', fn() => true );
@@ -267,9 +267,9 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testInitRestSkipsWhenNoConfig(): void {
 		global $registered_rest_routes;
-		$registered_rest_routes = array();
+		$registered_rest_routes = [];
 
-		$tool = $this->createTestTool( null, array( 'command' => 'test', 'synopsis' => 'Test' ) );
+		$tool = $this->createTestTool( null, [ 'command' => 'test', 'synopsis' => 'Test' ] );
 
 		$tool->init_rest( 'whiskey/v1', fn() => true );
 
@@ -279,15 +279,15 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testInitCliRegistersCommand(): void {
 		global $registered_cli_commands;
-		$registered_cli_commands = array();
+		$registered_cli_commands = [];
 
 		$tool = $this->createTestTool(
-			array( 'method' => 'GET', 'path' => '/test' ),
-			array(
+			[ 'method' => 'GET', 'path' => '/test' ],
+			[
 				'command'  => 'whiskey test',
 				'synopsis' => 'Test command',
 				'when'     => 'after_wp_load',
-			)
+			]
 		);
 
 		$tool->init_cli();
@@ -301,9 +301,9 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 	public function testInitCliSkipsWhenNoConfig(): void {
 		global $registered_cli_commands;
-		$registered_cli_commands = array();
+		$registered_cli_commands = [];
 
-		$tool = $this->createTestTool( array( 'method' => 'GET', 'path' => '/test' ), null );
+		$tool = $this->createTestTool( [ 'method' => 'GET', 'path' => '/test' ], null );
 
 		$tool->init_cli();
 
@@ -314,9 +314,9 @@ class WhiskeyToolTest extends WhiskeyTest {
 	public function testInitCliSkipsWhenWpCliNotAvailable(): void {
 		// WP_CLI is always available in tests, but we can test the null config path
 		global $registered_cli_commands;
-		$registered_cli_commands = array();
+		$registered_cli_commands = [];
 
-		$tool = $this->createTestTool( array( 'method' => 'GET', 'path' => '/test' ), null );
+		$tool = $this->createTestTool( [ 'method' => 'GET', 'path' => '/test' ], null );
 
 		$tool->init_cli();
 
@@ -346,7 +346,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			}
 
 			protected function handle_logic( array $args ): array {
-				return array();
+				return [];
 			}
 		};
 	}
@@ -360,11 +360,11 @@ class WhiskeyToolTest extends WhiskeyTest {
 			}
 
 			protected function get_rest_config(): ?array {
-				return array( 'method' => 'GET', 'path' => '/test' );
+				return [ 'method' => 'GET', 'path' => '/test' ];
 			}
 
 			protected function get_cli_config(): ?array {
-				return array( 'command' => 'test', 'synopsis' => 'Test' );
+				return [ 'command' => 'test', 'synopsis' => 'Test' ];
 			}
 
 			protected function handle_logic( array $args ): array {
@@ -382,11 +382,11 @@ class WhiskeyToolTest extends WhiskeyTest {
 			}
 
 			protected function get_rest_config(): ?array {
-				return array( 'method' => 'GET', 'path' => '/test' );
+				return [ 'method' => 'GET', 'path' => '/test' ];
 			}
 
 			protected function get_cli_config(): ?array {
-				return array( 'command' => 'test', 'synopsis' => 'Test' );
+				return [ 'command' => 'test', 'synopsis' => 'Test' ];
 			}
 
 			protected function handle_logic( array $args ): array {

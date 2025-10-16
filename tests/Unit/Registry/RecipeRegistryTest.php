@@ -44,38 +44,38 @@ class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	public function testAddStoresRecipe(): void {
-		$this->registry->add( 'test-recipe', array( 'ingredient1' => 'value1' ) );
+		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
 	}
 
 	public function testAddReplacesExistingRecipe(): void {
-		$this->registry->add( 'test-recipe', array( 'ingredient1' => 'value1' ) );
-		$this->registry->add( 'test-recipe', array( 'ingredient2' => 'value2' ) );
+		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
+		$this->registry->add( 'test-recipe', [ 'ingredient2' => 'value2' ] );
 
 		$recipe = $this->registry->get( 'test-recipe' );
 
-		$this->assertSame( array( 'ingredient2' => 'value2' ), $recipe );
+		$this->assertSame( [ 'ingredient2' => 'value2' ], $recipe );
 	}
 
 	public function testAddSkipsEmptyName(): void {
-		$this->registry->add( '', array( 'ingredient1' => 'value1' ) );
+		$this->registry->add( '', [ 'ingredient1' => 'value1' ] );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
 	public function testAddSkipsEmptyIngredients(): void {
-		$this->registry->add( 'test-recipe', array() );
+		$this->registry->add( 'test-recipe', [] );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
 	public function testGetReturnsRecipe(): void {
-		$this->registry->add( 'test-recipe', array( 'ingredient1' => 'value1' ) );
+		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
 
 		$recipe = $this->registry->get( 'test-recipe' );
 
-		$this->assertSame( array( 'ingredient1' => 'value1' ), $recipe );
+		$this->assertSame( [ 'ingredient1' => 'value1' ], $recipe );
 	}
 
 	public function testGetReturnsNullForNonExistent(): void {
@@ -96,8 +96,8 @@ class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	public function testAllReturnsAllRecipes(): void {
-		$this->registry->add( 'recipe1', array( 'ingredient1' => 'value1' ) );
-		$this->registry->add( 'recipe2', array( 'ingredient2' => 'value2' ) );
+		$this->registry->add( 'recipe1', [ 'ingredient1' => 'value1' ] );
+		$this->registry->add( 'recipe2', [ 'ingredient2' => 'value2' ] );
 
 		$recipes = $this->registry->all();
 
@@ -118,7 +118,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	public function testHasReturnsTrueForExistingRecipe(): void {
-		$this->registry->add( 'test-recipe', array( 'ingredient1' => 'value1' ) );
+		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
 	}

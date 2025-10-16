@@ -54,11 +54,11 @@ class ListIngredientsToolTest extends WhiskeyTest {
 	public function testHandleLogicReturnsIngredientList(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'all' )->willReturn(
-			array(
+			[
 				'ingredient1' => 'Class1',
 				'ingredient2' => 'Class2',
 				'ingredient3' => 'Class3',
-			)
+			]
 		);
 
 		$tool = new ListIngredientsTool( $this->recipes, $ingredients, $this->executor );
@@ -67,20 +67,20 @@ class ListIngredientsToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'ingredients', $result );
-		$this->assertSame( array(
+		$this->assertSame( [
 			'ingredient1',
 			'ingredient2',
 			'ingredient3',
-		), $result['ingredients'] );
+		], $result['ingredients'] );
 	}
 
 	public function testHandleLogicReturnsEmptyArrayWhenNoIngredients(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
-		$ingredients->method( 'all' )->willReturn( array() );
+		$ingredients->method( 'all' )->willReturn( [] );
 
 		$tool = new ListIngredientsTool( $this->recipes, $ingredients, $this->executor );
 
@@ -88,11 +88,11 @@ class ListIngredientsToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'ingredients', $result );
-		$this->assertSame( array(), $result['ingredients'] );
+		$this->assertSame( [], $result['ingredients'] );
 	}
 
 	public function testFormatCliOutputWithIngredients(): void {
@@ -101,12 +101,12 @@ class ListIngredientsToolTest extends WhiskeyTest {
 		$method->setAccessible( true );
 
 		// Test with ingredients - should not throw exception
-		$method->invoke( $this->tool, array(
-			'ingredients' => array(
+		$method->invoke( $this->tool, [
+			'ingredients' => [
 				'ingredient1',
 				'ingredient2',
-			),
-		) );
+			],
+		] );
 
 		$this->assertTrue( true );
 	}
@@ -117,7 +117,7 @@ class ListIngredientsToolTest extends WhiskeyTest {
 		$method->setAccessible( true );
 
 		// Test with empty ingredients - should not throw exception
-		$method->invoke( $this->tool, array( 'ingredients' => array() ) );
+		$method->invoke( $this->tool, [ 'ingredients' => [] ] );
 
 		$this->assertTrue( true );
 	}

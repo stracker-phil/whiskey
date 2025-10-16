@@ -54,11 +54,11 @@ class ListRecipesToolTest extends WhiskeyTest {
 	public function testHandleLogicReturnsRecipeList(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'all' )->willReturn(
-			array(
-				'recipe1' => array( 'ingredient1' => 'value1' ),
-				'recipe2' => array( 'ingredient2' => 'value2' ),
-				'recipe3' => array( 'ingredient3' => 'value3' ),
-			)
+			[
+				'recipe1' => [ 'ingredient1' => 'value1' ],
+				'recipe2' => [ 'ingredient2' => 'value2' ],
+				'recipe3' => [ 'ingredient3' => 'value3' ],
+			]
 		);
 
 		$tool = new ListRecipesTool( $recipes, $this->ingredients, $this->executor );
@@ -67,16 +67,16 @@ class ListRecipesToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'recipes', $result );
-		$this->assertSame( array( 'recipe1', 'recipe2', 'recipe3' ), $result['recipes'] );
+		$this->assertSame( [ 'recipe1', 'recipe2', 'recipe3' ], $result['recipes'] );
 	}
 
 	public function testHandleLogicReturnsEmptyArrayWhenNoRecipes(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
-		$recipes->method( 'all' )->willReturn( array() );
+		$recipes->method( 'all' )->willReturn( [] );
 
 		$tool = new ListRecipesTool( $recipes, $this->ingredients, $this->executor );
 
@@ -84,11 +84,11 @@ class ListRecipesToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array() );
+		$result = $method->invoke( $tool, [] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'recipes', $result );
-		$this->assertSame( array(), $result['recipes'] );
+		$this->assertSame( [], $result['recipes'] );
 	}
 
 	public function testFormatCliOutputWithRecipes(): void {
@@ -97,7 +97,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 		$method->setAccessible( true );
 
 		// Test with recipes - should not throw exception
-		$method->invoke( $this->tool, array( 'recipes' => array( 'recipe1', 'recipe2' ) ) );
+		$method->invoke( $this->tool, [ 'recipes' => [ 'recipe1', 'recipe2' ] ] );
 
 		$this->assertTrue( true );
 	}
@@ -108,7 +108,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 		$method->setAccessible( true );
 
 		// Test with empty recipes - should not throw exception
-		$method->invoke( $this->tool, array( 'recipes' => array() ) );
+		$method->invoke( $this->tool, [ 'recipes' => [] ] );
 
 		$this->assertTrue( true );
 	}

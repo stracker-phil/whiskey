@@ -53,10 +53,10 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicReturnsIngredientMetadata(): void {
-		$metadata = array(
+		$metadata = [
 			'category'    => 'wordpress',
 			'description' => 'Test ingredient description',
-		);
+		];
 
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'get_metadata' )->willReturn( $metadata );
@@ -67,7 +67,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 'name' => 'test-ingredient' ) );
+		$result = $method->invoke( $tool, [ 'name' => 'test-ingredient' ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'name', $result );
@@ -79,10 +79,10 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicExtractsNameFromPositionalArg(): void {
-		$metadata = array(
+		$metadata = [
 			'category'    => 'wordpress',
 			'description' => 'Test',
-		);
+		];
 
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'get_metadata' )->willReturn( $metadata );
@@ -93,7 +93,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 0 => 'my-ingredient' ) );
+		$result = $method->invoke( $tool, [ 0 => 'my-ingredient' ] );
 
 		$this->assertSame( 'my-ingredient', $result['name'] );
 	}
@@ -106,12 +106,12 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $this->tool, array() );
+		$method->invoke( $this->tool, [] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenIngredientNotFound(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
-		$ingredients->method( 'get_metadata' )->willReturn( array() );
+		$ingredients->method( 'get_metadata' )->willReturn( [] );
 
 		$tool = new ShowIngredientTool( $this->recipes, $ingredients, $this->executor );
 
@@ -122,7 +122,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'name' => 'nonexistent' ) );
+		$method->invoke( $tool, [ 'name' => 'nonexistent' ] );
 	}
 
 	public function testExtractCliArgsIncludesFormatParameter(): void {
@@ -132,8 +132,8 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$result = $method->invoke(
 			$this->tool,
-			array( 'test-ingredient' ),
-			array( 'format' => 'json' )
+			[ 'test-ingredient' ],
+			[ 'format' => 'json' ]
 		);
 
 		$this->assertArrayHasKey( 'format', $result );
@@ -147,8 +147,8 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$result = $method->invoke(
 			$this->tool,
-			array( 'test-ingredient' ),
-			array()
+			[ 'test-ingredient' ],
+			[]
 		);
 
 		$this->assertArrayHasKey( 'format', $result );
@@ -163,12 +163,12 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		// Test with table format - should not throw exception
 		$method->invoke(
 			$this->tool,
-			array(
+			[
 				'format'      => 'table',
 				'name'        => 'test-ingredient',
 				'category'    => 'wordpress',
 				'description' => 'Test description',
-			)
+			]
 		);
 
 		$this->assertTrue( true );
@@ -182,12 +182,12 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		// Test with json format - should call WP_CLI\Utils\format_items
 		$method->invoke(
 			$this->tool,
-			array(
+			[
 				'format'      => 'json',
 				'name'        => 'test-ingredient',
 				'category'    => 'wordpress',
 				'description' => 'Test description',
-			)
+			]
 		);
 
 		$this->assertTrue( true );
@@ -201,12 +201,12 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		// Test with yaml format - should call WP_CLI\Utils\format_items
 		$method->invoke(
 			$this->tool,
-			array(
+			[
 				'format'      => 'yaml',
 				'name'        => 'test-ingredient',
 				'category'    => 'wordpress',
 				'description' => 'Test description',
-			)
+			]
 		);
 
 		$this->assertTrue( true );

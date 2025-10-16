@@ -32,7 +32,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testValidateRejectsArray(): void {
-		$this->assertFalse( $this->ingredient->validate( array( 'invalid' ) ) );
+		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] ) );
 	}
 
 	public function testValidateRejectsBoolean(): void {

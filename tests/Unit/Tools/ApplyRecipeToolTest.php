@@ -62,7 +62,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $this->tool, array() );
+		$method->invoke( $this->tool, [] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenRecipeNotFound(): void {
@@ -78,11 +78,11 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'name' => 'nonexistent' ) );
+		$method->invoke( $tool, [ 'name' => 'nonexistent' ] );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenConfigInvalid(): void {
-		$recipe_config = array( 'invalid' => 'config' );
+		$recipe_config = [ 'invalid' => 'config' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -99,11 +99,11 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'name' => 'test-recipe' ) );
+		$method->invoke( $tool, [ 'name' => 'test-recipe' ] );
 	}
 
 	public function testHandleLogicReturnsDryRunResultWhenFlagSet(): void {
-		$recipe_config = array( 'ingredient1' => 'value1' );
+		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -117,7 +117,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 'name' => 'test-recipe', 'dry-run' => true ) );
+		$result = $method->invoke( $tool, [ 'name' => 'test-recipe', 'dry-run' => true ] );
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'dry_run', $result );
@@ -127,7 +127,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicExecutesRecipeSuccessfully(): void {
-		$recipe_config = array( 'ingredient1' => 'value1' );
+		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -135,7 +135,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$execution_result = new ExecutionResult(
 			true,
 			'Recipe executed successfully',
-			array( 'ingredient1' => array( 'success' => true, 'message' => 'Done' ) )
+			[ 'ingredient1' => [ 'success' => true, 'message' => 'Done' ] ]
 		);
 
 		$executor = $this->createStub( RecipeExecutor::class );
@@ -148,7 +148,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 'name' => 'test-recipe' ) );
+		$result = $method->invoke( $tool, [ 'name' => 'test-recipe' ] );
 
 		$this->assertIsArray( $result );
 		$this->assertTrue( $result['success'] );
@@ -157,7 +157,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicThrowsExceptionOnExecutionFailure(): void {
-		$recipe_config = array( 'ingredient1' => 'value1' );
+		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -177,11 +177,11 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$method->invoke( $tool, array( 'name' => 'test-recipe' ) );
+		$method->invoke( $tool, [ 'name' => 'test-recipe' ] );
 	}
 
 	public function testHandleLogicExtractsNameFromPositionalArg(): void {
-		$recipe_config = array( 'ingredient1' => 'value1' );
+		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
@@ -198,7 +198,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $tool, array( 0 => 'my-recipe' ) );
+		$result = $method->invoke( $tool, [ 0 => 'my-recipe' ] );
 
 		$this->assertSame( 'my-recipe', $result['name'] );
 	}
@@ -208,12 +208,12 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
-		$data = array(
+		$data = [
 			'name'    => 'test-recipe',
 			'success' => true,
 			'message' => 'Recipe applied successfully',
-			'data'    => array( 'key' => 'value' ),
-		);
+			'data'    => [ 'key' => 'value' ],
+		];
 
 		$response = $method->invoke( $this->tool, $data );
 
@@ -231,14 +231,14 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
-		$data = array( 'name' => 'test' );
+		$data = [ 'name' => 'test' ];
 
 		$response      = $method->invoke( $this->tool, $data );
 		$response_data = $response->get_data();
 
 		$this->assertTrue( $response_data['success'] );
 		$this->assertSame( '', $response_data['message'] );
-		$this->assertSame( array(), $response_data['data'] );
+		$this->assertSame( [], $response_data['data'] );
 	}
 
 	public function testFormatCliOutputWithDryRunMode(): void {
@@ -246,11 +246,11 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
-		$data = array(
+		$data = [
 			'name'    => 'test-recipe',
 			'dry_run' => true,
 			'valid'   => true,
-		);
+		];
 
 		// Should not throw exception
 		$method->invoke( $this->tool, $data );
@@ -264,21 +264,21 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
-		$data = array(
+		$data = [
 			'name'    => 'test-recipe',
 			'message' => 'Recipe applied successfully',
-			'data'    => array(
-				'ingredient1' => array(
+			'data'    => [
+				'ingredient1' => [
 					'success' => true,
 					'message' => 'Ingredient 1 executed',
-					'data'    => array( 'key' => 'value' ),
-				),
-				'ingredient2' => array(
+					'data'    => [ 'key' => 'value' ],
+				],
+				'ingredient2' => [
 					'success' => false,
 					'message' => 'Ingredient 2 failed',
-				),
-			),
-		);
+				],
+			],
+		];
 
 		$method->invoke( $this->tool, $data );
 
@@ -292,9 +292,9 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_ingredient_data' );
 		$method->setAccessible( true );
 
-		$data = array(
-			'items' => array( 'item1', 'item2', 'item3' ),
-		);
+		$data = [
+			'items' => [ 'item1', 'item2', 'item3' ],
+		];
 
 		// Should not throw exception
 		$method->invoke( $this->tool, $data, 2 );
@@ -308,12 +308,12 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'format_ingredient_data' );
 		$method->setAccessible( true );
 
-		$data = array(
-			'config' => array(
+		$data = [
+			'config' => [
 				'setting1' => 'value1',
 				'setting2' => 'value2',
-			),
-		);
+			],
+		];
 
 		// Should not throw exception
 		$method->invoke( $this->tool, $data, 2 );
@@ -326,7 +326,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array() );
+		$result = $method->invoke( $this->tool, [] );
 
 		$this->assertTrue( $result );
 	}
@@ -336,7 +336,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array( 'a', 'b', 'c' ) );
+		$result = $method->invoke( $this->tool, [ 'a', 'b', 'c' ] );
 
 		$this->assertTrue( $result );
 	}
@@ -346,7 +346,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array( 'key' => 'value' ) );
+		$result = $method->invoke( $this->tool, [ 'key' => 'value' ] );
 
 		$this->assertFalse( $result );
 	}
@@ -356,7 +356,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array( array( 'nested' ) ) );
+		$result = $method->invoke( $this->tool, [ [ 'nested' ] ] );
 
 		$this->assertFalse( $result );
 	}
@@ -366,7 +366,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->tool, array( new \stdClass() ) );
+		$result = $method->invoke( $this->tool, [ new \stdClass() ] );
 
 		$this->assertFalse( $result );
 	}
