@@ -55,8 +55,16 @@ class WP_Functions {
 		self::$mocks = [];
 	}
 
-	public static function mock( string $function, callable $implementation ): void {
-		self::$mocks[ $function ] = $implementation;
+	public static function mock( string $function, $return_value = null ): void {
+		if ( is_callable( $return_value ) ) {
+			self::$mocks[ $function ] = $return_value;
+		} elseif ( func_num_args() === 1 ) {
+			// No second arg = void function
+			self::$mocks[ $function ] = static fn() => null;
+		} else {
+			// Scalar value = return it
+			self::$mocks[ $function ] = static fn() => $return_value;
+		}
 	}
 
 	public static function call( string $function, ...$args ) {

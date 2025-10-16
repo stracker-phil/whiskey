@@ -7,7 +7,6 @@ declare( strict_types = 1 );
 namespace Whiskey\Tests\Unit\Ingredients;
 
 use Whiskey\Ingredients\SetHomepageIngredient;
-use WP_Post;
 use WP_Functions;
 
 class SetHomepageIngredientTest extends IngredientTest {
@@ -41,12 +40,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteWithValidStringSlug(): void {
-		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
-			return $this->createMockPost( 123 );
-		} );
-		WP_Functions::mock( 'update_option', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 123 ) );
+		WP_Functions::mock( 'update_option', true );
 
 		$result = $this->ingredient->execute( 'home' );
 
@@ -54,12 +49,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteWithValidPostId(): void {
-		WP_Functions::mock( 'get_post', function ( $id ) {
-			return $this->createMockPost( $id, 'page' );
-		} );
-		WP_Functions::mock( 'update_option', function () {
-			return true;
-		} );
+		WP_Functions::mock( 'get_post', static fn( $id ) => $this->createMockPost( $id, 'page' ) );
+		WP_Functions::mock( 'update_option', true );
 
 		$result = $this->ingredient->execute( 456 );
 
@@ -67,9 +58,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteFailsWithInvalidSlug(): void {
-		WP_Functions::mock( 'get_page_by_path', function () {
-			return null;
-		} );
+		WP_Functions::mock( 'get_page_by_path', null );
 
 		$result = $this->ingredient->execute( 'nonexistent' );
 
@@ -77,9 +66,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteFailsWithInvalidPostId(): void {
-		WP_Functions::mock( 'get_post', function () {
-			return null;
-		} );
+		WP_Functions::mock( 'get_post', null );
 
 		$result = $this->ingredient->execute( 999 );
 
@@ -87,9 +74,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteFailsWhenPostIsNotAPage(): void {
-		WP_Functions::mock( 'get_post', function ( $id ) {
-			return $this->createMockPost( $id, 'post' ); // Not a page!
-		} );
+		WP_Functions::mock( 'get_post', static fn( $id ) => $this->createMockPost( $id, 'post' ) );
 
 		$result = $this->ingredient->execute( 789 );
 

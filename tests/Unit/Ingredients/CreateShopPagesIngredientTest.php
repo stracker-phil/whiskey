@@ -27,11 +27,11 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	// ===== Validation Tests =====
 
 	public function testValidateAcceptsArrayOfStrings(): void {
-		$this->assertValidationAccepts( array( 'shop', 'cart' ) );
+		$this->assertValidationAccepts( [ 'shop', 'cart' ] );
 	}
 
 	public function testValidateAcceptsEmptyArray(): void {
-		$this->assertValidationAccepts( array() );
+		$this->assertValidationAccepts( [] );
 	}
 
 	public function testValidateRejectsString(): void {
@@ -39,19 +39,19 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testValidateRejectsArrayWithNonStringValue(): void {
-		$this->assertValidationRejects( array( 'shop', 123 ) );
+		$this->assertValidationRejects( [ 'shop', 123 ] );
 	}
 
 	public function testValidateRejectsArrayWithNestedArray(): void {
-		$this->assertValidationRejects( array( 'shop', array( 'nested' ) ) );
+		$this->assertValidationRejects( [ 'shop', [ 'nested' ] ] );
 	}
 
 	// ===== Execution Tests =====
 
 	public function testExecuteCreatesNewPage(): void {
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', fn( $data ) => 123 );
-		WP_Functions::mock( 'update_post_meta', fn() => true );
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', 123 );
+		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -65,7 +65,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'test-page' ) );
+		$result = $this->ingredient->execute( [ 'test-page' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -78,9 +78,9 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	public function testExecuteUpdatesExistingPage(): void {
 		$existing_page = $this->createMockPost( 456 );
 
-		WP_Functions::mock( 'get_page_by_path', fn() => $existing_page );
-		WP_Functions::mock( 'wp_insert_post', fn( $data ) => $data['ID'] );
-		WP_Functions::mock( 'update_post_meta', fn() => true );
+		WP_Functions::mock( 'get_page_by_path', $existing_page );
+		WP_Functions::mock( 'wp_insert_post', static fn( $data ) => $data['ID'] );
+		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -94,7 +94,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'test-page' ) );
+		$result = $this->ingredient->execute( [ 'test-page' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -105,7 +105,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteHandlesMissingTemplate(): void {
-		$result = $this->ingredient->execute( array( 'nonexistent-page' ) );
+		$result = $this->ingredient->execute( [ 'nonexistent-page' ] );
 
 		$this->assertExecutionFailure( $result, 'Failed' );
 		$data = $result->get_data();
@@ -113,8 +113,8 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteHandlesWpInsertPostFailure(): void {
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', fn() => 0 );
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', 0 );
 
 		// Create a test template file
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -128,7 +128,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'test-page' ) );
+		$result = $this->ingredient->execute( [ 'test-page' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -137,12 +137,13 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteProcessesMultiplePages(): void {
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', static function ( $data ) {
 			static $id = 100;
+
 			return ++ $id;
 		} );
-		WP_Functions::mock( 'update_post_meta', fn() => true );
+		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create test template files
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -159,7 +160,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Page 2", "content" => "Content 2"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'page1', 'page2' ) );
+		$result = $this->ingredient->execute( [ 'page1', 'page2' ] );
 
 		// Clean up
 		unlink( $template_dir . '/page1.php' );
@@ -172,11 +173,12 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteHandlesPostMetaInTemplate(): void {
-		$meta_calls = array();
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', fn() => 123 );
-		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
-			$meta_calls[] = array( $post_id, $key, $value );
+		$meta_calls = [];
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', 123 );
+		WP_Functions::mock( 'update_post_meta', static function ( $post_id, $key, $value ) use ( &$meta_calls ) {
+			$meta_calls[] = [ $post_id, $key, $value ];
+
 			return true;
 		} );
 
@@ -192,7 +194,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test", "content" => "Test", "post_meta" => ["key1" => "value1", "key2" => "value2"]];'
 		);
 
-		$result = $this->ingredient->execute( array( 'meta-page' ) );
+		$result = $this->ingredient->execute( [ 'meta-page' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -216,7 +218,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test"];' // Missing content field
 		);
 
-		$result = $this->ingredient->execute( array( 'invalid-template' ) );
+		$result = $this->ingredient->execute( [ 'invalid-template' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -236,7 +238,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$template_file = $template_dir . '/bad-template.php';
 		file_put_contents( $template_file, '<?php return "not an array";' );
 
-		$result = $this->ingredient->execute( array( 'bad-template' ) );
+		$result = $this->ingredient->execute( [ 'bad-template' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -246,12 +248,13 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 
 	public function testExecuteAppliesDefaultPostTypeWhenNotSpecified(): void {
 		$captured_post_data = null;
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', function ( $data ) use ( &$captured_post_data ) {
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', static function ( $data ) use ( &$captured_post_data ) {
 			$captured_post_data = $data;
+
 			return 123;
 		} );
-		WP_Functions::mock( 'update_post_meta', fn() => true );
+		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create template without post_type
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
@@ -265,7 +268,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test", "content" => "Test"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'no-type' ) );
+		$result = $this->ingredient->execute( [ 'no-type' ] );
 
 		// Clean up
 		unlink( $template_file );
@@ -275,11 +278,12 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteAppliesDefaultPostMetaWhenNotSpecified(): void {
-		$meta_calls = array();
-		WP_Functions::mock( 'get_page_by_path', fn() => null );
-		WP_Functions::mock( 'wp_insert_post', fn() => 123 );
-		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
-			$meta_calls[] = array( $post_id, $key, $value );
+		$meta_calls = [];
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', 123 );
+		WP_Functions::mock( 'update_post_meta', static function ( $post_id, $key, $value ) use ( &$meta_calls ) {
+			$meta_calls[] = [ $post_id, $key, $value ];
+
 			return true;
 		} );
 
@@ -295,7 +299,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test", "content" => "Test"];'
 		);
 
-		$result = $this->ingredient->execute( array( 'no-meta' ) );
+		$result = $this->ingredient->execute( [ 'no-meta' ] );
 
 		// Clean up
 		unlink( $template_file );

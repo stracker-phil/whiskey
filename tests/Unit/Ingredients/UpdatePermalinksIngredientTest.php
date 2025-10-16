@@ -41,13 +41,9 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 
 	public function testExecuteUpdatesPermalinkStructure(): void {
 		$flush_called = false;
-		WP_Functions::mock( 'get_option', function ( $option ) {
-			return ''; // Previous structure
-		} );
-		WP_Functions::mock( 'update_option', function ( $option, $value ) {
-			return true;
-		} );
-		WP_Functions::mock( 'flush_rewrite_rules', function () use ( &$flush_called ) {
+		WP_Functions::mock( 'get_option', '' );
+		WP_Functions::mock( 'update_option', true );
+		WP_Functions::mock( 'flush_rewrite_rules', static function () use ( &$flush_called ) {
 			$flush_called = true;
 		} );
 
@@ -59,14 +55,9 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteReturnsDataWithPreviousAndCurrentStructure(): void {
-		WP_Functions::mock( 'get_option', function ( $option ) {
-			return '/old-structure/';
-		} );
-		WP_Functions::mock( 'update_option', function ( $option, $value ) {
-			return true;
-		} );
-		WP_Functions::mock( 'flush_rewrite_rules', function () {
-		} );
+		WP_Functions::mock( 'get_option', '/old-structure/' );
+		WP_Functions::mock( 'update_option', true );
+		WP_Functions::mock( 'flush_rewrite_rules' );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
@@ -77,14 +68,9 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteHandlesFailedUpdate(): void {
-		WP_Functions::mock( 'get_option', function ( $option ) {
-			return '/different/';
-		} );
-		WP_Functions::mock( 'update_option', function ( $option, $value ) {
-			return false; // Update failed
-		} );
-		WP_Functions::mock( 'flush_rewrite_rules', function () {
-		} );
+		WP_Functions::mock( 'get_option', '/different/' );
+		WP_Functions::mock( 'update_option', false );
+		WP_Functions::mock( 'flush_rewrite_rules' );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
@@ -92,14 +78,9 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteSucceedsWhenStructureUnchanged(): void {
-		WP_Functions::mock( 'get_option', function ( $option ) {
-			return '/%postname%/';
-		} );
-		WP_Functions::mock( 'update_option', function ( $option, $value ) {
-			return false; // No update needed - already same
-		} );
-		WP_Functions::mock( 'flush_rewrite_rules', function () {
-		} );
+		WP_Functions::mock( 'get_option', '/%postname%/' );
+		WP_Functions::mock( 'update_option', false );
+		WP_Functions::mock( 'flush_rewrite_rules' );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 

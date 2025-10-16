@@ -42,29 +42,13 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteCreatesNewMenuIfNotExists(): void {
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () {
-			return false; // Menu doesn't exist
-		} );
-		WP_Functions::mock( 'wp_create_nav_menu', function () {
-			return 42; // New menu ID
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', false );
+		WP_Functions::mock( 'wp_create_nav_menu', 42 );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -77,26 +61,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu          = new stdClass();
 		$menu->term_id = 99;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -106,12 +76,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 	}
 
 	public function testExecuteFailsIfMenuCreationFails(): void {
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'wp_create_nav_menu', function () {
-			return 0; // Creation failed
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', false );
+		WP_Functions::mock( 'wp_create_nav_menu', 0 );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -129,31 +95,16 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$item2     = new stdClass();
 		$item2->ID = 2;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () use ( $item1, $item2 ) {
-			return array( $item1, $item2 );
-		} );
-		WP_Functions::mock( 'wp_delete_post', function ( $id, $force ) use ( &$deleted_posts ) {
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', array( $item1, $item2 ) );
+		WP_Functions::mock( 'wp_delete_post', static function ( $id, $force ) use ( &$deleted_posts ) {
 			$deleted_posts[] = $id;
-
 			return true;
 		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -166,27 +117,17 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', static function ( $slug ) {
 			$page            = new WP_Post();
 			$page->ID        = $slug === 'home' ? 10 : 20;
 			$page->post_name = $slug;
-
 			return $page;
 		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function ( $menu_id, $item_id, $data ) {
-			return 100 + $data['menu-item-object-id'];
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_update_nav_menu_item', static fn( $menu_id, $item_id, $data ) => 100 + $data['menu-item-object-id'] );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home', 'about' ) );
 
@@ -200,29 +141,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
-			if ( $slug === 'nonexistent' ) {
-				return null;
-			}
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', static fn( $slug ) => $slug === 'nonexistent' ? null : $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home', 'nonexistent' ) );
 
@@ -238,25 +162,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu            = new stdClass();
 		$menu->term_id   = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function ( $name, $value ) use ( &$theme_mod_calls ) {
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod', static function ( $name, $value ) use ( &$theme_mod_calls ) {
 			$theme_mod_calls[] = array( $name, $value );
 		} );
 
@@ -272,26 +183,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 0; // Failure
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 0 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -305,26 +202,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false; // No existing items
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () {
-			return array();
-		} );
-		WP_Functions::mock( 'set_theme_mod', function () {
-		} );
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', array() );
+		WP_Functions::mock( 'set_theme_mod' );
 
 		$result = $this->ingredient->execute( array( 'home' ) );
 
@@ -340,25 +223,12 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$menu               = new stdClass();
 		$menu->term_id      = 42;
 
-		WP_Functions::mock( 'wp_get_nav_menu_object', function () use ( $menu ) {
-			return $menu;
-		} );
-		WP_Functions::mock( 'wp_get_nav_menu_items', function () {
-			return false;
-		} );
-		WP_Functions::mock( 'get_page_by_path', function () {
-			$page     = new WP_Post();
-			$page->ID = 10;
-
-			return $page;
-		} );
-		WP_Functions::mock( 'wp_update_nav_menu_item', function () {
-			return 100;
-		} );
-		WP_Functions::mock( 'get_theme_mod', function () use ( $existing_locations ) {
-			return $existing_locations;
-		} );
-		WP_Functions::mock( 'set_theme_mod', function ( $name, $value ) use ( &$theme_mod_calls ) {
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 100 );
+		WP_Functions::mock( 'get_theme_mod', $existing_locations );
+		WP_Functions::mock( 'set_theme_mod', static function ( $name, $value ) use ( &$theme_mod_calls ) {
 			$theme_mod_calls[] = array( $name, $value );
 		} );
 
