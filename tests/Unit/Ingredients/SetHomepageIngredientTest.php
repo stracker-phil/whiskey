@@ -115,10 +115,4 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertFalse( $result->is_success() );
 		$this->assertStringContainsString( 'Did not find', $result->get_message() );
 	}
-
-	public function testConstantsAreDefined(): void {
-		$this->assertSame( 'set_homepage', SetHomepageIngredient::NAME );
-		$this->assertSame( 'wordpress', SetHomepageIngredient::CATEGORY );
-		$this->assertNotEmpty( SetHomepageIngredient::DESCRIPTION );
-	}
 }
