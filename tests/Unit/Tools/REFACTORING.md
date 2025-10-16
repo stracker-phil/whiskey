@@ -1,525 +1,387 @@
-# Tool Test Suite Refactoring Strategy
+# Tool Test Suite - Phase 2 Refactoring Opportunities
 
-## Project Context
+## Phase 1 Results ✅
 
-**Whiskey** is a WordPress configuration plugin demonstrating PHP language improvements from 7.4 to 8.3. The plugin uses a tool-based architecture where each tool encapsulates business logic for both REST API endpoints and WP-CLI commands.
-
-**Current PHP Version:** 7.4  
-**Testing Framework:** PHPUnit 9.x  
-**Base Test Class:** `WhiskeyTest` (provides WordPress hook reset)
-
-## Current Test Structure Overview
-
-### Test Files
-
-The `tests/Unit/Tools/` directory contains tests for seven tool classes:
-
-1. **WhiskeyToolTest.php** - Tests the abstract base `WhiskeyTool` class
-2. **ApplyRecipeToolTest.php** - Tests recipe execution logic
-3. **ListRecipesToolTest.php** - Tests recipe listing
-4. **ShowRecipeToolTest.php** - Tests single recipe display
-5. **ListIngredientsToolTest.php** - Tests ingredient listing
-6. **ShowIngredientToolTest.php** - Tests single ingredient display
-7. **StatusToolTest.php** - Tests plugin status reporting
-
-### Common Architecture Pattern
-
-All tool test classes follow a consistent pattern:
-
-```php
-class SomeToolTest extends WhiskeyTest {
-    private SomeTool $tool;
-    private RecipeRegistry $recipes;
-    private IngredientRegistry $ingredients;
-    private RecipeExecutor $executor;
-
-    protected function setUp(): void {
-        parent::setUp();
-        $this->recipes = $this->createStub(RecipeRegistry::class);
-        $this->ingredients = $this->createStub(IngredientRegistry::class);
-        $this->executor = $this->createStub(RecipeExecutor::class);
-        $this->tool = new SomeTool($this->recipes, $this->ingredients, $this->executor);
-    }
-
-    // ... test methods
-}
-```
-
-## Identified Patterns for Extraction
-
-### 1. Common Setup Pattern
-
-**Every tool test** instantiates the same three dependencies:
-- `RecipeRegistry` (stubbed)
-- `IngredientRegistry` (stubbed)
-- `RecipeExecutor` (stubbed)
-
-**Location:** `setUp()` method in each test class  
-**Frequency:** 7 occurrences (100% of tool tests)
-
-### 2. Reflection-Based Method Testing
-
-**Pattern:** Using PHP Reflection to test protected methods
-
-```php
-$reflection = new ReflectionClass($this->tool);
-$method = $reflection->getMethod('get_rest_config');
-$method->setAccessible(true);
-$config = $method->invoke($this->tool);
-```
-
-**Locations:**
-- `testGetRestConfigReturnsConfiguration()` - 6 tool test classes
-- `testGetCliConfigReturnsConfiguration()` - 6 tool test classes
-- `testHandleLogic*()` methods - All tool test classes
-- Various other protected method tests
-
-**Frequency:** ~40+ occurrences across all test files
-
-### 3. Configuration Testing Structure
-
-**Pattern:** Testing REST and CLI config methods with consistent assertions
-
-```php
-public function testGetRestConfigReturnsConfiguration(): void {
-    // Reflection setup
-    $config = // invoke method
-    
-    $this->assertIsArray($config);
-    $this->assertSame('METHOD', $config['method']);
-    $this->assertStringContainsString('path-fragment', $config['path']);
-}
-
-public function testGetCliConfigReturnsConfiguration(): void {
-    // Reflection setup
-    $config = // invoke method
-    
-    $this->assertIsArray($config);
-    $this->assertSame('command string', $config['command']);
-    $this->assertStringContainsString('keyword', $config['synopsis']);
-}
-```
-
-**Frequency:** 2 tests per tool class (12 total tests with near-identical structure)
-
-### 4. Argument Extraction Testing
-
-**Pattern:** Testing name parameter extraction from multiple argument formats
-
-```php
-// Tests extraction from 'name' key
-$result = $method->invoke($tool, ['name' => 'test-value']);
-
-// Tests extraction from positional arg [0]
-$result = $method->invoke($tool, [0 => 'test-value']);
-```
-
-**Frequency:** Most tool tests include both variations
-
-### 5. Exception Testing Pattern
-
-**Pattern:** Testing error conditions with consistent exception assertions
-
-```php
-$this->expectException(Exception::class);
-$this->expectExceptionMessage('Expected message');
-
-$method->invoke($tool, $args);
-```
-
-**Common error cases:**
-- Missing required parameter (name)
-- Resource not found (recipe/ingredient)
-- Invalid configuration
-- Execution failure
-
-**Frequency:** 2-5 exception tests per tool class
-
-### 6. Mock/Stub Creation with Custom Behavior
-
-**Pattern:** Creating stubs with specific return values for testing
-
-```php
-$recipes = $this->createStub(RecipeRegistry::class);
-$recipes->method('get')->willReturn($recipe_config);
-
-$tool = new SomeTool($recipes, $this->ingredients, $this->executor);
-```
-
-**Frequency:** Appears in most test methods that need specific behavior
-
-### 7. WP_CLI Message Verification
-
-**Pattern:** Verifying CLI output by checking captured log messages
-
-```php
-$method->invoke($this->tool, $data);
-
-$messages = \WP_CLI::get_log_messages();
-$this->assertContains('expected message', $messages);
-```
-
-**Frequency:** In all `testFormatCliOutput*()` methods
-
-## Duplication Analysis
-
-### High Duplication (90-100% similar)
-
-1. **setUp() method** - Identical across all 6 concrete tool tests
-2. **Config testing methods** - Very similar structure with only string values different
-3. **Reflection boilerplate** - Identical `ReflectionClass` setup in 40+ places
-
-### Medium Duplication (50-80% similar)
-
-4. **Exception testing** - Same pattern, different messages
-5. **Argument extraction tests** - Same structure, different argument names
-6. **WP_CLI message verification** - Same pattern, different expected messages
-
-### Low Duplication (patterns, but context-dependent)
-
-7. **handle_logic() tests** - Similar structure but business logic varies significantly
-8. **Format method tests** - Similar pattern but formatting details differ per tool
-
-## Proposed Base Class: `ToolTest`
-
-### Purpose
-
-Create an abstract `ToolTest` class (extending `WhiskeyTest`) to:
-1. Eliminate duplicate dependency setup
-2. Provide helper methods for reflection-based testing
-3. Simplify common test patterns
-4. Maintain type safety and readability
-5. Reduce maintenance burden
-
-### Design Principles
-
-✅ **Extract only high-duplication patterns** (90%+ similarity)  
-✅ **Maintain readability** - helpers should make tests clearer, not obscure them  
-✅ **Preserve type safety** - no loss of IDE support or type hints  
-✅ **Keep tests explicit** - don't hide critical test logic in base class  
-✅ **Follow project conventions** - match existing style and patterns
-
-### Proposed Structure
-
-```php
-<?php
-declare(strict_types = 1);
-
-namespace Whiskey\Tests\Unit\Tools;
-
-use Whiskey\Tests\Unit\WhiskeyTest;
-use Whiskey\Tools\WhiskeyTool;
-use Whiskey\Registry\RecipeRegistry;
-use Whiskey\Registry\IngredientRegistry;
-use Whiskey\RecipeExecutor;
-use ReflectionClass;
-use ReflectionMethod;
-
-/**
- * Base class for tool tests providing common setup and helper methods.
- */
-abstract class ToolTest extends WhiskeyTest {
-    protected RecipeRegistry $recipes;
-    protected IngredientRegistry $ingredients;
-    protected RecipeExecutor $executor;
-
-    protected function setUp(): void {
-        parent::setUp();
-        $this->recipes = $this->createStub(RecipeRegistry::class);
-        $this->ingredients = $this->createStub(IngredientRegistry::class);
-        $this->executor = $this->createStub(RecipeExecutor::class);
-    }
-
-    /**
-     * Helper: Call a protected method on the tool via reflection.
-     *
-     * @param WhiskeyTool $tool
-     * @param string $method_name
-     * @param array $args
-     * @return mixed
-     */
-    protected function invoke_protected_method(
-        WhiskeyTool $tool,
-        string $method_name,
-        array $args = []
-    ) {
-        $reflection = new ReflectionClass($tool);
-        $method = $reflection->getMethod($method_name);
-        $method->setAccessible(true);
-        
-        return $method->invoke($tool, ...$args);
-    }
-
-    /**
-     * Helper: Get a ReflectionMethod for a protected method.
-     *
-     * Useful when you need the method object for multiple calls.
-     *
-     * @param WhiskeyTool $tool
-     * @param string $method_name
-     * @return ReflectionMethod
-     */
-    protected function get_protected_method(
-        WhiskeyTool $tool,
-        string $method_name
-    ): ReflectionMethod {
-        $reflection = new ReflectionClass($tool);
-        $method = $reflection->getMethod($method_name);
-        $method->setAccessible(true);
-        
-        return $method;
-    }
-}
-```
-
-## Refactoring Impact
-
-### Before: ApplyRecipeToolTest (example)
-
-```php
-class ApplyRecipeToolTest extends WhiskeyTest {
-    private ApplyRecipeTool $tool;
-    private RecipeRegistry $recipes;
-    private IngredientRegistry $ingredients;
-    private RecipeExecutor $executor;
-
-    protected function setUp(): void {
-        parent::setUp();
-        $this->recipes = $this->createStub(RecipeRegistry::class);
-        $this->ingredients = $this->createStub(IngredientRegistry::class);
-        $this->executor = $this->createStub(RecipeExecutor::class);
-        $this->tool = new ApplyRecipeTool($this->recipes, $this->ingredients, $this->executor);
-    }
-
-    public function testGetRestConfigReturnsConfiguration(): void {
-        $reflection = new ReflectionClass($this->tool);
-        $method = $reflection->getMethod('get_rest_config');
-        $method->setAccessible(true);
-
-        $config = $method->invoke($this->tool);
-
-        $this->assertIsArray($config);
-        // ... assertions
-    }
-
-    public function testHandleLogicThrowsExceptionWhenNameMissing(): void {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Recipe name is required');
-
-        $reflection = new ReflectionClass($this->tool);
-        $method = $reflection->getMethod('handle_logic');
-        $method->setAccessible(true);
-
-        $method->invoke($this->tool, []);
-    }
-}
-```
-
-### After: Using ToolTest Base Class
-
-```php
-class ApplyRecipeToolTest extends ToolTest {
-    private ApplyRecipeTool $tool;
-
-    protected function setUp(): void {
-        parent::setUp(); // Now handles all dependency setup
-        $this->tool = new ApplyRecipeTool($this->recipes, $this->ingredients, $this->executor);
-    }
-
-    public function testGetRestConfigReturnsConfiguration(): void {
-        $config = $this->invoke_protected_method($this->tool, 'get_rest_config');
-
-        $this->assertIsArray($config);
-        // ... assertions
-    }
-
-    public function testHandleLogicThrowsExceptionWhenNameMissing(): void {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Recipe name is required');
-
-        $this->invoke_protected_method($this->tool, 'handle_logic', [[]]);
-    }
-}
-```
-
-## Benefits
-
-### Code Reduction
-
-**Estimated impact:**
-- **Remove ~42 lines** of duplicate setUp() code (7 lines × 6 classes)
-- **Simplify ~40+ reflection blocks** - Each saves 3-4 lines
-- **Total reduction:** ~160-200 lines across the test suite
-
-### Maintenance
-
-- **Single point of change** for dependency setup
-- **Consistent reflection patterns** across all tool tests
-- **Easier to add new tools** - less boilerplate to copy
-
-### Readability
-
-- **Clearer intent** - `invoke_protected_method()` is more descriptive than raw reflection
-- **Less noise** - Test logic stands out from reflection mechanics
-- **Better focus** - Tests emphasize what they're testing, not how they access it
-
-### Type Safety
-
-- **Preserved** - All type hints remain in place
-- **IDE support** - Autocomplete and navigation still work
-- **No magic** - Helper methods are explicit and well-typed
-
-## What NOT to Extract
-
-❌ **Test assertions** - Keep in individual tests for clarity  
-❌ **Business logic setup** - Tool-specific mocking stays in concrete tests  
-❌ **Expected values** - Each tool's config is unique and should be explicit  
-❌ **Complex test scenarios** - Only extract truly common patterns
-
-## Implementation Strategy
-
-### Phase 1: Create Base Class
-1. Create `tests/Unit/Tools/ToolTest.php`
-2. Implement common setup and helper methods
-3. Add comprehensive docblocks
-4. Write tests for the base class (minimal - mostly smoke tests)
-
-### Phase 2: Migrate Existing Tests (One by One)
-1. **Start with simplest test:** StatusToolTest
-   - Change `extends WhiskeyTest` to `extends ToolTest`
-   - Remove duplicate setUp() code
-   - Replace reflection blocks with helper methods
-   - Run tests to verify no breakage
-
-2. **Continue with remaining tests:**
-   - ListRecipesToolTest
-   - ListIngredientsToolTest
-   - ShowRecipeToolTest
-   - ShowIngredientToolTest
-   - ApplyRecipeToolTest
-
-3. **Leave WhiskeyToolTest unchanged** - It tests the base WhiskeyTool class and has unique requirements
-
-### Phase 3: Documentation
-1. Update this REFACTORING.md with final metrics
-2. Add examples of the new pattern to TESTING.md (if needed)
-3. Document any lessons learned or edge cases
-
-## Success Criteria
-
-✅ All existing tests still pass  
-✅ Code coverage remains at 100%  
-✅ Test execution time unchanged (or improved)  
-✅ Reduced lines of code (~160-200 lines)  
-✅ Improved readability in concrete test classes  
-✅ No loss of type safety or IDE support
-
-## Testing the Base Class
-
-The `ToolTest` base class itself needs minimal testing:
-
-```php
-/**
- * Tests for ToolTest base class helpers
- */
-class ToolTestTest extends WhiskeyTest {
-    public function testInvokeProtectedMethodCallsMethod(): void {
-        // Create concrete test tool
-        // Call invoke_protected_method
-        // Verify it works
-    }
-
-    public function testGetProtectedMethodReturnsReflectionMethod(): void {
-        // Create concrete test tool
-        // Call get_protected_method
-        // Verify ReflectionMethod is returned and accessible
-    }
-}
-```
-
-**Note:** Since these are helper methods with no complex logic, smoke tests are sufficient.
-
-## Risk Assessment
-
-### Low Risk
-
-✅ **No business logic changes** - Only test infrastructure  
-✅ **Incremental migration** - One test class at a time  
-✅ **Full test coverage** - Any issues caught immediately  
-✅ **Easy rollback** - Can revert individual files if needed
-
-### Potential Issues
-
-⚠️ **IDE confusion** - Some IDEs may struggle with inherited protected properties  
-   - **Mitigation:** Use explicit `$this->recipes` consistently
-
-⚠️ **Merge conflicts** - If multiple people modify tests simultaneously  
-   - **Mitigation:** Coordinate timing, migrate quickly
-
-⚠️ **Over-abstraction temptation** - May want to extract too much  
-   - **Mitigation:** Stick to the plan, only extract high-duplication patterns
-
-## Future Considerations
-
-### If More Tools Are Added
-
-The base class makes adding new tools easier:
-
-```php
-class NewToolTest extends ToolTest {
-    private NewTool $tool;
-
-    protected function setUp(): void {
-        parent::setUp();
-        $this->tool = new NewTool($this->recipes, $this->ingredients, $this->executor);
-    }
-
-    // Write tests using helper methods - no boilerplate needed
-}
-```
-
-### If Tool Architecture Changes
-
-If the tool constructor signature changes (e.g., new dependency added):
-- Update `ToolTest::setUp()` once
-- All tool tests inherit the change automatically
-- Minimal update effort across the test suite
-
-### Additional Helpers (Future)
-
-Potential additional helpers to consider after initial refactoring:
-
-```php
-// Helper for config testing pattern
-protected function assert_rest_config(
-    WhiskeyTool $tool,
-    string $expected_method,
-    string $expected_path_fragment
-): void {
-    // Common config assertions
-}
-
-// Helper for CLI config testing
-protected function assert_cli_config(
-    WhiskeyTool $tool,
-    string $expected_command,
-    string $expected_synopsis_fragment
-): void {
-    // Common config assertions
-}
-```
-
-**Decision:** Add only if these patterns prove beneficial during Phase 2 migration.
+**Completed:** Base `ToolTest` class with reflection helpers  
+**Lines Saved:** 243 lines across 6 test files  
+**Impact:** Eliminated duplicate setUp() and reflection boilerplate
 
 ---
 
-## Summary
+## Identified Patterns for Phase 2
 
-This refactoring will:
-1. Create a `ToolTest` base class with common setup and reflection helpers
-2. Migrate 6 tool test classes to use the new base class
-3. Reduce ~160-200 lines of duplicate code
-4. Improve test readability and maintainability
-5. Make adding new tools easier in the future
+### Pattern 1: Config Testing Boilerplate ⭐⭐⭐
 
-All changes are low-risk, incremental, and fully testable. The refactoring focuses strictly on high-duplication patterns while preserving clarity and type safety.
+**Frequency:** 12 tests (2 per tool class)  
+**Current State:** Nearly identical structure, only values differ
+
+```php
+// REST Config - Appears in ALL 6 tool tests
+public function testGetRestConfigReturnsConfiguration(): void {
+    $config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
+    
+    $this->assertIsArray( $config );
+    $this->assertSame( 'GET', $config['method'] );          // Only this differs
+    $this->assertSame( '/recipes', $config['path'] );       // Only this differs
+}
+
+// CLI Config - Appears in ALL 6 tool tests
+public function testGetCliConfigReturnsConfiguration(): void {
+    $config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
+    
+    $this->assertIsArray( $config );
+    $this->assertSame( 'whiskey recipes', $config['command'] );      // Only this differs
+    $this->assertStringContainsString( 'recipes', $config['synopsis'] ); // Only this differs
+}
+```
+
+**Duplication:** 7-8 lines × 12 tests = ~90 lines of near-identical code
+
+**Proposed Solution: Assertion Helper Methods**
+
+```php
+// In ToolTest base class
+protected function assert_rest_config(
+    string $expected_method,
+    string $expected_path_fragment
+): void {
+    $config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
+    
+    $this->assertIsArray( $config );
+    $this->assertSame( $expected_method, $config['method'] );
+    $this->assertStringContainsString( $expected_path_fragment, $config['path'] );
+}
+
+protected function assert_cli_config(
+    string $expected_command,
+    string $expected_synopsis_fragment
+): void {
+    $config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
+    
+    $this->assertIsArray( $config );
+    $this->assertSame( $expected_command, $config['command'] );
+    $this->assertStringContainsString( $expected_synopsis_fragment, $config['synopsis'] );
+}
+```
+
+**Usage in Concrete Tests:**
+
+```php
+// Before: 8 lines
+public function testGetRestConfigReturnsConfiguration(): void {
+    $config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
+    $this->assertIsArray( $config );
+    $this->assertSame( 'GET', $config['method'] );
+    $this->assertSame( '/recipes', $config['path'] );
+}
+
+// After: 3 lines
+public function testGetRestConfigReturnsConfiguration(): void {
+    $this->assert_rest_config( 'GET', '/recipes' );
+}
+```
+
+**Estimated Savings:** ~60 lines across all tool tests
+
+**Trade-offs:**
+- ✅ Significant reduction in duplication
+- ✅ Config tests become one-liners
+- ⚠️ Hides the assertion details (but they're always the same)
+- ⚠️ Need to decide: exact match or fragment match for paths?
+
+**Decision Required:** Should `path` use exact match or `assertStringContainsString`?
+- StatusTool: `/status` (exact)
+- ShowRecipeTool: `/recipe/(?P<n>[a-zA-Z0-9-_]+)` (regex pattern)
+- ApplyRecipeTool: `/recipe/(?P<n>[a-zA-Z0-9-_]+)/apply` (complex pattern)
+
+**Recommendation:** Use `assertStringContainsString` for flexibility, or provide both helpers.
+
+---
+
+### Pattern 2: Stub-with-Return-Value Creation ⭐⭐
+
+**Frequency:** Appears in ~20 tests  
+**Current State:** 4-5 lines to create stub with specific behavior
+
+```php
+// Creating a stub with a return value - very common pattern
+$recipes = $this->createStub( RecipeRegistry::class );
+$recipes->method( 'get' )->willReturn( $recipe_config );
+
+$tool = new ShowRecipeTool( $recipes, $this->ingredients, $this->executor );
+```
+
+**Proposed Solution: Factory Helper Methods**
+
+```php
+// In ToolTest base class
+protected function create_recipes_stub_returning( $method_name, $return_value ): RecipeRegistry {
+    $stub = $this->createStub( RecipeRegistry::class );
+    $stub->method( $method_name )->willReturn( $return_value );
+    return $stub;
+}
+
+protected function create_ingredients_stub_returning( $method_name, $return_value ): IngredientRegistry {
+    $stub = $this->createStub( IngredientRegistry::class );
+    $stub->method( $method_name )->willReturn( $return_value );
+    return $stub;
+}
+
+protected function create_executor_stub_returning( $method_name, $return_value ): RecipeExecutor {
+    $stub = $this->createStub( RecipeExecutor::class );
+    $stub->method( $method_name )->willReturn( $return_value );
+    return $stub;
+}
+
+// More specific helper for common case
+protected function create_tool_with_recipe_stub( $tool_class, $return_value ) {
+    $recipes = $this->create_recipes_stub_returning( 'get', $return_value );
+    return new $tool_class( $recipes, $this->ingredients, $this->executor );
+}
+```
+
+**Usage:**
+
+```php
+// Before: 4 lines
+$recipes = $this->createStub( RecipeRegistry::class );
+$recipes->method( 'get' )->willReturn( $recipe_config );
+$tool = new ShowRecipeTool( $recipes, $this->ingredients, $this->executor );
+$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test' ] ] );
+
+// After: 2 lines
+$tool = $this->create_tool_with_recipe_stub( ShowRecipeTool::class, $recipe_config );
+$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test' ] ] );
+```
+
+**Estimated Savings:** ~40-50 lines across all tests
+
+**Trade-offs:**
+- ✅ Reduces repetitive stub creation
+- ✅ Clarifies test intent (what data is being stubbed)
+- ⚠️ Adds another layer of abstraction
+- ⚠️ Not flexible for complex mock expectations
+- ❌ Less explicit about what's being stubbed
+
+**Recommendation:** Consider carefully. This might obscure test setup too much. The current pattern is already quite clear.
+
+---
+
+### Pattern 3: Format Method Smoke Tests ⭐
+
+**Frequency:** ~12-15 tests  
+**Current State:** Just verify method doesn't throw exception
+
+```php
+public function testFormatCliOutputWithRecipes(): void {
+    // Test with recipes - should not throw exception
+    $this->invoke_protected_method(
+        $this->tool,
+        'format_cli_output',
+        [ [ 'recipes' => [ 'recipe1', 'recipe2' ] ] ]
+    );
+    
+    $this->assertTrue( true );
+}
+```
+
+**Analysis:**
+- These are smoke tests - just checking methods don't crash
+- Not testing actual behavior or output
+- The `$this->assertTrue(true)` is a code smell
+
+**Proposed Solution: Smoke Test Helper**
+
+```php
+// In ToolTest base class
+protected function assert_method_does_not_throw( string $method_name, array $args ): void {
+    // If method throws, test fails automatically
+    // No need for explicit assertion
+    $this->invoke_protected_method( $this->tool, $method_name, $args );
+}
+```
+
+**Usage:**
+
+```php
+// Before: 9 lines
+public function testFormatCliOutputWithRecipes(): void {
+    // Test with recipes - should not throw exception
+    $this->invoke_protected_method(
+        $this->tool,
+        'format_cli_output',
+        [ [ 'recipes' => [ 'recipe1', 'recipe2' ] ] ]
+    );
+    $this->assertTrue( true );
+}
+
+// After: 3 lines (or inline in a data provider)
+public function testFormatCliOutputWithRecipes(): void {
+    $this->assert_method_does_not_throw( 'format_cli_output', [ [ 'recipes' => [ 'recipe1', 'recipe2' ] ] ] );
+}
+```
+
+**Estimated Savings:** ~10-15 lines
+
+**Trade-offs:**
+- ✅ More explicit about test intent
+- ✅ Removes the awkward `assertTrue(true)`
+- ⚠️ Still smoke tests - could be improved by testing actual output
+- ⚠️ Limited value - only saves 1-2 lines per test
+
+**Recommendation:** LOW PRIORITY. The helper is marginally better, but the real solution is to test actual behavior instead of smoke tests.
+
+---
+
+### Pattern 4: Custom Tool Instance Creation ⭐⭐
+
+**Frequency:** Most tests with custom stub behavior  
+**Current State:** Repeated tool instantiation with custom stubs
+
+```php
+$ingredients = $this->createStub( IngredientRegistry::class );
+$ingredients->method( 'all' )->willReturn( [ 'ing1' => 'Class1', 'ing2' => 'Class2' ] );
+
+$tool = new StatusTool( $this->recipes, $ingredients, $this->executor );
+$result = $this->invoke_protected_method( $tool, 'handle_logic', [ [] ] );
+```
+
+**Analysis:**
+- Mixing two concerns: stub setup + tool instantiation
+- The tool instantiation line is always the same pattern
+- The real variability is in the stub configuration
+
+**Proposed Solution: Don't Extract**
+
+This pattern is actually quite readable and explicit. Extracting it would hide what's being customized.
+
+**Recommendation:** SKIP - Leave as-is for clarity
+
+---
+
+### Pattern 5: Array Assertion Chains ⭐
+
+**Frequency:** Many tests  
+**Current State:** Multiple assertions on array structure
+
+```php
+$this->assertIsArray( $result );
+$this->assertArrayHasKey( 'name', $result );
+$this->assertArrayHasKey( 'category', $result );
+$this->assertArrayHasKey( 'description', $result );
+$this->assertSame( 'test-ingredient', $result['name'] );
+$this->assertSame( 'wordpress', $result['category'] );
+```
+
+**Proposed Solution: Assertion Helper**
+
+```php
+// In ToolTest base class
+protected function assert_array_structure( array $array, array $expected_keys_and_values ): void {
+    $this->assertIsArray( $array );
+    
+    foreach ( $expected_keys_and_values as $key => $expected_value ) {
+        $this->assertArrayHasKey( $key, $array );
+        if ( $expected_value !== null ) {
+            $this->assertSame( $expected_value, $array[ $key ] );
+        }
+    }
+}
+```
+
+**Usage:**
+
+```php
+// Before: 6 lines
+$this->assertIsArray( $result );
+$this->assertArrayHasKey( 'name', $result );
+$this->assertArrayHasKey( 'category', $result );
+$this->assertSame( 'test-ingredient', $result['name'] );
+$this->assertSame( 'wordpress', $result['category'] );
+
+// After: 5 lines (saves only 1 line, but more declarative)
+$this->assert_array_structure( $result, [
+    'name'     => 'test-ingredient',
+    'category' => 'wordpress',
+    'description' => null, // present but not checked
+] );
+```
+
+**Estimated Savings:** ~20 lines, but more about readability
+
+**Trade-offs:**
+- ✅ More declarative - shows expected structure at a glance
+- ✅ Reduces repetitive assertion chains
+- ⚠️ Less granular failure messages
+- ⚠️ Mixing "has key" and "equals value" checks might be confusing
+
+**Recommendation:** MAYBE - Useful for complex result arrays, but might not save much
+
+---
+
+## Summary & Recommendations
+
+### High Value (Implement)
+1. **Config Testing Helpers** ⭐⭐⭐
+   - Clear win: ~60 lines saved
+   - Makes config tests trivial
+   - Low risk of obscuring important details
+
+### Medium Value (Consider)
+2. **Stub Factory Methods** ⭐⭐
+   - Moderate savings: ~40-50 lines
+   - Risk of obscuring test setup
+   - **Decision:** Only if it improves readability significantly
+
+3. **Array Structure Assertions** ⭐
+   - Modest savings: ~20 lines
+   - Better declarative style
+   - **Decision:** Good for complex arrays, overkill for simple ones
+
+### Low Value (Skip)
+4. **Smoke Test Helper** ⭐
+   - Minimal savings: ~10-15 lines
+   - Better to improve tests than wrap them
+   - **Decision:** SKIP - Fix the smoke tests instead
+
+5. **Custom Tool Instance Pattern**
+   - No real benefit to extraction
+   - **Decision:** SKIP - Keep explicit
+
+---
+
+## Phase 2 Implementation Plan
+
+### Option A: Conservative (Recommended)
+**Implement only Pattern 1 (Config Helpers)**
+- Add `assert_rest_config()` and `assert_cli_config()` to ToolTest
+- Update all 12 config tests to use helpers
+- Estimated effort: 30 minutes
+- Estimated savings: ~60 lines
+
+### Option B: Moderate
+**Implement Patterns 1 + 3**
+- Add config helpers + array structure helper
+- Update tests where applicable
+- Estimated effort: 1 hour
+- Estimated savings: ~80 lines
+
+### Option C: Aggressive
+**Implement Patterns 1 + 2 + 3**
+- Add all helpers
+- Refactor tests comprehensively
+- Estimated effort: 2-3 hours
+- Estimated savings: ~120-130 lines
+- Risk: Over-abstraction
+
+---
+
+## Decision Criteria
+
+**Questions to ask:**
+1. Does the helper improve readability, or just reduce lines?
+2. Will future developers understand what's being tested?
+3. Does it hide important test details?
+4. Is the pattern frequent enough to justify abstraction?
+
+**My recommendation:** Start with **Option A** (Config Helpers only). They're a clear win with minimal downside. Evaluate the results before considering further abstraction.
