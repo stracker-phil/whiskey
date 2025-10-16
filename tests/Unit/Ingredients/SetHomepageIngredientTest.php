@@ -42,10 +42,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 	public function testExecuteWithValidStringSlug(): void {
 		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
-			$post     = new WP_Post();
-			$post->ID = 123;
-
-			return $post;
+			return $this->createMockPost( 123 );
 		} );
 		WP_Functions::mock( 'update_option', function () {
 			return true;
@@ -59,11 +56,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 	public function testExecuteWithValidPostId(): void {
 		WP_Functions::mock( 'get_post', function ( $id ) {
-			$post            = new WP_Post();
-			$post->ID        = $id;
-			$post->post_type = 'page';
-
-			return $post;
+			return $this->createMockPost( $id, 'page' );
 		} );
 		WP_Functions::mock( 'update_option', function () {
 			return true;
@@ -99,11 +92,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 
 	public function testExecuteFailsWhenPostIsNotAPage(): void {
 		WP_Functions::mock( 'get_post', function ( $id ) {
-			$post            = new WP_Post();
-			$post->ID        = $id;
-			$post->post_type = 'post'; // Not a page!
-
-			return $post;
+			return $this->createMockPost( $id, 'post' ); // Not a page!
 		} );
 
 		$result = $this->ingredient->execute( 789 );
