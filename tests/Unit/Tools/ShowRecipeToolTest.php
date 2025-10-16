@@ -12,6 +12,7 @@ use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
 use Exception;
+use ReflectionClass;
 
 class ShowRecipeToolTest extends WhiskeyTest {
 	private ShowRecipeTool $tool;
@@ -28,7 +29,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -40,7 +41,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -62,7 +63,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ShowRecipeTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -83,7 +84,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ShowRecipeTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -96,7 +97,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe name is required' );
 
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -112,7 +113,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe not found: nonexistent' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -120,7 +121,7 @@ class ShowRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutput(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 

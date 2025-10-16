@@ -12,6 +12,7 @@ use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
 use Exception;
+use ReflectionClass;
 
 class ShowIngredientToolTest extends WhiskeyTest {
 	private ShowIngredientTool $tool;
@@ -28,7 +29,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -40,7 +41,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -62,7 +63,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$tool = new ShowIngredientTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -88,7 +89,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 
 		$tool = new ShowIngredientTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -101,7 +102,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Ingredient name is required' );
 
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -117,7 +118,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Ingredient not found: nonexistent' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -125,7 +126,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testExtractCliArgsIncludesFormatParameter(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'extract_cli_args' );
 		$method->setAccessible( true );
 
@@ -140,7 +141,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testExtractCliArgsDefaultsToTableFormat(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'extract_cli_args' );
 		$method->setAccessible( true );
 
@@ -155,7 +156,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithTableFormat(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -174,7 +175,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithJsonFormat(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -193,7 +194,7 @@ class ShowIngredientToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithYamlFormat(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 

@@ -13,6 +13,7 @@ use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
 use Whiskey\ExecutionResult;
 use Exception;
+use ReflectionClass;
 
 class ApplyRecipeToolTest extends WhiskeyTest {
 	private ApplyRecipeTool $tool;
@@ -29,7 +30,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -42,7 +43,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -57,7 +58,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe name is required' );
 
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -73,7 +74,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe not found: nonexistent' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -94,7 +95,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Invalid recipe configuration' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -112,7 +113,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -143,7 +144,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -172,7 +173,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe execution failed: Ingredient failed' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -193,7 +194,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -203,7 +204,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatRestSuccessReturnsCustomFormat(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
@@ -226,7 +227,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatRestSuccessHandlesMissingOptionalFields(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
@@ -241,7 +242,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithDryRunMode(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -259,7 +260,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithSuccessfulExecution(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -287,7 +288,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatIngredientDataWithSimpleList(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_ingredient_data' );
 		$method->setAccessible( true );
 
@@ -303,7 +304,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatIngredientDataWithNestedStructure(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_ingredient_data' );
 		$method->setAccessible( true );
 
@@ -321,7 +322,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testIsSimpleListReturnsTrueForEmptyArray(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
@@ -331,7 +332,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testIsSimpleListReturnsTrueForScalarArray(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
@@ -341,7 +342,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testIsSimpleListReturnsFalseForAssociativeArray(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
@@ -351,7 +352,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testIsSimpleListReturnsFalseForNestedArray(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 
@@ -361,7 +362,7 @@ class ApplyRecipeToolTest extends WhiskeyTest {
 	}
 
 	public function testIsSimpleListReturnsFalseForObjectInArray(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'is_simple_list' );
 		$method->setAccessible( true );
 

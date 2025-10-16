@@ -8,12 +8,10 @@ namespace Whiskey\Tests\Unit\Tools;
 
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Tools\WhiskeyTool;
-use Whiskey\Registry\RecipeRegistry;
-use Whiskey\Registry\IngredientRegistry;
-use Whiskey\RecipeExecutor;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use ReflectionClass;
 
 class WhiskeyToolTest extends WhiskeyTest {
 
@@ -82,7 +80,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 		$request = $this->createStub( WP_REST_Request::class );
 		$request->method( 'get_params' )->willReturn( array( 'key' => 'value' ) );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'extract_rest_args' );
 		$method->setAccessible( true );
 
@@ -97,7 +95,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			array( 'command' => 'test', 'synopsis' => 'Test' )
 		);
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'extract_cli_args' );
 		$method->setAccessible( true );
 
@@ -116,7 +114,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			array( 'command' => 'test', 'synopsis' => 'Test' )
 		);
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_rest_success' );
 		$method->setAccessible( true );
 
@@ -136,7 +134,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			array( 'command' => 'test', 'synopsis' => 'Test' )
 		);
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_rest_error' );
 		$method->setAccessible( true );
 
@@ -158,7 +156,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 		$exception = new Exception( 'Recipe not found: test' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'get_http_code' );
 		$method->setAccessible( true );
 
@@ -175,7 +173,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 
 		$exception = new Exception( 'Invalid input' );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'get_http_code' );
 		$method->setAccessible( true );
 
@@ -210,7 +208,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			array( 'command' => 'test', 'synopsis' => 'Test' )
 		);
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -227,7 +225,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 			array( 'command' => 'test', 'synopsis' => 'Test' )
 		);
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -329,7 +327,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 	// Helper methods
 
 	private function createTestTool( ?array $rest_config, ?array $cli_config ): WhiskeyTool {
-		return new class($rest_config, $cli_config) extends WhiskeyTool {
+		return new class( $rest_config, $cli_config ) extends WhiskeyTool {
 			private ?array $rest_config;
 			private ?array $cli_config;
 
@@ -354,7 +352,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 	}
 
 	private function createTestToolWithLogic( array $return_data ): WhiskeyTool {
-		return new class($return_data) extends WhiskeyTool {
+		return new class( $return_data ) extends WhiskeyTool {
 			private array $return_data;
 
 			public function __construct( array $return_data ) {
@@ -376,7 +374,7 @@ class WhiskeyToolTest extends WhiskeyTest {
 	}
 
 	private function createTestToolWithException( string $message ): WhiskeyTool {
-		return new class($message) extends WhiskeyTool {
+		return new class( $message ) extends WhiskeyTool {
 			private string $message;
 
 			public function __construct( string $message ) {

@@ -11,6 +11,7 @@ use Whiskey\Tools\ListIngredientsTool;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
+use ReflectionClass;
 
 class ListIngredientsToolTest extends WhiskeyTest {
 	private ListIngredientsTool $tool;
@@ -27,7 +28,7 @@ class ListIngredientsToolTest extends WhiskeyTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -39,7 +40,7 @@ class ListIngredientsToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -62,7 +63,7 @@ class ListIngredientsToolTest extends WhiskeyTest {
 
 		$tool = new ListIngredientsTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -70,7 +71,11 @@ class ListIngredientsToolTest extends WhiskeyTest {
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'ingredients', $result );
-		$this->assertSame( array( 'ingredient1', 'ingredient2', 'ingredient3' ), $result['ingredients'] );
+		$this->assertSame( array(
+			'ingredient1',
+			'ingredient2',
+			'ingredient3',
+		), $result['ingredients'] );
 	}
 
 	public function testHandleLogicReturnsEmptyArrayWhenNoIngredients(): void {
@@ -79,7 +84,7 @@ class ListIngredientsToolTest extends WhiskeyTest {
 
 		$tool = new ListIngredientsTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -91,18 +96,23 @@ class ListIngredientsToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithIngredients(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
 		// Test with ingredients - should not throw exception
-		$method->invoke( $this->tool, array( 'ingredients' => array( 'ingredient1', 'ingredient2' ) ) );
+		$method->invoke( $this->tool, array(
+			'ingredients' => array(
+				'ingredient1',
+				'ingredient2',
+			),
+		) );
 
 		$this->assertTrue( true );
 	}
 
 	public function testFormatCliOutputWithEmptyIngredients(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 

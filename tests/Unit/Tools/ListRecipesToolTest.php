@@ -11,6 +11,7 @@ use Whiskey\Tools\ListRecipesTool;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
+use ReflectionClass;
 
 class ListRecipesToolTest extends WhiskeyTest {
 	private ListRecipesTool $tool;
@@ -27,7 +28,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -39,7 +40,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -62,7 +63,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 
 		$tool = new ListRecipesTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -79,7 +80,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 
 		$tool = new ListRecipesTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -91,7 +92,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithRecipes(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 
@@ -102,7 +103,7 @@ class ListRecipesToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutputWithEmptyRecipes(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 

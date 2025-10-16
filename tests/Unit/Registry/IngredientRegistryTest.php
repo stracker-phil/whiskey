@@ -35,7 +35,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 	public function testInitOnlyRunsOnce(): void {
 		$callCount = 0;
 		add_action( 'whiskey:register_ingredient', function () use ( &$callCount ) {
-			$callCount++;
+			$callCount ++;
 		} );
 
 		$this->registry->init();

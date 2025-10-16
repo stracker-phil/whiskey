@@ -13,7 +13,7 @@ use Whiskey\Tools\WhiskeyTool;
 class CliControllerTest extends WhiskeyTest {
 
 	public function testConstructorCreatesInstance(): void {
-		$tool = $this->createStub( WhiskeyTool::class );
+		$tool       = $this->createStub( WhiskeyTool::class );
 		$controller = new CliController( array( $tool ) );
 
 		$this->assertInstanceOf( CliController::class, $controller );

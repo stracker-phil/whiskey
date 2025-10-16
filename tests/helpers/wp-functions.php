@@ -103,11 +103,13 @@ function get_post( int $id ) {
 
 function update_option( string $option, $value ): bool {
 	$result = WP_Functions::call( 'update_option', $option, $value );
+
 	return $result !== null ? $result : true;
 }
 
 function get_option( string $option, $default = false ) {
 	$result = WP_Functions::call( 'get_option', $option, $default );
+
 	return $result !== null ? $result : $default;
 }
 
@@ -117,11 +119,13 @@ function flush_rewrite_rules(): void {
 
 function wp_insert_post( array $data, bool $wp_error = false ) {
 	$result = WP_Functions::call( 'wp_insert_post', $data, $wp_error );
+
 	return $result !== null ? $result : 0;
 }
 
 function update_post_meta( int $post_id, string $key, $value ): bool {
 	$result = WP_Functions::call( 'update_post_meta', $post_id, $key, $value );
+
 	return $result !== null ? $result : true;
 }
 
@@ -135,6 +139,7 @@ function wp_get_nav_menu_object( string $menu ) {
 
 function wp_create_nav_menu( string $name ) {
 	$result = WP_Functions::call( 'wp_create_nav_menu', $name );
+
 	return $result !== null ? $result : 0;
 }
 
@@ -144,16 +149,19 @@ function wp_get_nav_menu_items( int $menu_id ) {
 
 function wp_delete_post( int $post_id, bool $force_delete = false ): bool {
 	$result = WP_Functions::call( 'wp_delete_post', $post_id, $force_delete );
+
 	return $result !== null ? $result : true;
 }
 
 function wp_update_nav_menu_item( int $menu_id, int $menu_item_db_id, array $menu_item_data ) {
 	$result = WP_Functions::call( 'wp_update_nav_menu_item', $menu_id, $menu_item_db_id, $menu_item_data );
+
 	return $result !== null ? $result : 0;
 }
 
 function get_theme_mod( string $name, $default = false ) {
 	$result = WP_Functions::call( 'get_theme_mod', $name, $default );
+
 	return $result !== null ? $result : $default;
 }
 

@@ -11,6 +11,7 @@ use Whiskey\Tools\StatusTool;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\RecipeExecutor;
+use ReflectionClass;
 
 class StatusToolTest extends WhiskeyTest {
 	private StatusTool $tool;
@@ -20,14 +21,14 @@ class StatusToolTest extends WhiskeyTest {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->recipes     = $this->createStub( RecipeRegistry::class );
+		$this->recipes = $this->createStub( RecipeRegistry::class );
 		$this->ingredients = $this->createStub( IngredientRegistry::class );
-		$this->executor    = $this->createStub( RecipeExecutor::class );
-		$this->tool        = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
+		$this->executor = $this->createStub( RecipeExecutor::class );
+		$this->tool = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_rest_config' );
 		$method->setAccessible( true );
 
@@ -39,7 +40,7 @@ class StatusToolTest extends WhiskeyTest {
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'get_cli_config' );
 		$method->setAccessible( true );
 
@@ -51,7 +52,7 @@ class StatusToolTest extends WhiskeyTest {
 	}
 
 	public function testHandleLogicReturnsPhpVersion(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -64,11 +65,14 @@ class StatusToolTest extends WhiskeyTest {
 
 	public function testHandleLogicReturnsRecipeCount(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
-		$recipes->method( 'all' )->willReturn( array( 'recipe1' => array(), 'recipe2' => array() ) );
+		$recipes->method( 'all' )->willReturn( array(
+			'recipe1' => array(),
+			'recipe2' => array(),
+		) );
 
 		$tool = new StatusTool( $recipes, $this->ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -80,11 +84,15 @@ class StatusToolTest extends WhiskeyTest {
 
 	public function testHandleLogicReturnsIngredientCount(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
-		$ingredients->method( 'all' )->willReturn( array( 'ing1' => 'Class1', 'ing2' => 'Class2', 'ing3' => 'Class3' ) );
+		$ingredients->method( 'all' )->willReturn( array(
+			'ing1' => 'Class1',
+			'ing2' => 'Class2',
+			'ing3' => 'Class3',
+		) );
 
 		$tool = new StatusTool( $this->recipes, $ingredients, $this->executor );
 
-		$reflection = new \ReflectionClass( $tool );
+		$reflection = new ReflectionClass( $tool );
 		$method     = $reflection->getMethod( 'handle_logic' );
 		$method->setAccessible( true );
 
@@ -95,7 +103,7 @@ class StatusToolTest extends WhiskeyTest {
 	}
 
 	public function testFormatCliOutput(): void {
-		$reflection = new \ReflectionClass( $this->tool );
+		$reflection = new ReflectionClass( $this->tool );
 		$method     = $reflection->getMethod( 'format_cli_output' );
 		$method->setAccessible( true );
 

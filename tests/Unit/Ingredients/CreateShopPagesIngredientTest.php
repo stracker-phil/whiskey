@@ -9,6 +9,7 @@ namespace Whiskey\Tests\Unit\Ingredients;
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\CreateShopPagesIngredient;
 use WP_Post;
+use WP_Functions;
 
 class CreateShopPagesIngredientTest extends WhiskeyTest {
 	private CreateShopPagesIngredient $ingredient;
@@ -43,13 +44,13 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteCreatesNewPage(): void {
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null; // Page doesn't exist
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function ( $data ) {
+		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
 			return 123; // New post ID
 		} );
-		\WP_Functions::mock( 'update_post_meta', function () {
+		WP_Functions::mock( 'update_post_meta', function () {
 			return true;
 		} );
 
@@ -79,13 +80,13 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 		$existing_page     = new WP_Post();
 		$existing_page->ID = 456;
 
-		\WP_Functions::mock( 'get_page_by_path', function () use ( $existing_page ) {
+		WP_Functions::mock( 'get_page_by_path', function () use ( $existing_page ) {
 			return $existing_page;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function ( $data ) {
+		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
 			return $data['ID']; // Return the ID from update
 		} );
-		\WP_Functions::mock( 'update_post_meta', function () {
+		WP_Functions::mock( 'update_post_meta', function () {
 			return true;
 		} );
 
@@ -121,10 +122,10 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteHandlesWpInsertPostFailure(): void {
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function () {
+		WP_Functions::mock( 'wp_insert_post', function () {
 			return 0; // Failure
 		} );
 
@@ -150,15 +151,15 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteProcessesMultiplePages(): void {
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function ( $data ) {
+		WP_Functions::mock( 'wp_insert_post', function ( $data ) {
 			static $id = 100;
 
-			return ++$id;
+			return ++ $id;
 		} );
-		\WP_Functions::mock( 'update_post_meta', function () {
+		WP_Functions::mock( 'update_post_meta', function () {
 			return true;
 		} );
 
@@ -191,13 +192,13 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 
 	public function testExecuteHandlesPostMetaInTemplate(): void {
 		$meta_calls = array();
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function () {
+		WP_Functions::mock( 'wp_insert_post', function () {
 			return 123;
 		} );
-		\WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
+		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
 			$meta_calls[] = array( $post_id, $key, $value );
 
 			return true;
@@ -275,15 +276,15 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 
 	public function testExecuteAppliesDefaultPostTypeWhenNotSpecified(): void {
 		$captured_post_data = null;
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function ( $data ) use ( &$captured_post_data ) {
+		WP_Functions::mock( 'wp_insert_post', function ( $data ) use ( &$captured_post_data ) {
 			$captured_post_data = $data;
 
 			return 123;
 		} );
-		\WP_Functions::mock( 'update_post_meta', function () {
+		WP_Functions::mock( 'update_post_meta', function () {
 			return true;
 		} );
 
@@ -310,13 +311,13 @@ class CreateShopPagesIngredientTest extends WhiskeyTest {
 
 	public function testExecuteAppliesDefaultPostMetaWhenNotSpecified(): void {
 		$meta_calls = array();
-		\WP_Functions::mock( 'get_page_by_path', function () {
+		WP_Functions::mock( 'get_page_by_path', function () {
 			return null;
 		} );
-		\WP_Functions::mock( 'wp_insert_post', function () {
+		WP_Functions::mock( 'wp_insert_post', function () {
 			return 123;
 		} );
-		\WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
+		WP_Functions::mock( 'update_post_meta', function ( $post_id, $key, $value ) use ( &$meta_calls ) {
 			$meta_calls[] = array( $post_id, $key, $value );
 
 			return true;

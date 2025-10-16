@@ -33,7 +33,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 	public function testInitOnlyRunsOnce(): void {
 		$callCount = 0;
 		add_action( 'whiskey:register_recipe', function () use ( &$callCount ) {
-			$callCount++;
+			$callCount ++;
 		} );
 
 		$this->registry->init();

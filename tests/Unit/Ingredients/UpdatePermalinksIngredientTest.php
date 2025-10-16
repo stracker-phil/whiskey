@@ -8,6 +8,7 @@ namespace Whiskey\Tests\Unit\Ingredients;
 
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\UpdatePermalinksIngredient;
+use WP_Functions;
 
 class UpdatePermalinksIngredientTest extends WhiskeyTest {
 	private UpdatePermalinksIngredient $ingredient;
@@ -38,19 +39,16 @@ class UpdatePermalinksIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteUpdatesPermalinkStructure(): void {
-		global $wp_functions_mock;
 		$flush_called = false;
-		$wp_functions_mock = array(
-			'get_option'           => function ( $option ) {
-				return ''; // Previous structure
-			},
-			'update_option'        => function ( $option, $value ) {
-				return true;
-			},
-			'flush_rewrite_rules'  => function () use ( &$flush_called ) {
-				$flush_called = true;
-			},
-		);
+		WP_Functions::mock( 'get_option', function ( $option ) {
+			return ''; // Previous structure
+		} );
+		WP_Functions::mock( 'update_option', function ( $option, $value ) {
+			return true;
+		} );
+		WP_Functions::mock( 'flush_rewrite_rules', function () use ( &$flush_called ) {
+			$flush_called = true;
+		} );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
@@ -60,17 +58,14 @@ class UpdatePermalinksIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteReturnsDataWithPreviousAndCurrentStructure(): void {
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_option'           => function ( $option ) {
-				return '/old-structure/';
-			},
-			'update_option'        => function ( $option, $value ) {
-				return true;
-			},
-			'flush_rewrite_rules'  => function () {
-			},
-		);
+		WP_Functions::mock( 'get_option', function ( $option ) {
+			return '/old-structure/';
+		} );
+		WP_Functions::mock( 'update_option', function ( $option, $value ) {
+			return true;
+		} );
+		WP_Functions::mock( 'flush_rewrite_rules', function () {
+		} );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
@@ -81,17 +76,14 @@ class UpdatePermalinksIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteHandlesFailedUpdate(): void {
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_option'           => function ( $option ) {
-				return '/different/';
-			},
-			'update_option'        => function ( $option, $value ) {
-				return false; // Update failed
-			},
-			'flush_rewrite_rules'  => function () {
-			},
-		);
+		WP_Functions::mock( 'get_option', function ( $option ) {
+			return '/different/';
+		} );
+		WP_Functions::mock( 'update_option', function ( $option, $value ) {
+			return false; // Update failed
+		} );
+		WP_Functions::mock( 'flush_rewrite_rules', function () {
+		} );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 
@@ -100,17 +92,14 @@ class UpdatePermalinksIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteSucceedsWhenStructureUnchanged(): void {
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_option'           => function ( $option ) {
-				return '/%postname%/';
-			},
-			'update_option'        => function ( $option, $value ) {
-				return false; // No update needed - already same
-			},
-			'flush_rewrite_rules'  => function () {
-			},
-		);
+		WP_Functions::mock( 'get_option', function ( $option ) {
+			return '/%postname%/';
+		} );
+		WP_Functions::mock( 'update_option', function ( $option, $value ) {
+			return false; // No update needed - already same
+		} );
+		WP_Functions::mock( 'flush_rewrite_rules', function () {
+		} );
 
 		$result = $this->ingredient->execute( '/%postname%/' );
 

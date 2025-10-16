@@ -9,6 +9,7 @@ namespace Whiskey\Tests\Unit\Ingredients;
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Ingredients\SetHomepageIngredient;
 use WP_Post;
+use WP_Functions;
 
 class SetHomepageIngredientTest extends WhiskeyTest {
 	private SetHomepageIngredient $ingredient;
@@ -39,19 +40,15 @@ class SetHomepageIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteWithValidStringSlug(): void {
-		// Mock WordPress functions
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_page_by_path' => function ( $slug ) {
-				$post     = new WP_Post();
-				$post->ID = 123;
+		WP_Functions::mock( 'get_page_by_path', function ( $slug ) {
+			$post     = new WP_Post();
+			$post->ID = 123;
 
-				return $post;
-			},
-			'update_option'    => function () {
-				return true;
-			},
-		);
+			return $post;
+		} );
+		WP_Functions::mock( 'update_option', function () {
+			return true;
+		} );
 
 		$result = $this->ingredient->execute( 'home' );
 
@@ -60,20 +57,16 @@ class SetHomepageIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteWithValidPostId(): void {
-		// Mock WordPress functions
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_post'       => function ( $id ) {
-				$post            = new WP_Post();
-				$post->ID        = $id;
-				$post->post_type = 'page';
+		WP_Functions::mock( 'get_post', function ( $id ) {
+			$post            = new WP_Post();
+			$post->ID        = $id;
+			$post->post_type = 'page';
 
-				return $post;
-			},
-			'update_option'  => function () {
-				return true;
-			},
-		);
+			return $post;
+		} );
+		WP_Functions::mock( 'update_option', function () {
+			return true;
+		} );
 
 		$result = $this->ingredient->execute( 456 );
 
@@ -82,13 +75,9 @@ class SetHomepageIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteFailsWithInvalidSlug(): void {
-		// Mock WordPress functions
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_page_by_path' => function () {
-				return null;
-			},
-		);
+		WP_Functions::mock( 'get_page_by_path', function () {
+			return null;
+		} );
 
 		$result = $this->ingredient->execute( 'nonexistent' );
 
@@ -97,13 +86,9 @@ class SetHomepageIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteFailsWithInvalidPostId(): void {
-		// Mock WordPress functions
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_post' => function () {
-				return null;
-			},
-		);
+		WP_Functions::mock( 'get_post', function () {
+			return null;
+		} );
 
 		$result = $this->ingredient->execute( 999 );
 
@@ -112,17 +97,13 @@ class SetHomepageIngredientTest extends WhiskeyTest {
 	}
 
 	public function testExecuteFailsWhenPostIsNotAPage(): void {
-		// Mock WordPress functions
-		global $wp_functions_mock;
-		$wp_functions_mock = array(
-			'get_post' => function ( $id ) {
-				$post            = new WP_Post();
-				$post->ID        = $id;
-				$post->post_type = 'post'; // Not a page!
+		WP_Functions::mock( 'get_post', function ( $id ) {
+			$post            = new WP_Post();
+			$post->ID        = $id;
+			$post->post_type = 'post'; // Not a page!
 
-				return $post;
-			},
-		);
+			return $post;
+		} );
 
 		$result = $this->ingredient->execute( 789 );
 

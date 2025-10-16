@@ -13,7 +13,7 @@ use Whiskey\Tools\WhiskeyTool;
 class RestControllerTest extends WhiskeyTest {
 
 	public function testConstructorCreatesInstance(): void {
-		$tool = $this->createStub( WhiskeyTool::class );
+		$tool       = $this->createStub( WhiskeyTool::class );
 		$controller = new RestController( array( $tool ) );
 
 		$this->assertInstanceOf( RestController::class, $controller );
@@ -42,7 +42,7 @@ class RestControllerTest extends WhiskeyTest {
 	}
 
 	public function testRegisterRoutesPassesPermissionCallback(): void {
-		$tool = $this->createMock( WhiskeyTool::class );
+		$tool       = $this->createMock( WhiskeyTool::class );
 		$controller = new RestController( array( $tool ) );
 
 		$capturedCallback = null;
