@@ -13,15 +13,7 @@ echo "📊 Collecting metrics for branch: $BRANCH"
 # 1. Count ingredients
 INGREDIENT_COUNT=$(find src/Ingredients -name "*Ingredient.php" -not -name "Ingredient.php" | wc -l | tr -d ' ')
 
-# 2. PHPLoc - Lines of code and structure metrics
-echo "   → Running phploc..."
-if [ -f "vendor/bin/phploc" ]; then
-    vendor/bin/phploc --log-json="$OUTPUT_DIR/phploc.json" src/ > "$OUTPUT_DIR/phploc.txt" 2>&1
-else
-    echo "   ⚠️  phploc not installed"
-fi
-
-# 3. PHPMetrics - Complexity analysis
+# 2. PHPMetrics - Complexity and structure analysis
 echo "   → Running phpmetrics..."
 if [ -f "vendor/bin/phpmetrics" ]; then
     vendor/bin/phpmetrics --report-html="$OUTPUT_DIR/phpmetrics-report" --report-json="$OUTPUT_DIR/phpmetrics.json" src/ > /dev/null 2>&1
@@ -29,7 +21,7 @@ else
     echo "   ⚠️  phpmetrics not installed"
 fi
 
-# 4. Test coverage
+# 3. Test coverage
 echo "   → Running test coverage..."
 if [ -f "vendor/bin/phpunit" ]; then
     XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html="$OUTPUT_DIR/coverage/" --coverage-text --coverage-clover="$OUTPUT_DIR/coverage.xml" > "$OUTPUT_DIR/test-output.txt" 2>&1 || true
@@ -37,25 +29,26 @@ else
     echo "   ⚠️  PHPUnit not installed"
 fi
 
-# 5. Extract key metrics
+# 4. Extract key metrics
 echo "   → Extracting key metrics..."
 
-# Parse PHPMetrics JSON for complexity
-AVG_COMPLEXITY="N/A"
 if [ -f "$OUTPUT_DIR/phpmetrics.json" ] && command -v jq &> /dev/null; then
+    # Complexity
     AVG_COMPLEXITY=$(jq '[.[] | select(.ccn != null) | .ccn] | add / length' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null | xargs printf "%.2f" 2>/dev/null || echo "N/A")
-fi
 
-# Parse PHPLoc JSON for LOC
-TOTAL_LOC="N/A"
-LLOC="N/A"
-CLASSES="N/A"
-METHODS="N/A"
-if [ -f "$OUTPUT_DIR/phploc.json" ] && command -v jq &> /dev/null; then
-    TOTAL_LOC=$(jq -r '.ncloc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
-    LLOC=$(jq -r '.lloc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
-    CLASSES=$(jq -r '.classes' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
-    METHODS=$(jq -r '.methods' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+    # Lines of code (sum across all files)
+    TOTAL_LOC=$(jq '[.[] | select(.loc != null) | .loc] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+    LLOC=$(jq '[.[] | select(.lloc != null) | .lloc] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+
+    # Count classes and methods
+    CLASSES=$(jq '[.[] | select(.nbClasses != null) | .nbClasses] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+    METHODS=$(jq '[.[] | select(.nbMethods != null) | .nbMethods] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+else
+    AVG_COMPLEXITY="N/A"
+    TOTAL_LOC="N/A"
+    LLOC="N/A"
+    CLASSES="N/A"
+    METHODS="N/A"
 fi
 
 # Parse coverage from test output
@@ -64,7 +57,7 @@ if [ -f "$OUTPUT_DIR/test-output.txt" ]; then
     COVERAGE_PCT=$(grep -A 3 "Lines:" "$OUTPUT_DIR/test-output.txt" | grep -oP '\d+\.\d+%' | head -1 || echo "N/A")
 fi
 
-# 6. Create HTML summary
+# 5. Create HTML summary
 echo "   → Generating index.html..."
 cat > "$OUTPUT_DIR/index.html" << HTMLEOF
 <!DOCTYPE html>
@@ -205,7 +198,6 @@ cat > "$OUTPUT_DIR/index.html" << HTMLEOF
         <h2>Detailed Reports</h2>
         <a href="./phpmetrics-report/index.html" class="report-link">Complexity Analysis</a>
         <a href="./coverage/index.html" class="report-link">Test Coverage</a>
-        <a href="./phploc.txt" class="report-link">PHPLoc Details</a>
     </div>
 </body>
 </html>
