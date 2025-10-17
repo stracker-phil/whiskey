@@ -17,7 +17,7 @@ class SetActiveThemeIngredient extends Ingredient {
 	public const DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
 
 	public function validate( $value ): bool {
-		return is_string( $value );
+		return is_string( $value ) && $value !== '';
 	}
 
 	public function execute( $value ): ExecutionResult {
