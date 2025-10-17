@@ -18,19 +18,11 @@ class ListRecipesToolTest extends ToolTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'GET', $config['method'] );
-		$this->assertSame( '/recipes', $config['path'] );
+		$this->assert_rest_config( 'GET', '/recipes' );
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'whiskey recipes', $config['command'] );
-		$this->assertStringContainsString( 'recipes', $config['synopsis'] );
+		$this->assert_cli_config( 'whiskey recipes', 'recipes' );
 	}
 
 	public function testHandleLogicReturnsRecipeList(): void {
