@@ -16,15 +16,15 @@ class StatusToolTest extends ToolTest {
 		$this->tool = new StatusTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
-	public function testGetRestConfigReturnsConfiguration(): void {
-		$this->assert_rest_config( 'GET', '/status' );
+	public function test_get_rest_config_returns_configuration(): void {
+		$this->assertRestConfig( 'GET', '/status' );
 	}
 
-	public function testGetCliConfigReturnsConfiguration(): void {
-		$this->assert_cli_config( 'whiskey status', 'status' );
+	public function test_get_cli_config_returns_configuration(): void {
+		$this->assertCliConfig( 'whiskey status', 'status' );
 	}
 
-	public function testHandleLogicReturnsPhpVersion(): void {
+	public function test_handle_logic_returns_php_version(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 
 		$this->assertIsArray( $result );
@@ -32,7 +32,7 @@ class StatusToolTest extends ToolTest {
 		$this->assertSame( PHP_VERSION, $result['php_version'] );
 	}
 
-	public function testHandleLogicReturnsRecipeCount(): void {
+	public function test_handle_logic_returns_recipe_count(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'all' )->willReturn( [
 			'recipe1' => [],
@@ -47,7 +47,7 @@ class StatusToolTest extends ToolTest {
 		$this->assertSame( 2, $result['recipes'] );
 	}
 
-	public function testHandleLogicReturnsIngredientCount(): void {
+	public function test_handle_logic_returns_ingredient_count(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'all' )->willReturn( [
 			'ing1' => 'Class1',
@@ -63,7 +63,7 @@ class StatusToolTest extends ToolTest {
 		$this->assertSame( 3, $result['ingredients'] );
 	}
 
-	public function testFormatCliOutput(): void {
+	public function test_format_cli_output(): void {
 		// Test with data - should not throw exception
 		$this->invoke_protected_method(
 			$this->tool,

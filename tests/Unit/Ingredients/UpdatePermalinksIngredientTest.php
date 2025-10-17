@@ -23,23 +23,23 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		return 'wordpress';
 	}
 
-	public function testValidateAcceptsString(): void {
+	public function test_validate_accepts_string(): void {
 		$this->assertTrue( $this->ingredient->validate( '/%postname%/' ) );
 	}
 
-	public function testValidateAcceptsEmptyString(): void {
+	public function test_validate_accepts_empty_string(): void {
 		$this->assertTrue( $this->ingredient->validate( '' ) );
 	}
 
-	public function testValidateRejectsInteger(): void {
+	public function test_validate_rejects_integer(): void {
 		$this->assertFalse( $this->ingredient->validate( 123 ) );
 	}
 
-	public function testValidateRejectsArray(): void {
+	public function test_validate_rejects_array(): void {
 		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] ) );
 	}
 
-	public function testExecuteUpdatesPermalinkStructure(): void {
+	public function test_execute_updates_permalink_structure(): void {
 		$flush_called = false;
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', true );
@@ -54,7 +54,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		$this->assertStringContainsString( 'updated', $result->get_message() );
 	}
 
-	public function testExecuteReturnsDataWithPreviousAndCurrentStructure(): void {
+	public function test_execute_returns_data_with_previous_and_current_structure(): void {
 		WP_Functions::mock( 'get_option', '/old-structure/' );
 		WP_Functions::mock( 'update_option', true );
 		WP_Functions::mock( 'flush_rewrite_rules' );
@@ -67,7 +67,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		$this->assertSame( '/%postname%/', $data['current'] );
 	}
 
-	public function testExecuteHandlesFailedUpdate(): void {
+	public function test_execute_handles_failed_update(): void {
 		WP_Functions::mock( 'get_option', '/different/' );
 		WP_Functions::mock( 'update_option', false );
 		WP_Functions::mock( 'flush_rewrite_rules' );
@@ -77,7 +77,7 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		$this->assertExecutionFailure( $result, 'Failed' );
 	}
 
-	public function testExecuteSucceedsWhenStructureUnchanged(): void {
+	public function test_execute_succeeds_when_structure_unchanged(): void {
 		WP_Functions::mock( 'get_option', '/%postname%/' );
 		WP_Functions::mock( 'update_option', false );
 		WP_Functions::mock( 'flush_rewrite_rules' );

@@ -15,15 +15,15 @@ class ListIngredientsToolTest extends ToolTest {
 		$this->tool = new ListIngredientsTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
-	public function testGetRestConfigReturnsConfiguration(): void {
-		$this->assert_rest_config( 'GET', '/ingredients' );
+	public function test_get_rest_config_returns_configuration(): void {
+		$this->assertRestConfig( 'GET', '/ingredients' );
 	}
 
-	public function testGetCliConfigReturnsConfiguration(): void {
-		$this->assert_cli_config( 'whiskey ingredients', 'ingredients' );
+	public function test_get_cli_config_returns_configuration(): void {
+		$this->assertCliConfig( 'whiskey ingredients', 'ingredients' );
 	}
 
-	public function testHandleLogicReturnsIngredientList(): void {
+	public function test_handle_logic_returns_ingredient_list(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'all' )->willReturn(
 			[
@@ -46,7 +46,7 @@ class ListIngredientsToolTest extends ToolTest {
 		], $result['ingredients'] );
 	}
 
-	public function testHandleLogicReturnsEmptyArrayWhenNoIngredients(): void {
+	public function test_handle_logic_returns_empty_array_when_no_ingredients(): void {
 		$ingredients = $this->createStub( IngredientRegistry::class );
 		$ingredients->method( 'all' )->willReturn( [] );
 
@@ -59,7 +59,7 @@ class ListIngredientsToolTest extends ToolTest {
 		$this->assertSame( [], $result['ingredients'] );
 	}
 
-	public function testFormatCliOutputWithIngredients(): void {
+	public function test_format_cli_output_with_ingredients(): void {
 		// Test with ingredients - should not throw exception
 		$this->invoke_protected_method(
 			$this->tool,
@@ -77,7 +77,7 @@ class ListIngredientsToolTest extends ToolTest {
 		$this->assertTrue( true );
 	}
 
-	public function testFormatCliOutputWithEmptyIngredients(): void {
+	public function test_format_cli_output_with_empty_ingredients(): void {
 		// Test with empty ingredients - should not throw exception
 		$this->invoke_protected_method(
 			$this->tool,

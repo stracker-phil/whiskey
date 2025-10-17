@@ -23,13 +23,13 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->executor    = new RecipeExecutor( $this->ingredients );
 	}
 
-	public function testValidateReturnsFalseForEmptyConfig(): void {
+	public function test_validate_returns_false_for_empty_config(): void {
 		$result = $this->executor->validate( [] );
 
 		$this->assertFalse( $result );
 	}
 
-	public function testValidateReturnsTrueForValidConfig(): void {
+	public function test_validate_returns_true_for_valid_config(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
@@ -46,7 +46,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertTrue( $result );
 	}
 
-	public function testValidateSkipsUnknownIngredients(): void {
+	public function test_validate_skips_unknown_ingredients(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
@@ -72,7 +72,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertTrue( $result );
 	}
 
-	public function testValidateReturnsFalseWhenIngredientValidationFails(): void {
+	public function test_validate_returns_false_when_ingredient_validation_fails(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
@@ -89,7 +89,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertFalse( $result );
 	}
 
-	public function testValidateReturnsTrueWhenOnlyUnknownIngredientsPresent(): void {
+	public function test_validate_returns_true_when_only_unknown_ingredients_present(): void {
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
 			->willReturnMap(
@@ -109,7 +109,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertTrue( $result );
 	}
 
-	public function testExecuteSkipsUnknownIngredients(): void {
+	public function test_execute_skips_unknown_ingredients(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )
@@ -138,7 +138,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertArrayNotHasKey( 'unknown', $data );
 	}
 
-	public function testExecuteCollectsAllIngredientResults(): void {
+	public function test_execute_collects_all_ingredient_results(): void {
 		$ingredient1 = $this->createMock( Ingredient::class );
 		$ingredient1->expects( $this->once() )
 			->method( 'execute' )
@@ -174,7 +174,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertArrayHasKey( 'ingredient2', $data );
 	}
 
-	public function testExecuteReturnsSuccessResult(): void {
+	public function test_execute_returns_success_result(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )
@@ -190,7 +190,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertSame( 'Recipe executed successfully', $result->get_message() );
 	}
 
-	public function testExecuteStoresResultsAsArrays(): void {
+	public function test_execute_stores_results_as_arrays(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
 			->method( 'execute' )

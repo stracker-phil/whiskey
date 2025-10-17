@@ -18,22 +18,22 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->tool = new ApplyRecipeTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
-	public function testGetRestConfigReturnsConfiguration(): void {
-		$this->assert_rest_config( 'POST', '/recipe/' );
+	public function test_get_rest_config_returns_configuration(): void {
+		$this->assertRestConfig( 'POST', '/recipe/' );
 	}
 
-	public function testGetCliConfigReturnsConfiguration(): void {
-		$this->assert_cli_config( 'whiskey apply', 'recipe' );
+	public function test_get_cli_config_returns_configuration(): void {
+		$this->assertCliConfig( 'whiskey apply', 'recipe' );
 	}
 
-	public function testHandleLogicThrowsExceptionWhenNameMissing(): void {
+	public function test_handle_logic_throws_exception_when_name_missing(): void {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe name is required' );
 
 		$this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 	}
 
-	public function testHandleLogicThrowsExceptionWhenRecipeNotFound(): void {
+	public function test_handle_logic_throws_exception_when_recipe_not_found(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( null );
 
@@ -45,7 +45,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'nonexistent' ] ] );
 	}
 
-	public function testHandleLogicThrowsExceptionWhenConfigInvalid(): void {
+	public function test_handle_logic_throws_exception_when_config_invalid(): void {
 		$recipe_config = [ 'invalid' => 'config' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -62,7 +62,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe' ] ] );
 	}
 
-	public function testHandleLogicReturnsDryRunResultWhenFlagSet(): void {
+	public function test_handle_logic_returns_dry_run_result_when_flag_set(): void {
 		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -82,7 +82,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertSame( 'test-recipe', $result['name'] );
 	}
 
-	public function testHandleLogicExecutesRecipeSuccessfully(): void {
+	public function test_handle_logic_executes_recipe_successfully(): void {
 		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -108,7 +108,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertSame( 'Recipe executed successfully', $result['message'] );
 	}
 
-	public function testHandleLogicThrowsExceptionOnExecutionFailure(): void {
+	public function test_handle_logic_throws_exception_on_execution_failure(): void {
 		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -128,7 +128,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'test-recipe' ] ] );
 	}
 
-	public function testHandleLogicExtractsNameFromPositionalArg(): void {
+	public function test_handle_logic_extracts_name_from_positional_arg(): void {
 		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -147,7 +147,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertSame( 'my-recipe', $result['name'] );
 	}
 
-	public function testFormatRestSuccessReturnsCustomFormat(): void {
+	public function test_format_rest_success_returns_custom_format(): void {
 		$data = [
 			'name'    => 'test-recipe',
 			'success' => true,
@@ -166,7 +166,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertArrayHasKey( 'data', $response_data );
 	}
 
-	public function testFormatRestSuccessHandlesMissingOptionalFields(): void {
+	public function test_format_rest_success_handles_missing_optional_fields(): void {
 		$data = [ 'name' => 'test' ];
 
 		$response      = $this->invoke_protected_method( $this->tool, 'format_rest_success', [ $data ] );
@@ -177,7 +177,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertSame( [], $response_data['data'] );
 	}
 
-	public function testFormatCliOutputWithDryRunMode(): void {
+	public function test_format_cli_output_with_dry_run_mode(): void {
 		$data = [
 			'name'    => 'test-recipe',
 			'dry_run' => true,
@@ -191,7 +191,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertContains( 'Recipe: test-recipe', $messages );
 	}
 
-	public function testFormatCliOutputWithSuccessfulExecution(): void {
+	public function test_format_cli_output_with_successful_execution(): void {
 		$data = [
 			'name'    => 'test-recipe',
 			'message' => 'Recipe applied successfully',
@@ -215,7 +215,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertContains( 'Executing recipe...', $messages );
 	}
 
-	public function testFormatIngredientDataWithSimpleList(): void {
+	public function test_format_ingredient_data_with_simple_list(): void {
 		$data = [
 			'items' => [ 'item1', 'item2', 'item3' ],
 		];
@@ -227,7 +227,7 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertNotEmpty( $messages );
 	}
 
-	public function testFormatIngredientDataWithNestedStructure(): void {
+	public function test_format_ingredient_data_with_nested_structure(): void {
 		$data = [
 			'config' => [
 				'setting1' => 'value1',
@@ -241,31 +241,31 @@ class ApplyRecipeToolTest extends ToolTest {
 		$this->assertTrue( true );
 	}
 
-	public function testIsSimpleListReturnsTrueForEmptyArray(): void {
+	public function test_is_simple_list_returns_true_for_empty_array(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [] ] );
 
 		$this->assertTrue( $result );
 	}
 
-	public function testIsSimpleListReturnsTrueForScalarArray(): void {
+	public function test_is_simple_list_returns_true_for_scalar_array(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ 'a', 'b', 'c' ] ] );
 
 		$this->assertTrue( $result );
 	}
 
-	public function testIsSimpleListReturnsFalseForAssociativeArray(): void {
+	public function test_is_simple_list_returns_false_for_associative_array(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ 'key' => 'value' ] ] );
 
 		$this->assertFalse( $result );
 	}
 
-	public function testIsSimpleListReturnsFalseForNestedArray(): void {
+	public function test_is_simple_list_returns_false_for_nested_array(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ [ 'nested' ] ] ] );
 
 		$this->assertFalse( $result );
 	}
 
-	public function testIsSimpleListReturnsFalseForObjectInArray(): void {
+	public function test_is_simple_list_returns_false_for_object_in_array(): void {
 		$result = $this->invoke_protected_method( $this->tool, 'is_simple_list', [ [ new \stdClass() ] ] );
 
 		$this->assertFalse( $result );

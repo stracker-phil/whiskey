@@ -12,14 +12,14 @@ use Whiskey\Tools\WhiskeyTool;
 
 class RestControllerTest extends WhiskeyTest {
 
-	public function testConstructorCreatesInstance(): void {
+	public function test_constructor_creates_instance(): void {
 		$tool       = $this->createStub( WhiskeyTool::class );
 		$controller = new RestController( [ $tool ] );
 
 		$this->assertInstanceOf( RestController::class, $controller );
 	}
 
-	public function testRegisterRoutesCallsInitRestOnEachTool(): void {
+	public function test_register_routes_calls_init_rest_on_each_tool(): void {
 		$tool1 = $this->createMock( WhiskeyTool::class );
 		$tool2 = $this->createMock( WhiskeyTool::class );
 		$tool3 = $this->createMock( WhiskeyTool::class );
@@ -41,7 +41,7 @@ class RestControllerTest extends WhiskeyTest {
 		$controller->register_routes();
 	}
 
-	public function testRegisterRoutesPassesPermissionCallback(): void {
+	public function test_register_routes_passes_permission_callback(): void {
 		$tool       = $this->createMock( WhiskeyTool::class );
 		$controller = new RestController( [ $tool ] );
 
@@ -59,7 +59,7 @@ class RestControllerTest extends WhiskeyTest {
 		$this->assertSame( 'permission_callback', $capturedCallback[1] );
 	}
 
-	public function testRegisterRoutesHandlesEmptyToolsArray(): void {
+	public function test_register_routes_handles_empty_tools_array(): void {
 		$controller = new RestController( [] );
 
 		// Should not throw exception
@@ -68,7 +68,7 @@ class RestControllerTest extends WhiskeyTest {
 		$this->assertTrue( true );
 	}
 
-	public function testPermissionCallbackReturnsTrue(): void {
+	public function test_permission_callback_returns_true(): void {
 		$controller = new RestController( [] );
 
 		$result = $controller->permission_callback();

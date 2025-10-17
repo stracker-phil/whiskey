@@ -25,29 +25,29 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 
 	// ===== Validation Tests =====
 
-	public function testValidateAcceptsArrayOfStrings(): void {
+	public function test_validate_accepts_array_of_strings(): void {
 		$this->assertValidationAccepts( [ 'shop', 'cart' ] );
 	}
 
-	public function testValidateAcceptsEmptyArray(): void {
+	public function test_validate_accepts_empty_array(): void {
 		$this->assertValidationAccepts( [] );
 	}
 
-	public function testValidateRejectsString(): void {
+	public function test_validate_rejects_string(): void {
 		$this->assertValidationRejects( 'shop' );
 	}
 
-	public function testValidateRejectsArrayWithNonStringValue(): void {
+	public function test_validate_rejects_array_with_non_string_value(): void {
 		$this->assertValidationRejects( [ 'shop', 123 ] );
 	}
 
-	public function testValidateRejectsArrayWithNestedArray(): void {
+	public function test_validate_rejects_array_with_nested_array(): void {
 		$this->assertValidationRejects( [ 'shop', [ 'nested' ] ] );
 	}
 
 	// ===== Execution Tests =====
 
-	public function testExecuteCreatesNewPage(): void {
+	public function test_execute_creates_new_page(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', 123 );
 		WP_Functions::mock( 'update_post_meta', true );
@@ -74,7 +74,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 123, $data['pages']['test-page'] );
 	}
 
-	public function testExecuteUpdatesExistingPage(): void {
+	public function test_execute_updates_existing_page(): void {
 		$existing_page = $this->createMockPost( 456 );
 
 		WP_Functions::mock( 'get_page_by_path', $existing_page );
@@ -103,7 +103,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 456, $data['pages']['test-page'] );
 	}
 
-	public function testExecuteHandlesMissingTemplate(): void {
+	public function test_execute_handles_missing_template(): void {
 		$result = $this->ingredient->execute( [ 'nonexistent-page' ] );
 
 		$this->assertExecutionFailure( $result, 'Failed' );
@@ -111,7 +111,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 0, $data['pages']['nonexistent-page'] );
 	}
 
-	public function testExecuteHandlesWpInsertPostFailure(): void {
+	public function test_execute_handles_wp_insert_post_failure(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', 0 );
 
@@ -135,7 +135,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertExecutionFailure( $result, 'Failed' );
 	}
 
-	public function testExecuteProcessesMultiplePages(): void {
+	public function test_execute_processes_multiple_pages(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', static function ( $data ) {
 			static $id = 100;
@@ -171,7 +171,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 102, $data['pages']['page2'] );
 	}
 
-	public function testExecuteHandlesPostMetaInTemplate(): void {
+	public function test_execute_handles_post_meta_in_template(): void {
 		$meta_calls = [];
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', 123 );
@@ -204,7 +204,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 'key1', $meta_calls[0][1] );
 	}
 
-	public function testExecuteHandlesInvalidTemplateFormat(): void {
+	public function test_execute_handles_invalid_template_format(): void {
 		// Create a template file with invalid format (missing required fields)
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
 		if ( ! is_dir( $template_dir ) ) {
@@ -227,7 +227,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 0, $data['pages']['invalid-template'] );
 	}
 
-	public function testExecuteHandlesTemplateReturningNonArray(): void {
+	public function test_execute_handles_template_returning_non_array(): void {
 		// Create a template file that returns non-array
 		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
 		if ( ! is_dir( $template_dir ) ) {
@@ -245,7 +245,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertExecutionFailure( $result );
 	}
 
-	public function testExecuteAppliesDefaultPostTypeWhenNotSpecified(): void {
+	public function test_execute_applies_default_post_type_when_not_specified(): void {
 		$captured_post_data = null;
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', static function ( $data ) use ( &$captured_post_data ) {
@@ -276,7 +276,7 @@ class CreateShopPagesIngredientTest extends IngredientTest {
 		$this->assertSame( 'page', $captured_post_data['post_type'] );
 	}
 
-	public function testExecuteAppliesDefaultPostMetaWhenNotSpecified(): void {
+	public function test_execute_applies_default_post_meta_when_not_specified(): void {
 		$meta_calls = [];
 		WP_Functions::mock( 'get_page_by_path', null );
 		WP_Functions::mock( 'wp_insert_post', 123 );

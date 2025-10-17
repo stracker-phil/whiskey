@@ -20,7 +20,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->registry = new IngredientRegistry();
 	}
 
-	public function testInitFiresRegisterHook(): void {
+	public function test_init_fires_register_hook(): void {
 		$hookFired = false;
 		add_action( 'whiskey:register_ingredient', function ( $registry ) use ( &$hookFired ) {
 			$hookFired = true;
@@ -32,7 +32,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertTrue( $hookFired );
 	}
 
-	public function testInitOnlyRunsOnce(): void {
+	public function test_init_only_runs_once(): void {
 		$callCount = 0;
 		add_action( 'whiskey:register_ingredient', static function () use ( &$callCount ) {
 			$callCount ++;
@@ -45,25 +45,25 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertSame( 1, $callCount );
 	}
 
-	public function testAddStoresIngredientClass(): void {
+	public function test_add_stores_ingredient_class(): void {
 		$this->registry->add( TestIngredient::class );
 
 		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
 	}
 
-	public function testAddSkipsNonExistentClass(): void {
+	public function test_add_skips_non_existent_class(): void {
 		$this->registry->add( 'NonExistentClass' );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
-	public function testAddSkipsIngredientWithEmptyName(): void {
+	public function test_add_skips_ingredient_with_empty_name(): void {
 		$this->registry->add( TestIngredientEmptyName::class );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
 
-	public function testGetReturnsInstantiatedIngredient(): void {
+	public function test_get_returns_instantiated_ingredient(): void {
 		$this->registry->add( TestIngredient::class );
 
 		$ingredient = $this->registry->get( 'test_ingredient' );
@@ -71,13 +71,13 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertInstanceOf( TestIngredient::class, $ingredient );
 	}
 
-	public function testGetReturnsNullForNonExistent(): void {
+	public function test_get_returns_null_for_non_existent(): void {
 		$ingredient = $this->registry->get( 'non-existent' );
 
 		$this->assertNull( $ingredient );
 	}
 
-	public function testGetCallsInit(): void {
+	public function test_get_calls_init(): void {
 		$hookFired = false;
 		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
@@ -88,7 +88,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertTrue( $hookFired );
 	}
 
-	public function testAllReturnsAllIngredientClasses(): void {
+	public function test_all_returns_all_ingredient_classes(): void {
 		$this->registry->add( TestIngredient::class );
 		$this->registry->add( TestIngredient2::class );
 
@@ -101,7 +101,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertSame( TestIngredient2::class, $ingredients['test_ingredient2'] );
 	}
 
-	public function testAllCallsInit(): void {
+	public function test_all_calls_init(): void {
 		$hookFired = false;
 		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
@@ -112,17 +112,17 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertTrue( $hookFired );
 	}
 
-	public function testHasReturnsTrueForExistingIngredient(): void {
+	public function test_has_returns_true_for_existing_ingredient(): void {
 		$this->registry->add( TestIngredient::class );
 
 		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
 	}
 
-	public function testHasReturnsFalseForNonExistent(): void {
+	public function test_has_returns_false_for_non_existent(): void {
 		$this->assertFalse( $this->registry->has( 'non-existent' ) );
 	}
 
-	public function testHasCallsInit(): void {
+	public function test_has_calls_init(): void {
 		$hookFired = false;
 		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
 			$hookFired = true;
@@ -133,7 +133,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertTrue( $hookFired );
 	}
 
-	public function testGetMetadataReturnsIngredientMetadata(): void {
+	public function test_get_metadata_returns_ingredient_metadata(): void {
 		$this->registry->add( TestIngredient::class );
 
 		$metadata = $this->registry->get_metadata( 'test_ingredient' );
@@ -143,7 +143,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertSame( 'Test ingredient for testing', $metadata['description'] );
 	}
 
-	public function testAllMetadataReturnsAllMetadata(): void {
+	public function test_all_metadata_returns_all_metadata(): void {
 		$this->registry->add( TestIngredient::class );
 		$this->registry->add( TestIngredient2::class );
 

@@ -36,24 +36,24 @@ class MainTest extends WhiskeyTest {
 		);
 	}
 
-	public function testConstructorCreatesInstance(): void {
+	public function test_constructor_creates_instance(): void {
 		$this->assertInstanceOf( Main::class, $this->main );
 	}
 
-	public function testInitHookInitializesRegistries(): void {
+	public function test_init_hook_initializes_registries(): void {
 		$this->ingredients->expects( $this->once() )->method( 'init' );
 		$this->recipes->expects( $this->once() )->method( 'init' );
 
 		do_action( 'init' );
 	}
 
-	public function testRestApiInitHookRegistersRoutes(): void {
+	public function test_rest_api_init_hook_registers_routes(): void {
 		$this->rest->expects( $this->once() )->method( 'register_routes' );
 
 		do_action( 'rest_api_init' );
 	}
 
-	public function testCliInitHookRegistersCommands(): void {
+	public function test_cli_init_hook_registers_commands(): void {
 		$this->cli->expects( $this->once() )->method( 'register_commands' );
 
 		do_action( 'cli_init' );

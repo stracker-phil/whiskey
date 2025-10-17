@@ -23,23 +23,23 @@ class SetHomepageIngredientTest extends IngredientTest {
 		return 'wordpress';
 	}
 
-	public function testValidateAcceptsString(): void {
+	public function test_validate_accepts_string(): void {
 		$this->assertTrue( $this->ingredient->validate( 'home' ) );
 	}
 
-	public function testValidateAcceptsInteger(): void {
+	public function test_validate_accepts_integer(): void {
 		$this->assertTrue( $this->ingredient->validate( 42 ) );
 	}
 
-	public function testValidateRejectsArray(): void {
+	public function test_validate_rejects_array(): void {
 		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] ) );
 	}
 
-	public function testValidateRejectsBoolean(): void {
+	public function test_validate_rejects_boolean(): void {
 		$this->assertFalse( $this->ingredient->validate( true ) );
 	}
 
-	public function testExecuteWithValidStringSlug(): void {
+	public function test_execute_with_valid_string_slug(): void {
 		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 123 ) );
 		WP_Functions::mock( 'update_option', true );
 
@@ -48,7 +48,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertExecutionSuccess( $result, '123' );
 	}
 
-	public function testExecuteWithValidPostId(): void {
+	public function test_execute_with_valid_post_id(): void {
 		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'page' ) );
 		WP_Functions::mock( 'update_option', true );
 
@@ -57,7 +57,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertExecutionSuccess( $result, '456' );
 	}
 
-	public function testExecuteFailsWithInvalidSlug(): void {
+	public function test_execute_fails_with_invalid_slug(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 
 		$result = $this->ingredient->execute( 'nonexistent' );
@@ -65,7 +65,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
 
-	public function testExecuteFailsWithInvalidPostId(): void {
+	public function test_execute_fails_with_invalid_post_id(): void {
 		WP_Functions::mock( 'get_post', null );
 
 		$result = $this->ingredient->execute( 999 );
@@ -73,7 +73,7 @@ class SetHomepageIngredientTest extends IngredientTest {
 		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
 
-	public function testExecuteFailsWhenPostIsNotAPage(): void {
+	public function test_execute_fails_when_post_is_not_apage(): void {
 		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'post' ) );
 
 		$result = $this->ingredient->execute( 789 );

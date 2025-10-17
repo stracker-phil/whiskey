@@ -90,7 +90,6 @@ ddev exec vendor/bin/phpunit --filter RecipeExecutor
 ddev composer coverage
 ```
 
-
 ## Example Test
 
 ```php
@@ -116,10 +115,15 @@ class RecipeExecutorTest extends WhiskeyTest {
         $this->executor = new RecipeExecutor( $this->ingredients );
     }
 
-    public function testValidateReturnsFalseForEmptyConfig(): void {
+    public function test_validate_returns_false_for_empty_config(): void {
         $result = $this->executor->validate( array() );
         
         $this->assertFalse( $result );
     }
 }
 ```
+
+## Code Standards
+
+- All functions use snake_case, especially test functions
+- Only exceptions are assert-helpers, which stay in camelCase for compatibility with PHPUnit built-in assertions

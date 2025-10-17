@@ -78,7 +78,8 @@ abstract class ToolTest extends WhiskeyTest {
 	 *
 	 * Example:
 	 *     $config = $this->invoke_protected_method($this->tool, 'get_rest_config');
-	 *     $result = $this->invoke_protected_method($this->tool, 'handle_logic', [['name' => 'test']]);
+	 *     $result = $this->invoke_protected_method($this->tool, 'handle_logic', [['name' =>
+	 *     'test']]);
 	 *
 	 * @param WhiskeyTool $tool        The tool instance to call the method on.
 	 * @param string      $method_name The name of the protected method to call.
@@ -140,7 +141,7 @@ abstract class ToolTest extends WhiskeyTest {
 	 *
 	 * @return void
 	 */
-	protected function assert_rest_config(
+	protected function assertRestConfig(
 		string $expected_method,
 		string $expected_path_fragment
 	): void {
@@ -165,7 +166,7 @@ abstract class ToolTest extends WhiskeyTest {
 	 *
 	 * @return void
 	 */
-	protected function assert_cli_config(
+	protected function assertCliConfig(
 		string $expected_command,
 		string $expected_synopsis_fragment
 	): void {

@@ -25,23 +25,23 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		return 'wordpress';
 	}
 
-	public function testValidateAcceptsArrayOfStrings(): void {
+	public function test_validate_accepts_array_of_strings(): void {
 		$this->assertTrue( $this->ingredient->validate( [ 'home', 'about', 'contact' ] ) );
 	}
 
-	public function testValidateAcceptsEmptyArray(): void {
+	public function test_validate_accepts_empty_array(): void {
 		$this->assertTrue( $this->ingredient->validate( [] ) );
 	}
 
-	public function testValidateRejectsString(): void {
+	public function test_validate_rejects_string(): void {
 		$this->assertFalse( $this->ingredient->validate( 'home' ) );
 	}
 
-	public function testValidateRejectsArrayWithNonStringValue(): void {
+	public function test_validate_rejects_array_with_non_string_value(): void {
 		$this->assertFalse( $this->ingredient->validate( [ 'home', 123 ] ) );
 	}
 
-	public function testExecuteCreatesNewMenuIfNotExists(): void {
+	public function test_execute_creates_new_menu_if_not_exists(): void {
 		WP_Functions::mock( 'wp_get_nav_menu_object', false );
 		WP_Functions::mock( 'wp_create_nav_menu', 42 );
 		WP_Functions::mock( 'wp_get_nav_menu_items', false );
@@ -57,7 +57,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 42, $data['menu_id'] );
 	}
 
-	public function testExecuteUsesExistingMenu(): void {
+	public function test_execute_uses_existing_menu(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 99;
 
@@ -75,7 +75,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 99, $data['menu_id'] );
 	}
 
-	public function testExecuteFailsIfMenuCreationFails(): void {
+	public function test_execute_fails_if_menu_creation_fails(): void {
 		WP_Functions::mock( 'wp_get_nav_menu_object', false );
 		WP_Functions::mock( 'wp_create_nav_menu', 0 );
 
@@ -85,7 +85,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertStringContainsString( 'Failed to create', $result->get_message() );
 	}
 
-	public function testExecuteClearsExistingMenuItems(): void {
+	public function test_execute_clears_existing_menu_items(): void {
 		$deleted_posts = [];
 		$menu          = new stdClass();
 		$menu->term_id = 42;
@@ -114,7 +114,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertContains( 2, $deleted_posts );
 	}
 
-	public function testExecuteAddsMenuItemsForValidPages(): void {
+	public function test_execute_adds_menu_items_for_valid_pages(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
@@ -139,7 +139,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 120, $data['items']['about'] );
 	}
 
-	public function testExecuteHandlesNonexistentPages(): void {
+	public function test_execute_handles_nonexistent_pages(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
@@ -159,7 +159,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 0, $data['items']['nonexistent'] );
 	}
 
-	public function testExecuteSetsMenuLocation(): void {
+	public function test_execute_sets_menu_location(): void {
 		$theme_mod_calls = [];
 		$menu            = new stdClass();
 		$menu->term_id   = 42;
@@ -181,7 +181,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 42, $theme_mod_calls[0][1]['primary'] );
 	}
 
-	public function testExecuteHandlesWpUpdateNavMenuItemFailure(): void {
+	public function test_execute_handles_wp_update_nav_menu_item_failure(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
@@ -200,7 +200,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 0, $data['items']['home'] );
 	}
 
-	public function testExecuteHandlesEmptyMenuItems(): void {
+	public function test_execute_handles_empty_menu_items(): void {
 		$menu          = new stdClass();
 		$menu->term_id = 42;
 
@@ -216,7 +216,7 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertTrue( $result->is_success() );
 	}
 
-	public function testExecutePreservesExistingMenuLocations(): void {
+	public function test_execute_preserves_existing_menu_locations(): void {
 		$existing_locations = [
 			'secondary' => 99,
 			'footer'    => 88,

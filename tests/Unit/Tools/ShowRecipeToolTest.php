@@ -16,15 +16,15 @@ class ShowRecipeToolTest extends ToolTest {
 		$this->tool = new ShowRecipeTool( $this->recipes, $this->ingredients, $this->executor );
 	}
 
-	public function testGetRestConfigReturnsConfiguration(): void {
-		$this->assert_rest_config( 'GET', '/recipe/' );
+	public function test_get_rest_config_returns_configuration(): void {
+		$this->assertRestConfig( 'GET', '/recipe/' );
 	}
 
-	public function testGetCliConfigReturnsConfiguration(): void {
-		$this->assert_cli_config( 'whiskey recipe', 'recipe' );
+	public function test_get_cli_config_returns_configuration(): void {
+		$this->assertCliConfig( 'whiskey recipe', 'recipe' );
 	}
 
-	public function testHandleLogicReturnsRecipeData(): void {
+	public function test_handle_logic_returns_recipe_data(): void {
 		$recipe_config = [
 			'ingredient1' => 'value1',
 			'ingredient2' => 'value2',
@@ -44,7 +44,7 @@ class ShowRecipeToolTest extends ToolTest {
 		$this->assertSame( $recipe_config, $result['config'] );
 	}
 
-	public function testHandleLogicExtractsNameFromPositionalArg(): void {
+	public function test_handle_logic_extracts_name_from_positional_arg(): void {
 		$recipe_config = [ 'ingredient1' => 'value1' ];
 
 		$recipes = $this->createStub( RecipeRegistry::class );
@@ -57,14 +57,14 @@ class ShowRecipeToolTest extends ToolTest {
 		$this->assertSame( 'my-recipe', $result['name'] );
 	}
 
-	public function testHandleLogicThrowsExceptionWhenNameMissing(): void {
+	public function test_handle_logic_throws_exception_when_name_missing(): void {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Recipe name is required' );
 
 		$this->invoke_protected_method( $this->tool, 'handle_logic', [ [] ] );
 	}
 
-	public function testHandleLogicThrowsExceptionWhenRecipeNotFound(): void {
+	public function test_handle_logic_throws_exception_when_recipe_not_found(): void {
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( null );
 
@@ -76,7 +76,7 @@ class ShowRecipeToolTest extends ToolTest {
 		$this->invoke_protected_method( $tool, 'handle_logic', [ [ 'name' => 'nonexistent' ] ] );
 	}
 
-	public function testFormatCliOutput(): void {
+	public function test_format_cli_output(): void {
 		// Test with data - should not throw exception
 		$this->invoke_protected_method(
 			$this->tool,

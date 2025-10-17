@@ -57,7 +57,7 @@ abstract class IngredientTest extends WhiskeyTest {
 	 *
 	 * This test is automatically run for all ingredients
 	 */
-	public function testConstantsAreDefined(): void {
+	public function test_constants_are_defined(): void {
 		$class = $this->getIngredientClass();
 
 		$this->assertSame( $this->getExpectedName(), $class::NAME );
@@ -170,7 +170,7 @@ abstract class IngredientTest extends WhiskeyTest {
 	/**
 	 * Common validation test: null should always be rejected
 	 */
-	public function testValidateRejectsNull(): void {
+	public function test_validate_rejects_null(): void {
 		$this->assertValidationRejects( null );
 	}
 }

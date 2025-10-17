@@ -12,14 +12,14 @@ use Whiskey\Tools\WhiskeyTool;
 
 class CliControllerTest extends WhiskeyTest {
 
-	public function testConstructorCreatesInstance(): void {
+	public function test_constructor_creates_instance(): void {
 		$tool       = $this->createStub( WhiskeyTool::class );
 		$controller = new CliController( [ $tool ] );
 
 		$this->assertInstanceOf( CliController::class, $controller );
 	}
 
-	public function testRegisterCommandsCallsInitCliOnEachTool(): void {
+	public function test_register_commands_calls_init_cli_on_each_tool(): void {
 		$tool1 = $this->createMock( WhiskeyTool::class );
 		$tool2 = $this->createMock( WhiskeyTool::class );
 		$tool3 = $this->createMock( WhiskeyTool::class );
@@ -33,7 +33,7 @@ class CliControllerTest extends WhiskeyTest {
 		$controller->register_commands();
 	}
 
-	public function testRegisterCommandsHandlesEmptyToolsArray(): void {
+	public function test_register_commands_handles_empty_tools_array(): void {
 		$controller = new CliController( [] );
 
 		// Should not throw exception
@@ -42,7 +42,7 @@ class CliControllerTest extends WhiskeyTest {
 		$this->assertTrue( true );
 	}
 
-	public function testRegisterCommandsIteratesInOrder(): void {
+	public function test_register_commands_iterates_in_order(): void {
 		$callOrder = [];
 
 		$tool1 = $this->createMock( WhiskeyTool::class );
