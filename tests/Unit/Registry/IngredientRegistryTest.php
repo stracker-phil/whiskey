@@ -157,7 +157,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 	}
 
 	public function test_init_continues_after_hook_error(): void {
-		$init_count = [];
+		$init_count = 0;
 
 		// First callback throws an exception
 		add_action( 'whiskey:register_ingredient', static function () use ( &$init_count ) {
