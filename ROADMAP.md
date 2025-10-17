@@ -27,6 +27,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] Add README, ROADMAP and LICENSE
 - [x] Plugin header and activation (no logic)
 
+---
+
 ### Branch `php-7.4` - Baseline Implementation
 
 #### Core Plugin Setup
@@ -101,6 +103,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Capture baseline complexity metrics (need 15+ ingredients total)
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
+---
+
 ### Branch `php-8.0` - Modern Syntax
 
 #### Constructor Promotion
@@ -140,6 +144,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Update tests for new syntax
 - [ ] Measure complexity reduction
 
+---
+
 ### Branch `php-8.1` - Type Safety
 
 #### Enums for Categories
@@ -172,6 +178,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Update tests
 - [ ] Measure complexity reduction
 
+---
+
 ### Branch `php-8.2` - Immutability
 
 #### Readonly Classes
@@ -192,6 +200,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Use `true`/`false`/`null` types in ingredient validation
 - [ ] Update tests
 - [ ] Measure complexity reduction
+
+---
 
 ### Branch `php-8.3` - Final Polish
 
