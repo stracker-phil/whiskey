@@ -126,11 +126,11 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] Test RecipeExecutor (100% coverage)
 - [x] PHP stubs for IDE support (wordpress-stubs, wp-cli-stubs)
 - [x] Testing guidelines documentation (tests/TESTING.md)
-- [ ] Test IngredientRegistry
-- [ ] Test RecipeRegistry
-- [ ] Test individual ingredients
-- [ ] Test REST endpoints
-- [ ] Test CLI commands
+- [x] Test IngredientRegistry
+- [x] Test RecipeRegistry
+- [x] Test individual ingredients
+- [x] Test REST endpoints
+- [x] Test CLI commands
 
 #### Sample Recipes
 
