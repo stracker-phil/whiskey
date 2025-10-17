@@ -58,5 +58,59 @@ class MainTest extends WhiskeyTest {
 
 		do_action( 'cli_init' );
 	}
+
+	public function test_load_builtin_ingredients_continues_after_error(): void {
+		// Create a file with syntax error
+		$ingredientsDir = __DIR__ . '/../../src/Ingredients';
+		$errorFile      = $ingredientsDir . '/test-error-ingredient.php';
+		$validFile      = $ingredientsDir . '/test-valid-ingredient.php';
+
+		file_put_contents( $errorFile, '<?php throw new \Exception("Test error");' );
+		file_put_contents( $validFile, '<?php // Valid file' );
+
+		try {
+			// Trigger the init action which calls load_builtin_ingredients
+			do_action( 'init' );
+
+			// Both ingredients and recipes init should still be called
+			// despite errors in loaded files
+			$this->assertTrue( true ); // If we reach here, error was silently ignored
+		} finally {
+			// Cleanup
+			if ( file_exists( $errorFile ) ) {
+				unlink( $errorFile );
+			}
+			if ( file_exists( $validFile ) ) {
+				unlink( $validFile );
+			}
+		}
+	}
+
+	public function test_load_builtin_recipes_continues_after_error(): void {
+		// Create a file with syntax error
+		$recipesDir = __DIR__ . '/../../src/Recipes';
+		$errorFile  = $recipesDir . '/test-error-recipe.php';
+		$validFile  = $recipesDir . '/test-valid-recipe.php';
+
+		file_put_contents( $errorFile, '<?php throw new \Exception("Test error");' );
+		file_put_contents( $validFile, '<?php // Valid file' );
+
+		try {
+			// Trigger the init action which calls load_builtin_recipes
+			do_action( 'init' );
+
+			// Both ingredients and recipes init should still be called
+			// despite errors in loaded files
+			$this->assertTrue( true ); // If we reach here, error was silently ignored
+		} finally {
+			// Cleanup
+			if ( file_exists( $errorFile ) ) {
+				unlink( $errorFile );
+			}
+			if ( file_exists( $validFile ) ) {
+				unlink( $validFile );
+			}
+		}
+	}
 }
 

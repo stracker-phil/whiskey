@@ -137,4 +137,42 @@ class RecipeRegistryTest extends WhiskeyTest {
 
 		$this->assertTrue( $hookFired );
 	}
+
+	public function test_init_continues_after_hook_error(): void {
+		$init_count = 0;
+
+		add_action( 'whiskey:register_recipe', function () use ( &$init_count ) {
+			$init_count ++;
+			$this->registry->add( 'first-recipe', [ 'ingredient' => 'value' ] );
+			throw new \RuntimeException( 'Test error in hook callback' );
+		}, 10 );
+
+		// Second callback should NOT execute (WordPress stops after exception)
+		add_action( 'whiskey:register_recipe', function () use ( &$init_count ) {
+			$init_count ++;
+			$this->registry->add( 'second-recipe', [ 'ingredient' => 'value' ] );
+		}, 20 );
+
+		// Init should complete without throwing
+		$this->registry->init();
+
+		// Verify init marked as completed despite the error
+		$this->registry->init();
+		$this->assertSame( 1, $init_count );
+	}
+
+	public function test_registry_remains_functional_after_hook_error(): void {
+		// Add a hook that throws
+		add_action( 'whiskey:register_recipe', static function () {
+			throw new \RuntimeException( 'Test error' );
+		} );
+
+		// Init with error
+		$this->registry->init();
+
+		// Registry should still work normally
+		$this->registry->add( 'test-recipe', [ 'ingredient' => 'value' ] );
+		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
+		$this->assertSame( [ 'ingredient' => 'value' ], $this->registry->get( 'test-recipe' ) );
+	}
 }

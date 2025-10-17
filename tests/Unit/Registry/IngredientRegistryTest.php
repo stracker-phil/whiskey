@@ -155,6 +155,43 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertSame( 'test', $metadata['test_ingredient']['category'] );
 		$this->assertSame( 'test', $metadata['test_ingredient2']['category'] );
 	}
+
+	public function test_init_continues_after_hook_error(): void {
+		$init_count = [];
+
+		// First callback throws an exception
+		add_action( 'whiskey:register_ingredient', static function () use ( &$init_count ) {
+			$init_count ++;
+			throw new \RuntimeException( 'Test error in hook callback' );
+		}, 10 );
+
+		// Second callback should NOT execute (WordPress stops after exception)
+		add_action( 'whiskey:register_ingredient', static function () use ( &$init_count ) {
+			$init_count ++;
+		}, 20 );
+
+		// Init should complete without throwing
+		$this->registry->init();
+
+		// Verify init marked as completed despite the error
+		$this->registry->init();
+		$this->assertSame( 1, $init_count, 'Init should only run once' );
+	}
+
+	public function test_registry_remains_functional_after_hook_error(): void {
+		// Add a hook that throws
+		add_action( 'whiskey:register_ingredient', static function () {
+			throw new \RuntimeException( 'Test error' );
+		} );
+
+		// Init with error
+		$this->registry->init();
+
+		// Registry should still work normally
+		$this->registry->add( TestIngredient::class );
+		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
+		$this->assertInstanceOf( TestIngredient::class, $this->registry->get( 'test_ingredient' ) );
+	}
 }
 
 /**
