@@ -41,8 +41,8 @@ if [ -f "$OUTPUT_DIR/phpmetrics.json" ] && command -v jq &> /dev/null; then
     LLOC=$(jq '[.[] | select(.lloc != null) | .lloc] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
 
     # Count classes and methods
-    CLASSES=$(jq '[.[] | select(.nbClasses != null) | .nbClasses] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
-    METHODS=$(jq '[.[] | select(.nbMethods != null) | .nbMethods] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+    CLASSES=$(jq '[.[] | select(._type == "Hal\\Metric\\ClassMetric")] | length' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
+    METHODS=$(jq '[.[] | select(._type == "Hal\\Metric\\ClassMetric") | .nbMethods] | add' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null || echo "N/A")
 else
     AVG_COMPLEXITY="N/A"
     TOTAL_LOC="N/A"
