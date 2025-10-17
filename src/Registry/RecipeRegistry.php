@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Registry;
 
+use Throwable;
+
 class RecipeRegistry {
 
 	/**
@@ -27,7 +29,11 @@ class RecipeRegistry {
 			return;
 		}
 
-		do_action( 'whiskey:register_recipe', $this );
+		try {
+			do_action( 'whiskey:register_recipe', $this );
+		} catch ( Throwable $e ) {
+			// Silently ignore errors and continue
+		}
 
 		$this->initialized = true;
 	}

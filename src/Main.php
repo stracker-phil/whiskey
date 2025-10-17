@@ -13,6 +13,7 @@ use Whiskey\Controllers\RestController;
 use Whiskey\Controllers\CliController;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
+use Throwable;
 
 /**
  * Main plugin bootstrap - manages plugin lifecycle and dependencies
@@ -65,7 +66,7 @@ class Main {
 		foreach ( glob( $dir . '/*.php' ) as $file ) {
 			try {
 				include_once $file;
-			} catch ( \Throwable $e ) {
+			} catch ( Throwable $e ) {
 				// Silently ignore errors and continue loading other files
 			}
 		}
@@ -80,7 +81,7 @@ class Main {
 		foreach ( glob( $dir . '/*.php' ) as $file ) {
 			try {
 				include_once $file;
-			} catch ( \Throwable $e ) {
+			} catch ( Throwable $e ) {
 				// Silently ignore errors and continue loading other files
 			}
 		}
