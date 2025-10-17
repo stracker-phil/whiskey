@@ -1,0 +1,218 @@
+#!/bin/bash
+# Metrics collection script for Whiskey project
+# Usage: ddev collect-metrics
+
+set -e
+
+BRANCH=$(git branch --show-current)
+OUTPUT_DIR="metrics/$BRANCH"
+mkdir -p "$OUTPUT_DIR"
+
+echo "📊 Collecting metrics for branch: $BRANCH"
+
+# 1. Count ingredients
+INGREDIENT_COUNT=$(find src/Ingredients -name "*Ingredient.php" -not -name "Ingredient.php" | wc -l | tr -d ' ')
+
+# 2. PHPLoc - Lines of code and structure metrics
+echo "   → Running phploc..."
+if [ -f "vendor/bin/phploc" ]; then
+    vendor/bin/phploc --log-json="$OUTPUT_DIR/phploc.json" src/ > "$OUTPUT_DIR/phploc.txt" 2>&1
+else
+    echo "   ⚠️  phploc not installed"
+fi
+
+# 3. PHPMetrics - Complexity analysis
+echo "   → Running phpmetrics..."
+if [ -f "vendor/bin/phpmetrics" ]; then
+    vendor/bin/phpmetrics --report-html="$OUTPUT_DIR/phpmetrics-report" --report-json="$OUTPUT_DIR/phpmetrics.json" src/ > /dev/null 2>&1
+else
+    echo "   ⚠️  phpmetrics not installed"
+fi
+
+# 4. Test coverage
+echo "   → Running test coverage..."
+if [ -f "vendor/bin/phpunit" ]; then
+    XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html="$OUTPUT_DIR/coverage/" --coverage-text --coverage-clover="$OUTPUT_DIR/coverage.xml" > "$OUTPUT_DIR/test-output.txt" 2>&1 || true
+else
+    echo "   ⚠️  PHPUnit not installed"
+fi
+
+# 5. Extract key metrics
+echo "   → Extracting key metrics..."
+
+# Parse PHPMetrics JSON for complexity
+AVG_COMPLEXITY="N/A"
+if [ -f "$OUTPUT_DIR/phpmetrics.json" ] && command -v jq &> /dev/null; then
+    AVG_COMPLEXITY=$(jq '[.[] | select(.ccn != null) | .ccn] | add / length' "$OUTPUT_DIR/phpmetrics.json" 2>/dev/null | xargs printf "%.2f" 2>/dev/null || echo "N/A")
+fi
+
+# Parse PHPLoc JSON for LOC
+TOTAL_LOC="N/A"
+LLOC="N/A"
+CLASSES="N/A"
+METHODS="N/A"
+if [ -f "$OUTPUT_DIR/phploc.json" ] && command -v jq &> /dev/null; then
+    TOTAL_LOC=$(jq -r '.loc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+    LLOC=$(jq -r '.lloc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+    CLASSES=$(jq -r '.classes' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+    METHODS=$(jq -r '.methods' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+fi
+
+# Parse coverage from test output
+COVERAGE_PCT="N/A"
+if [ -f "$OUTPUT_DIR/test-output.txt" ]; then
+    COVERAGE_PCT=$(grep -A 3 "Lines:" "$OUTPUT_DIR/test-output.txt" | grep -oP '\d+\.\d+%' | head -1 || echo "N/A")
+fi
+
+# 6. Create HTML summary
+echo "   → Generating index.html..."
+cat > "$OUTPUT_DIR/index.html" << HTMLEOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metrics Summary - $BRANCH</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 { margin: 0 0 10px 0; }
+        .header p { margin: 5px 0; opacity: 0.9; }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric-card h3 {
+            margin: 0 0 8px 0;
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        .metric-label {
+            color: #666;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .reports {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .reports h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .report-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 8px 8px 8px 0;
+            transition: background 0.2s;
+        }
+        .report-link:hover {
+            background: #5568d3;
+        }
+        .report-link::before {
+            content: "📊 ";
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Metrics Summary</h1>
+        <p><strong>Branch:</strong> $BRANCH</p>
+        <p><strong>PHP Version:</strong> ${BRANCH#php-}</p>
+        <p><strong>Generated:</strong> $(date '+%Y-%m-%d %H:%M:%S')</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Lines of Code</h3>
+            <div class="metric-value">$TOTAL_LOC</div>
+            <div class="metric-label">Total lines</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Logical LOC</h3>
+            <div class="metric-value">$LLOC</div>
+            <div class="metric-label">Executable code</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Complexity</h3>
+            <div class="metric-value">$AVG_COMPLEXITY</div>
+            <div class="metric-label">Avg cyclomatic complexity</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Test Coverage</h3>
+            <div class="metric-value">$COVERAGE_PCT</div>
+            <div class="metric-label">Line coverage</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Classes</h3>
+            <div class="metric-value">$CLASSES</div>
+            <div class="metric-label">Total classes</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Methods</h3>
+            <div class="metric-value">$METHODS</div>
+            <div class="metric-label">Total methods</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Ingredients</h3>
+            <div class="metric-value">$INGREDIENT_COUNT</div>
+            <div class="metric-label">Custom ingredients</div>
+        </div>
+    </div>
+
+    <div class="reports">
+        <h2>Detailed Reports</h2>
+        <a href="./phpmetrics-report/index.html" class="report-link">Complexity Analysis</a>
+        <a href="./coverage/index.html" class="report-link">Test Coverage</a>
+        <a href="./phploc.txt" class="report-link">PHPLoc Details</a>
+    </div>
+</body>
+</html>
+HTMLEOF
+
+echo ""
+echo "✅ Metrics collection complete!"
+echo ""
+echo "🌐 View report: https://whiskey.ddev.site/metrics/$BRANCH/"
+echo ""

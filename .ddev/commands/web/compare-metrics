@@ -1,0 +1,79 @@
+#!/bin/bash
+# Compare metrics between two branches
+# Usage: ddev compare-metrics php-7.4 php-8.3
+
+BRANCH1=${1:-php-7.4}
+BRANCH2=${2:-php-8.3}
+
+echo "========================================"
+echo "Comparing metrics: $BRANCH1 vs $BRANCH2"
+echo "========================================"
+
+if [ ! -d "metrics/$BRANCH1" ] || [ ! -d "metrics/$BRANCH2" ]; then
+    echo "❌ Error: Metrics not found for one or both branches"
+    echo "Run ./bin/collect-metrics.sh on each branch first"
+    exit 1
+fi
+
+# Helper function to extract value from phploc
+extract_metric() {
+    local file=$1
+    local pattern=$2
+    grep "$pattern" "$file" | awk '{print $NF}'
+}
+
+echo ""
+echo "📊 Code Size Comparison"
+echo "----------------------------------------"
+
+BRANCH1_LOC=$(extract_metric "metrics/$BRANCH1/phploc.txt" "Lines of Code")
+BRANCH2_LOC=$(extract_metric "metrics/$BRANCH2/phploc.txt" "Lines of Code")
+
+echo "$BRANCH1 LOC: $BRANCH1_LOC"
+echo "$BRANCH2 LOC: $BRANCH2_LOC"
+
+if [ -n "$BRANCH1_LOC" ] && [ -n "$BRANCH2_LOC" ]; then
+    REDUCTION=$(echo "scale=2; (($BRANCH1_LOC - $BRANCH2_LOC) / $BRANCH1_LOC) * 100" | bc)
+    echo "Reduction: $REDUCTION%"
+fi
+
+echo ""
+echo "📊 Complexity Comparison"
+echo "----------------------------------------"
+
+# This requires the phpmetrics JSON files
+if command -v jq &> /dev/null; then
+    if [ -f "metrics/$BRANCH1/phpmetrics.json" ] && [ -f "metrics/$BRANCH2/phpmetrics.json" ]; then
+        BRANCH1_COMPLEXITY=$(jq '[.[] | select(.ccn != null) | .ccn] | add / length' "metrics/$BRANCH1/phpmetrics.json")
+        BRANCH2_COMPLEXITY=$(jq '[.[] | select(.ccn != null) | .ccn] | add / length' "metrics/$BRANCH2/phpmetrics.json")
+        
+        echo "$BRANCH1 Avg Complexity: $BRANCH1_COMPLEXITY"
+        echo "$BRANCH2 Avg Complexity: $BRANCH2_COMPLEXITY"
+        
+        REDUCTION=$(echo "scale=2; (($BRANCH1_COMPLEXITY - $BRANCH2_COMPLEXITY) / $BRANCH1_COMPLEXITY) * 100" | bc)
+        echo "Reduction: $REDUCTION%"
+    else
+        echo "⚠️  phpmetrics JSON not found"
+    fi
+else
+    echo "⚠️  jq not installed (brew install jq)"
+fi
+
+echo ""
+echo "📊 Structure Comparison"
+echo "----------------------------------------"
+
+BRANCH1_CLASSES=$(extract_metric "metrics/$BRANCH1/phploc.txt" "Classes")
+BRANCH2_CLASSES=$(extract_metric "metrics/$BRANCH2/phploc.txt" "Classes")
+
+BRANCH1_METHODS=$(extract_metric "metrics/$BRANCH1/phploc.txt" "Methods")
+BRANCH2_METHODS=$(extract_metric "metrics/$BRANCH2/phploc.txt" "Methods")
+
+echo "Classes: $BRANCH1_CLASSES → $BRANCH2_CLASSES"
+echo "Methods: $BRANCH1_METHODS → $BRANCH2_METHODS"
+
+echo ""
+echo "========================================"
+echo "Full detailed comparison:"
+echo "diff metrics/$BRANCH1/phploc.txt metrics/$BRANCH2/phploc.txt"
+echo "========================================"
