@@ -63,7 +63,11 @@ class Main {
 		$dir = __DIR__ . '/Ingredients';
 
 		foreach ( glob( $dir . '/*.php' ) as $file ) {
-			include_once $file;
+			try {
+				include_once $file;
+			} catch ( \Throwable $e ) {
+				// Silently ignore errors and continue loading other files
+			}
 		}
 	}
 
@@ -74,7 +78,11 @@ class Main {
 		$dir = __DIR__ . '/Recipes';
 
 		foreach ( glob( $dir . '/*.php' ) as $file ) {
-			include_once $file;
+			try {
+				include_once $file;
+			} catch ( \Throwable $e ) {
+				// Silently ignore errors and continue loading other files
+			}
 		}
 	}
 }
