@@ -9,15 +9,13 @@ use Whiskey\ExecutionResult;
 use Whiskey\Registry\IngredientRegistry;
 
 /**
- * Creates or updates standard WooCommerce pages.
- * Group: WordPress core / WooCommerce
- *
- * @todo untested
+ * Creates or updates pre-defined pages.
+ * Group: WordPress core
  */
-class CreateShopPagesIngredient extends Ingredient {
-	public const NAME        = 'create_shop_pages';
-	public const CATEGORY    = 'woocommerce';
-	public const DESCRIPTION = 'Creates or updates WooCommerce pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
+class CreatePagesIngredient extends Ingredient {
+	public const NAME        = 'create_pages';
+	public const CATEGORY    = 'wordpress';
+	public const DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
 
 	public function validate( $value ): bool {
 		if ( ! is_array( $value ) ) {
@@ -44,7 +42,7 @@ class CreateShopPagesIngredient extends Ingredient {
 				continue;
 			}
 
-			$post_id = $this->create_or_update_page( $slug, $template );
+			$post_id        = $this->create_or_update_page( $slug, $template );
 			$pages[ $slug ] = $post_id;
 		}
 

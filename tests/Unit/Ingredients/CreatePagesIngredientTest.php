@@ -1,26 +1,26 @@
 <?php
 /**
- * @covers \Whiskey\Ingredients\CreateShopPagesIngredient
+ * @covers \Whiskey\Ingredients\CreatePagesIngredient
  */
 declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Ingredients;
 
-use Whiskey\Ingredients\CreateShopPagesIngredient;
+use Whiskey\Ingredients\CreatePagesIngredient;
 use WP_Functions;
 
-class CreateShopPagesIngredientTest extends IngredientTest {
+class CreatePagesIngredientTest extends IngredientTest {
 
 	protected function getIngredientClass(): string {
-		return CreateShopPagesIngredient::class;
+		return CreatePagesIngredient::class;
 	}
 
 	protected function getExpectedName(): string {
-		return 'create_shop_pages';
+		return 'create_pages';
 	}
 
 	protected function getExpectedCategory(): string {
-		return 'woocommerce';
+		return 'wordpress';
 	}
 
 	// ===== Validation Tests =====

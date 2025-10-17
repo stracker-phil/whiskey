@@ -11,8 +11,6 @@ use Whiskey\Registry\IngredientRegistry;
 /**
  * Updates the "home_page" setting.
  * Group: WordPress core
- *
- * @todo untested
  */
 class SetHomepageIngredient extends Ingredient {
 	public const NAME        = 'set_homepage';

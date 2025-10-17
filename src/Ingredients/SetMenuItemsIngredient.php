@@ -12,8 +12,6 @@ use Whiskey\Registry\IngredientRegistry;
  * Creates a primary navigation menu with specified pages.
  * Replaces any existing primary menu completely.
  * Group: WordPress core
- *
- * @todo untested
  */
 class SetMenuItemsIngredient extends Ingredient {
 	public const NAME        = 'set_menu_items';

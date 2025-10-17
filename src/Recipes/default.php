@@ -7,13 +7,13 @@ declare( strict_types = 1 );
 
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Ingredients\SetHomepageIngredient;
-use Whiskey\Ingredients\CreateShopPagesIngredient;
+use Whiskey\Ingredients\CreatePagesIngredient;
 
 add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registry ) {
 	$registry->add(
 		'default-shop',
 		[
-			CreateShopPagesIngredient::NAME => [
+			CreatePagesIngredient::NAME => [
 				'shop',
 				'classic-cart',
 				'classic-checkout',

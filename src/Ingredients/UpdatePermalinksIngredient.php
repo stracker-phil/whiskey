@@ -10,8 +10,6 @@ use Whiskey\Registry\IngredientRegistry;
 /**
  * Updates the permalink structure of the WordPress site.
  * Group: WordPress core
- *
- * @todo untested
  */
 class UpdatePermalinksIngredient extends Ingredient {
 	public const NAME        = 'permalink_structure';
