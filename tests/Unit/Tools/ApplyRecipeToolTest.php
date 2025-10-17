@@ -21,20 +21,11 @@ class ApplyRecipeToolTest extends ToolTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'POST', $config['method'] );
-		$this->assertStringContainsString( '/recipe/', $config['path'] );
-		$this->assertStringContainsString( '/apply', $config['path'] );
+		$this->assert_rest_config( 'POST', '/recipe/' );
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'whiskey apply', $config['command'] );
-		$this->assertStringContainsString( 'recipe', $config['synopsis'] );
+		$this->assert_cli_config( 'whiskey apply', 'recipe' );
 	}
 
 	public function testHandleLogicThrowsExceptionWhenNameMissing(): void {
