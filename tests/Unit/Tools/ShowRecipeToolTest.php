@@ -19,19 +19,11 @@ class ShowRecipeToolTest extends ToolTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'GET', $config['method'] );
-		$this->assertSame( '/recipe/(?P<name>[a-zA-Z0-9-_]+)', $config['path'] );
+		$this->assert_rest_config( 'GET', '/recipe/' );
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'whiskey recipe', $config['command'] );
-		$this->assertStringContainsString( 'recipe', $config['synopsis'] );
+		$this->assert_cli_config( 'whiskey recipe', 'recipe' );
 	}
 
 	public function testHandleLogicReturnsRecipeData(): void {
