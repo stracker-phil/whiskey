@@ -3,6 +3,7 @@
 
 # Code coverage report
 /coverage/
+/metrics/
 
 # Claude integration
 !CLAUDE.md
