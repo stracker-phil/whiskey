@@ -117,4 +117,55 @@ abstract class ToolTest extends WhiskeyTest {
 
 		return $method;
 	}
+
+	/**
+	 * Assert that a tool's REST config matches expected values.
+	 *
+	 * Tests the get_rest_config() method and verifies the method and path.
+	 * Uses assertStringContainsString for path to handle regex patterns flexibly.
+	 *
+	 * Example:
+	 *     $this->assert_rest_config('GET', '/recipes');
+	 *     $this->assert_rest_config('POST', '/recipe/'); // matches paths with regex
+	 *
+	 * @param string $expected_method        Expected HTTP method (GET, POST, etc.).
+	 * @param string $expected_path_fragment Expected path or path fragment.
+	 *
+	 * @return void
+	 */
+	protected function assert_rest_config(
+		string $expected_method,
+		string $expected_path_fragment
+	): void {
+		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
+
+		$this->assertIsArray( $config );
+		$this->assertSame( $expected_method, $config['method'] );
+		$this->assertStringContainsString( $expected_path_fragment, $config['path'] );
+	}
+
+	/**
+	 * Assert that a tool's CLI config matches expected values.
+	 *
+	 * Tests the get_cli_config() method and verifies the command and synopsis.
+	 *
+	 * Example:
+	 *     $this->assert_cli_config('whiskey recipes', 'recipes');
+	 *     $this->assert_cli_config('whiskey apply', 'recipe');
+	 *
+	 * @param string $expected_command           Expected CLI command string.
+	 * @param string $expected_synopsis_fragment Expected word/phrase in synopsis.
+	 *
+	 * @return void
+	 */
+	protected function assert_cli_config(
+		string $expected_command,
+		string $expected_synopsis_fragment
+	): void {
+		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
+
+		$this->assertIsArray( $config );
+		$this->assertSame( $expected_command, $config['command'] );
+		$this->assertStringContainsString( $expected_synopsis_fragment, $config['synopsis'] );
+	}
 }
