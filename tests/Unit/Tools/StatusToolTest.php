@@ -11,8 +11,6 @@ use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Registry\IngredientRegistry;
 
 class StatusToolTest extends ToolTest {
-	private StatusTool $tool;
-
 	protected function setUp(): void {
 		parent::setUp();
 		$this->tool = new StatusTool( $this->recipes, $this->ingredients, $this->executor );

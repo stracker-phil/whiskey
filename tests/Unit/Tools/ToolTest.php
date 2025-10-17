@@ -28,6 +28,13 @@ use ReflectionMethod;
  */
 abstract class ToolTest extends WhiskeyTest {
 	/**
+	 * The tool that is tested.
+	 *
+	 * @var WhiskeyTool
+	 */
+	protected WhiskeyTool $tool;
+
+	/**
 	 * Recipe registry stub.
 	 *
 	 * @var RecipeRegistry

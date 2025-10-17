@@ -10,8 +10,6 @@ use Whiskey\Tools\ListIngredientsTool;
 use Whiskey\Registry\IngredientRegistry;
 
 class ListIngredientsToolTest extends ToolTest {
-	private ListIngredientsTool $tool;
-
 	protected function setUp(): void {
 		parent::setUp();
 		$this->tool = new ListIngredientsTool( $this->recipes, $this->ingredients, $this->executor );

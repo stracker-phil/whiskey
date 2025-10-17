@@ -11,8 +11,6 @@ use Whiskey\Registry\RecipeRegistry;
 use Exception;
 
 class ShowRecipeToolTest extends ToolTest {
-	private ShowRecipeTool $tool;
-
 	protected function setUp(): void {
 		parent::setUp();
 		$this->tool = new ShowRecipeTool( $this->recipes, $this->ingredients, $this->executor );

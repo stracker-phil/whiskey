@@ -13,8 +13,6 @@ use Whiskey\ExecutionResult;
 use Exception;
 
 class ApplyRecipeToolTest extends ToolTest {
-	private ApplyRecipeTool $tool;
-
 	protected function setUp(): void {
 		parent::setUp();
 		$this->tool = new ApplyRecipeTool( $this->recipes, $this->ingredients, $this->executor );
