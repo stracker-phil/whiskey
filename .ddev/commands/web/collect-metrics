@@ -52,7 +52,7 @@ LLOC="N/A"
 CLASSES="N/A"
 METHODS="N/A"
 if [ -f "$OUTPUT_DIR/phploc.json" ] && command -v jq &> /dev/null; then
-    TOTAL_LOC=$(jq -r '.loc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
+    TOTAL_LOC=$(jq -r '.ncloc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
     LLOC=$(jq -r '.lloc' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
     CLASSES=$(jq -r '.classes' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
     METHODS=$(jq -r '.methods' "$OUTPUT_DIR/phploc.json" 2>/dev/null || echo "N/A")
@@ -161,7 +161,7 @@ cat > "$OUTPUT_DIR/index.html" << HTMLEOF
         <div class="metric-card">
             <h3>Lines of Code</h3>
             <div class="metric-value">$TOTAL_LOC</div>
-            <div class="metric-label">Total lines</div>
+            <div class="metric-label">Non-comment lines</div>
         </div>
         
         <div class="metric-card">
