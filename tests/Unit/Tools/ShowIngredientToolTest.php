@@ -19,19 +19,11 @@ class ShowIngredientToolTest extends ToolTest {
 	}
 
 	public function testGetRestConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_rest_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'GET', $config['method'] );
-		$this->assertStringContainsString( '/ingredient/', $config['path'] );
+		$this->assert_rest_config( 'GET', '/ingredient/' );
 	}
 
 	public function testGetCliConfigReturnsConfiguration(): void {
-		$config = $this->invoke_protected_method( $this->tool, 'get_cli_config' );
-
-		$this->assertIsArray( $config );
-		$this->assertSame( 'whiskey ingredient', $config['command'] );
-		$this->assertStringContainsString( 'ingredient', $config['synopsis'] );
+		$this->assert_cli_config( 'whiskey ingredient', 'ingredient' );
 	}
 
 	public function testHandleLogicReturnsIngredientMetadata(): void {
