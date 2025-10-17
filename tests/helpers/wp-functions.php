@@ -181,6 +181,14 @@ function wp_json_encode( $data, int $options = 0, int $depth = 512 ) {
 	return json_encode( $data, $options, $depth );
 }
 
+function wp_get_theme( ?string $stylesheet = null ) {
+	return WP_Functions::call( 'wp_get_theme', $stylesheet );
+}
+
+function switch_theme( string $stylesheet ): void {
+	WP_Functions::call( 'switch_theme', $stylesheet );
+}
+
 // Track REST route registrations for testing
 global $registered_rest_routes;
 $registered_rest_routes = [];

@@ -19,3 +19,4 @@ require_once __DIR__ . '/stubs/WP_Post.php';
 require_once __DIR__ . '/stubs/WP_CLI.php';
 require_once __DIR__ . '/stubs/WP_CLI_Utils.php';
 require_once __DIR__ . '/stubs/WP_REST_Request.php';
+require_once __DIR__ . '/stubs/WP_Theme.php';
