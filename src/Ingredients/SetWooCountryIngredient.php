@@ -51,7 +51,7 @@ class SetWooCountryIngredient extends Ingredient {
 				false,
 				'Failed to update WooCommerce default country.',
 				[
-					'previous' => $previous_value,
+					'previous'  => $previous_value,
 					'requested' => $country_value,
 				]
 			);
