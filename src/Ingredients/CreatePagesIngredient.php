@@ -89,7 +89,7 @@ class CreatePagesIngredient extends Ingredient {
 	}
 
 	private function get_template_path( string $slug ): string {
-		return __DIR__ . '/ShopPages/' . $slug . '.php';
+		return __DIR__ . '/PageTemplates/' . $slug . '.php';
 	}
 
 	private function create_or_update_page( string $slug, array $template ): int {
@@ -138,5 +138,5 @@ class CreatePagesIngredient extends Ingredient {
 
 add_action(
 	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $registry ) => $registry->add( CreateShopPagesIngredient::class )
+	static fn( IngredientRegistry $registry ) => $registry->add( CreatePagesIngredient::class )
 );

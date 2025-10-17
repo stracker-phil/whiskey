@@ -53,7 +53,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create a test template file
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -82,7 +82,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create a test template file
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -116,7 +116,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'wp_insert_post', 0 );
 
 		// Create a test template file
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -145,7 +145,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create test template files
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -182,7 +182,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		} );
 
 		// Create template with post_meta
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -206,7 +206,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 
 	public function test_execute_handles_invalid_template_format(): void {
 		// Create a template file with invalid format (missing required fields)
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -229,7 +229,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 
 	public function test_execute_handles_template_returning_non_array(): void {
 		// Create a template file that returns non-array
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -256,7 +256,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_post_meta', true );
 
 		// Create template without post_type
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
@@ -287,7 +287,7 @@ class CreatePagesIngredientTest extends IngredientTest {
 		} );
 
 		// Create template without post_meta
-		$template_dir = __DIR__ . '/../../../src/Ingredients/ShopPages';
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
 		if ( ! is_dir( $template_dir ) ) {
 			mkdir( $template_dir, 0755, true );
 		}
