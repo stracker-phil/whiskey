@@ -46,8 +46,24 @@ class ListIngredientsTool extends WhiskeyTool {
 		}
 
 		WP_CLI::log( 'Available ingredients:' );
+		$categories = [];
+
 		foreach ( $ingredients as $ingredient ) {
-			WP_CLI::log( "  - $ingredient" );
+			$meta = $this->ingredients->get_metadata( $ingredient );
+
+			$category = $meta['category'] ?? 'default';
+			if ( ! isset( $categories[ $category ] ) ) {
+				$categories[ $category ] = [];
+			}
+			$categories[ $category ][] = $ingredient;
+		}
+
+		foreach ( $categories as $category => $ingredients ) {
+			WP_CLI::log( "[$category]" );
+
+			foreach ( $ingredients as $ingredient ) {
+				WP_CLI::log( "  - $ingredient" );
+			}
 		}
 
 		WP_CLI::success( sprintf( 'Found %d ingredient(s).', count( $ingredients ) ) );
