@@ -144,7 +144,7 @@ class SetMenuItemsIngredient extends Ingredient {
 	}
 }
 
-add_add_filter(
+add_filter(
 	'whiskey:register_ingredients',
 	static fn( array $items ) => [ ...$items, SetMenuItemsIngredient::class ]
 );
