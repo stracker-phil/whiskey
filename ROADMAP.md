@@ -91,7 +91,6 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - [x] WordPress shop setup recipe
 - [x] WooCommerce US store recipe
-- [ ] PayPal sandbox recipe
 
 #### Documentation
 
@@ -100,7 +99,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] REST API endpoint documentation
 - [x] WP-CLI command documentation
 - [x] CLAUDE.md for AI assistant context
-- [ ] Capture baseline complexity metrics (need 10+ ingredients total)
+- [x] Capture baseline complexity metrics (need 10+ ingredients total)
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
 ---
@@ -141,7 +140,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 #### Additional Features
 
 - [ ] Use `str_contains()`, `str_starts_with()`, `str_ends_with()` in ingredients
-- [ ] Update tests for new syntax
+- [ ] Pass all tests
 - [ ] Measure complexity reduction
 
 ---
@@ -175,7 +174,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 #### Additional Features
 
 - [ ] Use `array_is_list()` in validation where applicable
-- [ ] Update tests
+- [ ] Pass all tests
 - [ ] Measure complexity reduction
 
 ---
@@ -198,7 +197,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 #### Additional Features
 
 - [ ] Use `true`/`false`/`null` types in ingredient validation
-- [ ] Update tests
+- [ ] Pass all tests
 - [ ] Measure complexity reduction
 
 ---
@@ -221,7 +220,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - [ ] Use `json_validate()` for recipe config validation
 - [ ] Use anonymous readonly classes if applicable
-- [ ] Update tests
+- [ ] Pass all tests
 - [ ] Measure final complexity reduction
 
 #### Final Documentation
@@ -252,4 +251,4 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Use **wpdi** for DI
 - [ ] MCP Server integration via WordPress MCP Adapter
 - [x] WP-CLI command support
-- [ ] Recipe dependency management
+- [x] Recipe dependency management

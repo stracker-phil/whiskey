@@ -122,6 +122,17 @@ During development, a direct coverage output in the terminal is often more helpf
 ddev composer coverage
 ```
 
+**Option 3**
+
+To collect detailed metrics and coverage information, run the following command, and open the generated report link:
+
+```bash
+# Collect metrics details and generate an HTML documentation
+ddev collect-metrics
+```
+
+The details are available at: https://whiskey.ddev.site/metrics/<branch>
+
 ### Creating New Ingredients
 
 Ingredients are individual configuration operations that recipes can use.
@@ -135,7 +146,7 @@ Ingredients are individual configuration operations that recipes can use.
 
 1. Create ingredient class in `src/Ingredients/` extending `Ingredient` base class
 2. Implement `validate()` and `execute()` methods
-3. Add self-registration via `whiskey:register_ingredient` hook at bottom of file
+3. Add self-registration via `whiskey:register_ingredients` filter at bottom of file
 4. Write tests
 
 **Example ingredient:**
@@ -153,40 +164,43 @@ class MyCustomIngredient extends Ingredient {
     public function execute( $value ): ExecutionResult {
         // Collect response details for output.
         $details = [];
+        
         // Do the configuration work
         return new ExecutionResult( true, 'Success', $details );
     }
 }
 
 // Self-register
-add_action( 'whiskey:register_ingredient', function( $registry ) {
-    $registry->add( MyCustomIngredient::class );
-});
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, MyCustomIngredient::class ];
+);
 ```
 
 ### Creating New Recipes
 
 Recipes combine ingredients into complete configuration blueprints.
 
-The plugin includes built-in recipes in `src/Recipes/*.php` that work out-of-the-box, registered via the `whiskey:register_recipe` hook.
+The plugin includes built-in recipes in `src/Recipes/*.php` that work out-of-the-box, registered via the `whiskey:register_recipes` filter.
 
-To create custom recipes, use the same hook in any file loaded on/before `init` action at priority 10.
+To create custom recipes, use the same hook in any file loaded on/before `init` action at priority 10, and add your recipes to the filter's response array.
 
 **Sample recipe:**
 
 ```php
 // In a custom plugin or theme.
-add_action('whiskey:register_recipe', function( \Whiskey\Registry\RecipeRegistry $registry ) {
-    $registry->add(
-        'my-shop-setup',     // Unique recipe name
+add_filter(
+	'whiskey:register_recipes',
+	static fn( array $items ) => array_merge( $items, [
+        'my-shop-setup' =>   // Unique recipe name
         [                    // Ingredient configuration
-            'set_homepage' => 'shop',
-            'create_shop_pages' => ['shop', 'cart'],
-            'woocommerce_country' => 'US',
+            'set_homepage'           => 'shop',
+            'create_shop_pages'      => [ 'shop', 'cart' ],
+            'woocommerce_country'    => 'US',
             MyCustomIngredient::NAME => true, // Custom ingredient
         ]
-    );
-});
+    ] );
+);
 ```
 
 **Note:** If a recipe with the same name already exists, it will be replaced by the new recipe.
