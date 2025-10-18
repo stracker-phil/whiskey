@@ -47,7 +47,7 @@ class SetWooCurrencyIngredient extends Ingredient {
 	}
 }
 
-add_action(
-	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $registry ) => $registry->add( SetWooCurrencyIngredient::class )
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, SetWooCurrencyIngredient::class ]
 );

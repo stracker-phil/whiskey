@@ -46,7 +46,7 @@ class UpdatePermalinksIngredient extends Ingredient {
 	}
 }
 
-add_action(
-	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $registry ) => $registry->add( UpdatePermalinksIngredient::class )
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, UpdatePermalinksIngredient::class ]
 );

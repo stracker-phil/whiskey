@@ -68,7 +68,7 @@ class SetWooCountryIngredient extends Ingredient {
 	}
 }
 
-add_action(
-	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $registry ) => $registry->add( SetWooCountryIngredient::class )
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, SetWooCountryIngredient::class ]
 );
