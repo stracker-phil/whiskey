@@ -65,14 +65,6 @@ class SetPayPalMerchantIngredient extends Ingredient {
 			}
 		}
 
-		// Check for unknown keys
-		$allowed_keys = array_merge( self::REQUIRED_KEYS, self::OPTIONAL_KEYS );
-		foreach ( array_keys( $value ) as $key ) {
-			if ( ! in_array( $key, $allowed_keys, true ) ) {
-				return false;
-			}
-		}
-
 		return true;
 	}
 
