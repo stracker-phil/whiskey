@@ -121,6 +121,36 @@ class WhiskeyToolTest extends ToolTest {
 		$this->assertCount( 0, $registered_cli_commands );
 	}
 
+	public function test_init_cli_skips_when_cli_not_available(): void {
+		global $registered_cli_commands;
+		$registered_cli_commands = [];
+
+		$tool = new class( $this->recipes, $this->ingredients, $this->executor ) extends WhiskeyTool {
+			protected function get_rest_config(): ?array {
+				return null;
+			}
+
+			protected function get_cli_config(): ?array {
+				return [
+					'command'  => 'whiskey test',
+					'synopsis' => 'Test command',
+				];
+			}
+
+			protected function handle_logic( array $args ): array {
+				return [];
+			}
+
+			protected function is_cli_available(): bool {
+				return false;
+			}
+		};
+
+		$tool->init_cli();
+
+		$this->assertCount( 0, $registered_cli_commands );
+	}
+
 	// ===== handle_rest() tests =====
 
 	public function test_handle_rest_returns_success_response(): void {
