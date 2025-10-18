@@ -23,6 +23,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 		add_filter( 'whiskey:register_recipes', function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
 			$this->assertIsArray( $items );
+
 			return $items;
 		} );
 
@@ -35,6 +36,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$callCount = 0;
 		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$callCount ) {
 			$callCount ++;
+
 			return $items;
 		} );
 
@@ -110,6 +112,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$hookFired = false;
 		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+
 			return $items;
 		} );
 
@@ -138,6 +141,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$hookFired = false;
 		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+
 			return $items;
 		} );
 
@@ -160,6 +164,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$hookFired = false;
 		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+
 			return $items;
 		} );
 
@@ -232,5 +237,18 @@ class RecipeRegistryTest extends WhiskeyTest {
 
 		// Recipe should have override config
 		$this->assertSame( $override_config, $this->registry->get( 'test-recipe' ) );
+	}
+
+	public function test_init_handles_non_string_items_gracefully(): void {
+		// Simulate a broken filter that returns invalid types
+		add_filter( 'whiskey:register_ingredients', static function ( $items ) {
+			return [ 123, 'invalid', null, TestIngredient::class ];
+		} );
+
+		// Should not throw, should skip invalid items
+		$this->registry->init();
+
+		// Only valid ingredient should be registered
+		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
 	}
 }
