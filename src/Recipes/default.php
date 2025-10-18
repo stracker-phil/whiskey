@@ -14,11 +14,10 @@ use Whiskey\Ingredients\UpdatePermalinksIngredient;
 use Whiskey\Ingredients\SetWooCountryIngredient;
 use Whiskey\Ingredients\SetWooCurrencyIngredient;
 
-add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registry ) {
-	$registry->add(
-		'site-setup',
-		[
-			// Create all 6 WooCommerce pages
+add_filter(
+	'whiskey:register_recipes',
+	static fn( array $items ) => array_merge( $items, [
+		'site-setup' => [
 			CreatePagesIngredient::NAME      => [
 				'shop',
 				'classic-cart',
@@ -27,14 +26,8 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 				'block-checkout',
 				'my-account',
 			],
-
-			// Set Storefront as active theme
 			SetActiveThemeIngredient::NAME   => 'storefront',
-
-			// Set shop page as homepage
 			SetHomepageIngredient::NAME      => 'shop',
-
-			// Add pages to primary menu
 			SetMenuItemsIngredient::NAME     => [
 				'shop',
 				'classic-cart',
@@ -43,31 +36,27 @@ add_action( 'whiskey:register_recipe', static function ( RecipeRegistry $registr
 				'block-checkout',
 				'my-account',
 			],
-
-			// Set pretty permalinks
 			UpdatePermalinksIngredient::NAME => '/%postname%/',
-		]
-	);
+		],
+	] )
+);
 
-	$registry->add(
-		'us-shop',
-		[
-			// Set store location to California, US
+add_filter(
+	'whiskey:register_recipes',
+	static fn( array $items ) => array_merge( $items, [
+		'us-shop' => [
 			SetWooCountryIngredient::NAME  => 'US:CA',
-
-			// Set currency to USD
 			SetWooCurrencyIngredient::NAME => 'USD',
-		]
-	);
+		],
+	] )
+);
 
-	$registry->add(
-		'eu-shop',
-		[
-			// Set store location to Austria
+add_filter(
+	'whiskey:register_recipes',
+	static fn( array $items ) => array_merge( $items, [
+		'eu-shop' => [
 			SetWooCountryIngredient::NAME  => 'AT',
-
-			// Set currency to EUR
 			SetWooCurrencyIngredient::NAME => 'EUR',
-		]
-	);
-} );
+		],
+	] )
+);
