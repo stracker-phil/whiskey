@@ -18,3 +18,8 @@
 
 1. SetWooStorePages - arg: array (cart: slug, checkout: slug)
    - Changes the store pages, e.g. to switch default store to block checkout or classic checkout
+
+## General
+
+1. RecipeIngredient - arg: string (name of another recipe, which will be executed)
+   - Allows stacking of recipes. Needs some sort of tracking to prevent infinite loops
