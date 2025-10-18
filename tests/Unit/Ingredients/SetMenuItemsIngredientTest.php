@@ -245,4 +245,35 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		$this->assertSame( 99, $updated_locations['secondary'] );
 		$this->assertSame( 88, $updated_locations['footer'] );
 	}
+
+	public function test_execute_handles_wp_error_when_creating_menu(): void {
+		WP_Functions::mock( 'wp_get_nav_menu_object', false );
+		WP_Functions::mock( 'wp_create_nav_menu', 'error_object' );
+		WP_Functions::mock( 'is_wp_error', true );
+
+		$result = $this->ingredient->execute( [ 'home' ] );
+
+		$this->assertFalse( $result->is_success() );
+		$this->assertStringContainsString( 'Failed to create or retrieve primary menu', $result->get_message() );
+	}
+
+	public function test_execute_handles_wp_error_when_adding_menu_item(): void {
+		$menu          = new stdClass();
+		$menu->term_id = 42;
+
+		WP_Functions::mock( 'wp_get_nav_menu_object', $menu );
+		WP_Functions::mock( 'wp_get_nav_menu_items', false );
+		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 10 ) );
+		WP_Functions::mock( 'wp_update_nav_menu_item', 'error_object' );
+		WP_Functions::mock( 'is_wp_error', true );
+		WP_Functions::mock( 'get_theme_mod', [] );
+		WP_Functions::mock( 'set_theme_mod' );
+
+		$result = $this->ingredient->execute( [ 'home' ] );
+
+		$this->assertFalse( $result->is_success() );
+		$this->assertStringContainsString( 'Failed to add 1 menu item', $result->get_message() );
+		$data = $result->get_data();
+		$this->assertSame( 0, $data['items']['home'] );
+	}
 }

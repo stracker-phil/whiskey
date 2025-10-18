@@ -306,4 +306,60 @@ class CreatePagesIngredientTest extends IngredientTest {
 		$this->assertExecutionSuccess( $result );
 		$this->assertEmpty( $meta_calls );
 	}
+
+	public function test_execute_handles_wp_error_when_creating_new_page(): void {
+		WP_Functions::mock( 'get_page_by_path', null );
+		WP_Functions::mock( 'wp_insert_post', 'error_object' ); // Return value doesn't matter
+		WP_Functions::mock( 'is_wp_error', true ); // This is what matters
+
+		// Create a test template file
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
+		if ( ! is_dir( $template_dir ) ) {
+			mkdir( $template_dir, 0755, true );
+		}
+
+		$template_file = $template_dir . '/test-page.php';
+		file_put_contents(
+			$template_file,
+			'<?php return ["title" => "Test Page", "content" => "Test content"];'
+		);
+
+		$result = $this->ingredient->execute( [ 'test-page' ] );
+
+		// Clean up
+		unlink( $template_file );
+
+		$this->assertExecutionFailure( $result );
+		$data = $result->get_data();
+		$this->assertSame( 0, $data['pages']['test-page'] );
+	}
+
+	public function test_execute_handles_wp_error_when_updating_existing_page(): void {
+		$existing_page = $this->createMockPost( 456 );
+
+		WP_Functions::mock( 'get_page_by_path', $existing_page );
+		WP_Functions::mock( 'wp_insert_post', 'error_object' ); // Return value doesn't matter
+		WP_Functions::mock( 'is_wp_error', true ); // This is what matters
+
+		// Create a test template file
+		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
+		if ( ! is_dir( $template_dir ) ) {
+			mkdir( $template_dir, 0755, true );
+		}
+
+		$template_file = $template_dir . '/test-page.php';
+		file_put_contents(
+			$template_file,
+			'<?php return ["title" => "Test Page", "content" => "Test content"];'
+		);
+
+		$result = $this->ingredient->execute( [ 'test-page' ] );
+
+		// Clean up
+		unlink( $template_file );
+
+		$this->assertExecutionFailure( $result );
+		$data = $result->get_data();
+		$this->assertSame( 0, $data['pages']['test-page'] );
+	}
 }

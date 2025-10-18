@@ -144,7 +144,9 @@ function update_post_meta( int $post_id, string $key, $value ): bool {
 }
 
 function is_wp_error( $thing ): bool {
-	return false; // Simplified for testing
+	$result = WP_Functions::call( 'is_wp_error', $thing );
+
+	return $result !== null ? $result : false;
 }
 
 function wp_get_nav_menu_object( string $menu ) {
