@@ -239,16 +239,24 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$this->assertSame( $override_config, $this->registry->get( 'test-recipe' ) );
 	}
 
-	public function test_init_handles_non_string_items_gracefully(): void {
-		// Simulate a broken filter that returns invalid types
-		add_filter( 'whiskey:register_ingredients', static function ( $items ) {
-			return [ 123, 'invalid', null, TestIngredient::class ];
+	public function test_init_handles_non_string_keys_gracefully(): void {
+		// Simulate a broken filter that returns invalid recipe names (non-string keys)
+		add_filter( 'whiskey:register_recipes', static function ( $items ) {
+			return array_merge( $items, [
+				123          => [ 'ingredient1' => 'value1' ], // Numeric key causes TypeError, will be skipped
+				'valid-name' => [ 'ingredient2' => 'value2' ], // Valid recipe
+				''           => [ 'ingredient3' => 'value3' ], // Empty name (should be skipped)
+			] );
 		} );
 
 		// Should not throw, should skip invalid items
 		$this->registry->init();
 
-		// Only valid ingredient should be registered
-		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
+		// Valid recipe should be registered
+		$this->assertTrue( $this->registry->has( 'valid-name' ) );
+		// Numeric key causes TypeError and is skipped
+		$this->assertFalse( $this->registry->has( '123' ) );
+		// Empty name should be skipped
+		$this->assertFalse( $this->registry->has( '' ) );
 	}
 }
