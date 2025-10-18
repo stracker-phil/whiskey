@@ -88,7 +88,7 @@ abstract class WhiskeyTool {
 	 * Register CLI command if configuration is provided.
 	 */
 	public function init_cli(): void {
-		if ( ! class_exists( 'WP_CLI' ) ) {
+		if ( ! $this->is_cli_available() ) {
 			return;
 		}
 
@@ -206,5 +206,9 @@ abstract class WhiskeyTool {
 		}
 
 		return 400;
+	}
+
+	protected function is_cli_available(): bool {
+		return class_exists( 'WP_CLI' );
 	}
 }

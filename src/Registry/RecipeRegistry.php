@@ -32,7 +32,12 @@ class RecipeRegistry {
 		$items = apply_filters( 'whiskey:register_recipes', [] );
 
 		foreach ( $items as $name => $ingredients ) {
-			$this->add( $name, $ingredients );
+			try {
+				$this->add( $name, $ingredients );
+			} catch ( Throwable $e ) {
+				// Skip invalid recipes silently
+				continue;
+			}
 		}
 
 		$this->initialized = true;

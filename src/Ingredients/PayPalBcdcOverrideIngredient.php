@@ -49,28 +49,6 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 			);
 		}
 
-		// Delete the option (unset)
-		if ( false === $value ) {
-			$deleted = delete_option( self::OPTION_KEY );
-
-			if ( ! $deleted && $previous_value !== null ) {
-				return new ExecutionResult(
-					false,
-					'Failed to delete BCDC override flag.',
-					[ 'previous' => $previous_value ]
-				);
-			}
-
-			return new ExecutionResult(
-				true,
-				'BCDC override flag deleted.',
-				[
-					'previous' => $previous_value,
-					'current'  => null,
-				]
-			);
-		}
-
 		// Handle array: save custom data
 		if ( is_array( $value ) ) {
 			$updated = update_option( self::OPTION_KEY, $value );
@@ -96,11 +74,24 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 			);
 		}
 
-		// Should never reach here due to validation
+		// Every other case: Delete the option (unset)
+		$deleted = delete_option( self::OPTION_KEY );
+
+		if ( ! $deleted && $previous_value !== null ) {
+			return new ExecutionResult(
+				false,
+				'Failed to delete BCDC override flag.',
+				[ 'previous' => $previous_value ]
+			);
+		}
+
 		return new ExecutionResult(
-			false,
-			'Invalid value type.',
-			[ 'value' => $value ]
+			true,
+			'BCDC override flag deleted.',
+			[
+				'previous' => $previous_value,
+				'current'  => null,
+			]
 		);
 	}
 }
