@@ -121,6 +121,12 @@ function get_option( string $option, $default = false ) {
 	return $result !== null ? $result : $default;
 }
 
+function delete_option( string $option ): bool {
+	$result = WP_Functions::call( 'delete_option', $option );
+
+	return $result !== null ? $result : true;
+}
+
 function flush_rewrite_rules(): void {
 	WP_Functions::call( 'flush_rewrite_rules' );
 }
