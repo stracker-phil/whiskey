@@ -178,6 +178,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 				...$items,
 				TestIngredient::class,
 				'NonExistentClass', // This will fail
+				123, // This will throw a type error
 				TestIngredient2::class, // Should still be added
 			];
 		} );
