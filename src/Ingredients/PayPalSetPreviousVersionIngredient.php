@@ -1,0 +1,93 @@
+<?php
+declare( strict_types = 1 );
+
+namespace Whiskey\Ingredients;
+
+use Whiskey\Ingredient;
+use Whiskey\ExecutionResult;
+
+/**
+ * Sets the PayPal plugin installed version to trigger update logic.
+ * Group: PayPal
+ */
+class PayPalSetPreviousVersionIngredient extends Ingredient {
+	public const NAME        = 'paypal_set_previous_version';
+	public const CATEGORY    = 'paypal';
+	public const DESCRIPTION = 'Sets the stored PayPal plugin version to trigger update logic; accepts version string (e.g., "2.0.0") or empty string to delete';
+
+	private const OPTION_NAME = 'woocommerce-ppcp-version';
+
+	public function validate( $value ): bool {
+		if ( ! is_string( $value ) ) {
+			return false;
+		}
+
+		// Allow empty string (for deletion)
+		if ( $value === '' ) {
+			return true;
+		}
+
+		// Validate semantic version format (e.g., "2.0.0", "1.2.3-beta")
+		return preg_match( '/^\d+\.\d+\.\d+/', $value ) === 1;
+	}
+
+	public function execute( $value ): ExecutionResult {
+		$previous_value = get_option( self::OPTION_NAME, '' );
+
+		// Empty string means delete the option
+		if ( $value === '' ) {
+			$deleted = delete_option( self::OPTION_NAME );
+
+			if ( ! $deleted && $previous_value !== '' ) {
+				return new ExecutionResult(
+					false,
+					'Failed to delete PayPal version option.',
+					[
+						'previous' => $previous_value,
+						'option'   => self::OPTION_NAME,
+					]
+				);
+			}
+
+			return new ExecutionResult(
+				true,
+				'PayPal version option deleted successfully.',
+				[
+					'previous' => $previous_value,
+					'action'   => 'deleted',
+					'option'   => self::OPTION_NAME,
+				]
+			);
+		}
+
+		// Set the version
+		$updated = update_option( self::OPTION_NAME, $value );
+
+		if ( ! $updated && $previous_value !== $value ) {
+			return new ExecutionResult(
+				false,
+				'Failed to update PayPal version.',
+				[
+					'previous'  => $previous_value,
+					'requested' => $value,
+					'option'    => self::OPTION_NAME,
+				]
+			);
+		}
+
+		return new ExecutionResult(
+			true,
+			"PayPal version set to '{$value}'.",
+			[
+				'previous' => $previous_value,
+				'current'  => $value,
+				'option'   => self::OPTION_NAME,
+			]
+		);
+	}
+}
+
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, PayPalSetPreviousVersionIngredient::class ]
+);
