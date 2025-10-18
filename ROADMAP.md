@@ -89,8 +89,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Sample Recipes
 
-- [ ] WordPress shop setup recipe
-- [ ] WooCommerce US store recipe
+- [x] WordPress shop setup recipe
+- [x] WooCommerce US store recipe
 - [ ] PayPal sandbox recipe
 
 #### Documentation
@@ -100,7 +100,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] REST API endpoint documentation
 - [x] WP-CLI command documentation
 - [x] CLAUDE.md for AI assistant context
-- [ ] Capture baseline complexity metrics (need 15+ ingredients total)
+- [ ] Capture baseline complexity metrics (need 10+ ingredients total)
 - [ ] Document baseline in `docs/baseline-7.4.md`
 
 ---
