@@ -14,7 +14,6 @@ namespace YourPlugin\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Sets a custom plugin option
@@ -74,7 +73,7 @@ class CustomPluginSettingIngredient extends Ingredient {
 }
 
 // Self-register when Whiskey loads
-add_action(
-	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $r ) => $r->add( CustomPluginSettingIngredient::class )
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, CustomPluginSettingIngredient::class ]
 );

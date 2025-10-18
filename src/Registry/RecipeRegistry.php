@@ -43,9 +43,6 @@ class RecipeRegistry {
 	}
 
 	/**
-	 * @explain Called by plugins/themes via the 'whiskey:register_recipe' hook.
-	 *          Registry instance is passed as hook parameter for dependency injection.
-	 *
 	 * @param string $name        Unique name of the recipe. If a recipe with the
 	 *                            same name exists, it is replaced
 	 * @param array  $ingredients List of ingredients to execute, with configuration.

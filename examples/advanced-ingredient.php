@@ -12,10 +12,8 @@ declare( strict_types = 1 );
 
 namespace YourPlugin\Ingredients;
 
-use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Assigns a custom menu to a theme location
@@ -81,14 +79,14 @@ class AssignMenuToLocationIngredient extends Ingredient {
 				false,
 				sprintf( 'Theme location "%s" does not exist', $location ),
 				[
-					'location'           => $location,
+					'location'            => $location,
 					'available_locations' => array_keys( $locations ),
 				]
 			);
 		}
 
 		// Assign the menu
-		$theme_locations                = get_nav_menu_locations();
+		$theme_locations              = get_nav_menu_locations();
 		$theme_locations[ $location ] = $menu_id;
 		set_theme_mod( 'nav_menu_locations', $theme_locations );
 
@@ -112,17 +110,19 @@ class AssignMenuToLocationIngredient extends Ingredient {
 		// Already an ID
 		if ( is_int( $menu ) ) {
 			$menu_object = wp_get_nav_menu_object( $menu );
+
 			return $menu_object ? $menu_object->term_id : 0;
 		}
 
 		// Try as slug
 		$menu_object = wp_get_nav_menu_object( $menu );
+
 		return $menu_object ? $menu_object->term_id : 0;
 	}
 }
 
 // Self-register
-add_action(
-	'whiskey:register_ingredient',
-	static fn( IngredientRegistry $r ) => $r->add( AssignMenuToLocationIngredient::class )
+add_filter(
+	'whiskey:register_ingredients',
+	static fn( array $items ) => [ ...$items, AssignMenuToLocationIngredient::class ]
 );
