@@ -6,6 +6,9 @@ set -e
 
 BRANCH=$(git branch --show-current)
 OUTPUT_DIR="metrics/$BRANCH"
+if [ -d "$OUTPUT_DIR" ]; then
+  rm -rf "$OUTPUT_DIR"
+fi
 mkdir -p "$OUTPUT_DIR"
 
 echo "📊 Collecting metrics for branch: $BRANCH"
