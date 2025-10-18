@@ -22,9 +22,10 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function test_init_fires_register_hook(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', function ( $registry ) use ( &$hookFired ) {
+		add_filter( 'whiskey:register_ingredients', function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
-			$this->assertInstanceOf( IngredientRegistry::class, $registry );
+			$this->assertIsArray( $items );
+			return $items;
 		} );
 
 		$this->registry->init();
@@ -34,8 +35,9 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function test_init_only_runs_once(): void {
 		$callCount = 0;
-		add_action( 'whiskey:register_ingredient', static function () use ( &$callCount ) {
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) use ( &$callCount ) {
 			$callCount ++;
+			return $items;
 		} );
 
 		$this->registry->init();
@@ -43,6 +45,16 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->registry->init();
 
 		$this->assertSame( 1, $callCount );
+	}
+
+	public function test_init_collects_ingredients_from_filter(): void {
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) {
+			return [ ...$items, TestIngredient::class ];
+		} );
+
+		$this->registry->init();
+
+		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
 	}
 
 	public function test_add_stores_ingredient_class(): void {
@@ -79,8 +91,9 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function test_get_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->get( 'anything' );
@@ -103,8 +116,9 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function test_all_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->all();
@@ -124,8 +138,9 @@ class IngredientRegistryTest extends WhiskeyTest {
 
 	public function test_has_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_ingredient', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->has( 'anything' );
@@ -156,41 +171,56 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertSame( 'test', $metadata['test_ingredient2']['category'] );
 	}
 
-	public function test_init_continues_after_hook_error(): void {
-		$init_count = 0;
-
-		// First callback throws an exception
-		add_action( 'whiskey:register_ingredient', static function () use ( &$init_count ) {
-			$init_count ++;
-			throw new \RuntimeException( 'Test error in hook callback' );
-		}, 10 );
-
-		// Second callback should NOT execute (WordPress stops after exception)
-		add_action( 'whiskey:register_ingredient', static function () use ( &$init_count ) {
-			$init_count ++;
-		}, 20 );
+	public function test_init_continues_after_individual_ingredient_error(): void {
+		// Register multiple ingredients, one will fail
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) {
+			return [
+				...$items,
+				TestIngredient::class,
+				'NonExistentClass', // This will fail
+				TestIngredient2::class, // Should still be added
+			];
+		} );
 
 		// Init should complete without throwing
 		$this->registry->init();
 
-		// Verify init marked as completed despite the error
-		$this->registry->init();
-		$this->assertSame( 1, $init_count, 'Init should only run once' );
+		// Verify both valid ingredients were added
+		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
+		$this->assertTrue( $this->registry->has( 'test_ingredient2' ) );
 	}
 
-	public function test_registry_remains_functional_after_hook_error(): void {
-		// Add a hook that throws
-		add_action( 'whiskey:register_ingredient', static function () {
-			throw new \RuntimeException( 'Test error' );
+	public function test_registry_remains_functional_after_filter_error(): void {
+		// Add ingredients via filter
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) {
+			return [ ...$items, TestIngredient::class ];
 		} );
 
-		// Init with error
+		// Init with ingredients
 		$this->registry->init();
 
-		// Registry should still work normally
-		$this->registry->add( TestIngredient::class );
+		// Registry should work normally
 		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
 		$this->assertInstanceOf( TestIngredient::class, $this->registry->get( 'test_ingredient' ) );
+	}
+
+	public function test_multiple_filters_accumulate_ingredients(): void {
+		// First filter adds ingredient 1
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) {
+			return [ ...$items, TestIngredient::class ];
+		}, 10 );
+
+		// Second filter adds ingredient 2
+		add_filter( 'whiskey:register_ingredients', static function ( array $items ) {
+			return [ ...$items, TestIngredient2::class ];
+		}, 20 );
+
+		$this->registry->init();
+
+		// Both ingredients should be registered
+		$this->assertTrue( $this->registry->has( 'test_ingredient' ) );
+		$this->assertTrue( $this->registry->has( 'test_ingredient2' ) );
+		$this->assertCount( 2, $this->registry->all() );
 	}
 }
 

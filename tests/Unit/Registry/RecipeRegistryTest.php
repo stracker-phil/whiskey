@@ -20,9 +20,10 @@ class RecipeRegistryTest extends WhiskeyTest {
 
 	public function test_init_fires_register_hook(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_recipe', function ( $registry ) use ( &$hookFired ) {
+		add_filter( 'whiskey:register_recipes', function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
-			$this->assertInstanceOf( RecipeRegistry::class, $registry );
+			$this->assertIsArray( $items );
+			return $items;
 		} );
 
 		$this->registry->init();
@@ -32,8 +33,9 @@ class RecipeRegistryTest extends WhiskeyTest {
 
 	public function test_init_only_runs_once(): void {
 		$callCount = 0;
-		add_action( 'whiskey:register_recipe', static function () use ( &$callCount ) {
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$callCount ) {
 			$callCount ++;
+			return $items;
 		} );
 
 		$this->registry->init();
@@ -43,23 +45,32 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$this->assertSame( 1, $callCount );
 	}
 
-	public function test_add_stores_recipe(): void {
-		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
+	public function test_init_collects_recipes_from_filter(): void {
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) {
+			return array_merge( $items, [
+				'test-recipe' => [ 'ingredient1' => 'value1' ],
+			] );
+		} );
+
+		$this->registry->init();
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
 	}
 
-	public function test_add_replaces_existing_recipe(): void {
-		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
-		$this->registry->add( 'test-recipe', [ 'ingredient2' => 'value2' ] );
+	public function test_add_stores_recipe(): void {
+		$config = [
+			'set_homepage' => 'shop',
+			'create_pages' => [ 'cart', 'checkout' ],
+		];
 
-		$recipe = $this->registry->get( 'test-recipe' );
+		$this->registry->add( 'test-recipe', $config );
 
-		$this->assertSame( [ 'ingredient2' => 'value2' ], $recipe );
+		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
+		$this->assertSame( $config, $this->registry->get( 'test-recipe' ) );
 	}
 
 	public function test_add_skips_empty_name(): void {
-		$this->registry->add( '', [ 'ingredient1' => 'value1' ] );
+		$this->registry->add( '', [ 'ingredient' => 'value' ] );
 
 		$this->assertEmpty( $this->registry->all() );
 	}
@@ -70,24 +81,36 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$this->assertEmpty( $this->registry->all() );
 	}
 
-	public function test_get_returns_recipe(): void {
-		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
+	public function test_add_replaces_existing_recipe(): void {
+		$config1 = [ 'ingredient1' => 'value1' ];
+		$config2 = [ 'ingredient2' => 'value2' ];
 
-		$recipe = $this->registry->get( 'test-recipe' );
+		$this->registry->add( 'test-recipe', $config1 );
+		$this->registry->add( 'test-recipe', $config2 );
 
-		$this->assertSame( [ 'ingredient1' => 'value1' ], $recipe );
+		$this->assertSame( $config2, $this->registry->get( 'test-recipe' ) );
+	}
+
+	public function test_get_returns_recipe_config(): void {
+		$config = [ 'ingredient' => 'value' ];
+		$this->registry->add( 'test-recipe', $config );
+
+		$result = $this->registry->get( 'test-recipe' );
+
+		$this->assertSame( $config, $result );
 	}
 
 	public function test_get_returns_null_for_non_existent(): void {
-		$recipe = $this->registry->get( 'non-existent' );
+		$result = $this->registry->get( 'non-existent' );
 
-		$this->assertNull( $recipe );
+		$this->assertNull( $result );
 	}
 
 	public function test_get_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_recipe', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->get( 'anything' );
@@ -96,20 +119,26 @@ class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	public function test_all_returns_all_recipes(): void {
-		$this->registry->add( 'recipe1', [ 'ingredient1' => 'value1' ] );
-		$this->registry->add( 'recipe2', [ 'ingredient2' => 'value2' ] );
+		$config1 = [ 'ingredient1' => 'value1' ];
+		$config2 = [ 'ingredient2' => 'value2' ];
+
+		$this->registry->add( 'recipe1', $config1 );
+		$this->registry->add( 'recipe2', $config2 );
 
 		$recipes = $this->registry->all();
 
 		$this->assertCount( 2, $recipes );
 		$this->assertArrayHasKey( 'recipe1', $recipes );
 		$this->assertArrayHasKey( 'recipe2', $recipes );
+		$this->assertSame( $config1, $recipes['recipe1'] );
+		$this->assertSame( $config2, $recipes['recipe2'] );
 	}
 
 	public function test_all_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_recipe', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->all();
@@ -118,7 +147,7 @@ class RecipeRegistryTest extends WhiskeyTest {
 	}
 
 	public function test_has_returns_true_for_existing_recipe(): void {
-		$this->registry->add( 'test-recipe', [ 'ingredient1' => 'value1' ] );
+		$this->registry->add( 'test-recipe', [ 'ingredient' => 'value' ] );
 
 		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
 	}
@@ -129,8 +158,9 @@ class RecipeRegistryTest extends WhiskeyTest {
 
 	public function test_has_calls_init(): void {
 		$hookFired = false;
-		add_action( 'whiskey:register_recipe', static function () use ( &$hookFired ) {
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( &$hookFired ) {
 			$hookFired = true;
+			return $items;
 		} );
 
 		$this->registry->has( 'anything' );
@@ -138,41 +168,69 @@ class RecipeRegistryTest extends WhiskeyTest {
 		$this->assertTrue( $hookFired );
 	}
 
-	public function test_init_continues_after_hook_error(): void {
-		$init_count = 0;
-
-		add_action( 'whiskey:register_recipe', function () use ( &$init_count ) {
-			$init_count ++;
-			$this->registry->add( 'first-recipe', [ 'ingredient' => 'value' ] );
-			throw new \RuntimeException( 'Test error in hook callback' );
-		}, 10 );
-
-		// Second callback should NOT execute (WordPress stops after exception)
-		add_action( 'whiskey:register_recipe', function () use ( &$init_count ) {
-			$init_count ++;
-			$this->registry->add( 'second-recipe', [ 'ingredient' => 'value' ] );
-		}, 20 );
+	public function test_init_continues_after_individual_recipe_error(): void {
+		// Register multiple recipes, one will fail
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) {
+			return array_merge( $items, [
+				'recipe1'    => [ 'ingredient1' => 'value1' ],
+				'bad-recipe' => [], // Empty ingredients, will fail
+				'recipe2'    => [ 'ingredient2' => 'value2' ],
+			] );
+		} );
 
 		// Init should complete without throwing
 		$this->registry->init();
 
-		// Verify init marked as completed despite the error
-		$this->registry->init();
-		$this->assertSame( 1, $init_count );
+		// Verify valid recipes were added
+		$this->assertTrue( $this->registry->has( 'recipe1' ) );
+		$this->assertTrue( $this->registry->has( 'recipe2' ) );
+		$this->assertFalse( $this->registry->has( 'bad-recipe' ) );
 	}
 
-	public function test_registry_remains_functional_after_hook_error(): void {
-		// Add a hook that throws
-		add_action( 'whiskey:register_recipe', static function () {
-			throw new \RuntimeException( 'Test error' );
-		} );
+	public function test_multiple_filters_accumulate_recipes(): void {
+		// First filter adds recipe 1
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) {
+			return array_merge( $items, [
+				'recipe1' => [ 'ingredient1' => 'value1' ],
+			] );
+		}, 10 );
 
-		// Init with error
+		// Second filter adds recipe 2
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) {
+			return array_merge( $items, [
+				'recipe2' => [ 'ingredient2' => 'value2' ],
+			] );
+		}, 20 );
+
 		$this->registry->init();
 
-		// Registry should still work normally
-		$this->registry->add( 'test-recipe', [ 'ingredient' => 'value' ] );
-		$this->assertTrue( $this->registry->has( 'test-recipe' ) );
-		$this->assertSame( [ 'ingredient' => 'value' ], $this->registry->get( 'test-recipe' ) );
+		// Both recipes should be registered
+		$this->assertTrue( $this->registry->has( 'recipe1' ) );
+		$this->assertTrue( $this->registry->has( 'recipe2' ) );
+		$this->assertCount( 2, $this->registry->all() );
+	}
+
+	public function test_filter_can_override_recipes_from_previous_filters(): void {
+		$original_config = [ 'ingredient1' => 'original' ];
+		$override_config = [ 'ingredient1' => 'override' ];
+
+		// First filter adds recipe
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( $original_config ) {
+			return array_merge( $items, [
+				'test-recipe' => $original_config,
+			] );
+		}, 10 );
+
+		// Second filter overrides same recipe
+		add_filter( 'whiskey:register_recipes', static function ( array $items ) use ( $override_config ) {
+			return array_merge( $items, [
+				'test-recipe' => $override_config,
+			] );
+		}, 20 );
+
+		$this->registry->init();
+
+		// Recipe should have override config
+		$this->assertSame( $override_config, $this->registry->get( 'test-recipe' ) );
 	}
 }
