@@ -27,10 +27,14 @@ class IngredientRegistry {
 			return;
 		}
 
-		try {
-			do_action( 'whiskey:register_ingredient', $this );
-		} catch ( Throwable $e ) {
-			// Silently ignore errors and continue
+		$items = apply_filters( 'whiskey:register_ingredients', [] );
+
+		foreach ( $items as $class ) {
+			try {
+				$this->add( $class );
+			} catch ( Throwable $e ) {
+				// Individual item failed, continue
+			}
 		}
 
 		$this->initialized = true;

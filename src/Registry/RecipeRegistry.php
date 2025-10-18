@@ -29,10 +29,14 @@ class RecipeRegistry {
 			return;
 		}
 
-		try {
-			do_action( 'whiskey:register_recipe', $this );
-		} catch ( Throwable $e ) {
-			// Silently ignore errors and continue
+		$items = apply_filters( 'whiskey:register_recipes', [] );
+
+		foreach ( $items as $name => $ingredients ) {
+			try {
+				$this->add( $name, $ingredients );
+			} catch ( Throwable $e ) {
+				// Individual item failed, continue
+			}
 		}
 
 		$this->initialized = true;
