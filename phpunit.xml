@@ -16,6 +16,7 @@
         </include>
         <exclude>
             <directory suffix=".php">src/Recipes</directory>
+            <directory suffix=".php">src/Ingredients/PageTemplates</directory>
         </exclude>
     </coverage>
 </phpunit>
