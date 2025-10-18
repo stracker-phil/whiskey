@@ -100,7 +100,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [x] WP-CLI command documentation
 - [x] CLAUDE.md for AI assistant context
 - [x] Capture baseline complexity metrics (need 10+ ingredients total)
-- [ ] Document baseline in `docs/baseline-7.4.md`
+- [x] Document baseline in `docs/baseline-7.4.md`
 
 ---
 
