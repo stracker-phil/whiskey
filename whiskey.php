@@ -42,7 +42,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 // Initialize core dependencies.
 $recipes     = new RecipeRegistry();
 $ingredients = new IngredientRegistry();
-$executor    = new RecipeExecutor( $ingredients );
+$executor    = new RecipeExecutor( $ingredients, $recipes );
 
 // Initialize tools - each tool encapsulates one feature.
 $tools = [
