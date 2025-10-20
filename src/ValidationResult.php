@@ -9,26 +9,25 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
+use Closure;
+
 /**
  * Immutable value object holding validation result code + optional context.
  */
 class ValidationResult {
 
-	private string $code;
-	private $context;
-	private $executor;
-
 	/**
 	 * Private constructor - use factory methods for type safety.
 	 *
-	 * @param string    $code     Validation code constant from ValidationCode
-	 * @param mixed     $context  Optional context for error messages
-	 * @param ?callable $executor Optional executor to apply the valid ingredient
+	 * @param string   $code     Validation code constant from ValidationCode
+	 * @param mixed    $context  Optional context for error messages
+	 * @param ?Closure $executor Optional executor to apply the valid ingredient
 	 */
-	private function __construct( string $code, $context = null, callable $executor = null ) {
-		$this->code     = $code;
-		$this->context  = $context;
-		$this->executor = $executor;
+	private function __construct(
+		private string $code,
+		private $context = null,
+		private ?Closure $executor = null
+	) {
 	}
 
 	/**

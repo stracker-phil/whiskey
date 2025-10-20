@@ -18,14 +18,10 @@ class RestController {
 
 	private const NAMESPACE = 'whiskey/v1';
 
-	/** @var WhiskeyTool[] */
-	private array $tools;
-
 	/**
 	 * @param WhiskeyTool[] $tools
 	 */
-	public function __construct( array $tools ) {
-		$this->tools = $tools;
+	public function __construct( private array $tools ) {
 	}
 
 	public function register_routes(): void {

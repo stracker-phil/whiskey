@@ -19,22 +19,12 @@ use Throwable;
  * Main plugin bootstrap - manages plugin lifecycle and dependencies
  */
 class Main {
-	private RecipeRegistry $recipes;
-	private IngredientRegistry $ingredients;
-	private RestController $rest_controller;
-	private CliController $cli_controller;
-
 	public function __construct(
-		RecipeRegistry $recipes,
-		IngredientRegistry $ingredients,
-		RestController $rest_controller,
-		CliController $cli_controller
+		private RecipeRegistry $recipes,
+		private IngredientRegistry $ingredients,
+		private RestController $rest_controller,
+		private CliController $cli_controller
 	) {
-		$this->recipes         = $recipes;
-		$this->ingredients     = $ingredients;
-		$this->rest_controller = $rest_controller;
-		$this->cli_controller  = $cli_controller;
-
 		$this->init();
 	}
 

@@ -10,12 +10,10 @@ use Whiskey\Registry\RecipeRegistry;
 class RecipeExecutor {
 	private const EXTENDS = 'extends';
 
-	private IngredientRegistry $ingredients;
-	private RecipeRegistry $recipes;
-
-	public function __construct( IngredientRegistry $ingredients, RecipeRegistry $recipes ) {
-		$this->ingredients = $ingredients;
-		$this->recipes     = $recipes;
+	public function __construct(
+		private IngredientRegistry $ingredients,
+		private RecipeRegistry $recipes
+	) {
 	}
 
 	/**

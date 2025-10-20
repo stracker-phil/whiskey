@@ -24,18 +24,12 @@ use Whiskey\RecipeExecutor;
  * The base class handles registration, error handling, and response formatting.
  */
 abstract class WhiskeyTool {
-	protected RecipeRegistry $recipes;
-	protected IngredientRegistry $ingredients;
-	protected RecipeExecutor $executor;
 
 	public function __construct(
-		RecipeRegistry $recipes,
-		IngredientRegistry $ingredients,
-		RecipeExecutor $executor
+		protected RecipeRegistry $recipes,
+		protected IngredientRegistry $ingredients,
+		protected RecipeExecutor $executor
 	) {
-		$this->recipes     = $recipes;
-		$this->ingredients = $ingredients;
-		$this->executor    = $executor;
 	}
 
 	/**

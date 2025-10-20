@@ -16,14 +16,10 @@ use Whiskey\Tools\WhiskeyTool;
  */
 class CliController {
 
-	/** @var WhiskeyTool[] */
-	private array $tools;
-
 	/**
 	 * @param WhiskeyTool[] $tools
 	 */
-	public function __construct( array $tools ) {
-		$this->tools = $tools;
+	public function __construct( private array $tools ) {
 	}
 
 	/**
