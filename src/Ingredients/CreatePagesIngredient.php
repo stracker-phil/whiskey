@@ -18,7 +18,7 @@ class CreatePagesIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
 			return ValidationResult::invalid_type( 'array' );
 		}
@@ -32,7 +32,7 @@ class CreatePagesIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$pages = [];
 
 		foreach ( $value as $slug ) {

@@ -25,7 +25,7 @@ class SetWooStorePagesIngredient extends Ingredient {
 		'my-account' => 'woocommerce_myaccount_page_id',
 	];
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
 			return ValidationResult::invalid_type( 'array' );
 		}
@@ -47,7 +47,7 @@ class SetWooStorePagesIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$results = [];
 		$errors  = [];
 

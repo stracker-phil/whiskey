@@ -29,7 +29,7 @@ class PayPalStartOverIngredient extends Ingredient {
 		'ppcp-webhook',
 	];
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		// This ingredient doesn't require any input value
 		return ValidationResult::valid( fn() => $this->execute() );
 	}

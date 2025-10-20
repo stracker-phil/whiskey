@@ -17,7 +17,7 @@ class SetWooCountryIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the default country/state for WooCommerce; accepts "US:CA", "AT", or ["US", "CA"]';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		// Accept string like "US:CA" or "AT"
 		if ( is_string( $value ) ) {
 			if ( ! preg_match( '/^\w{2}(:\w{2})?$/', $value ) ) {
@@ -47,7 +47,7 @@ class SetWooCountryIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'string or array' );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_default_country', '' );
 
 		// Convert array format to string format

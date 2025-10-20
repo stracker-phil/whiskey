@@ -17,7 +17,7 @@ class ProcessImagesIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Processes an image URL into multiple variants; accepts array with image_url and optional alt text';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
 			return ValidationResult::invalid_type( 'array' );
 		}
@@ -37,7 +37,7 @@ class ProcessImagesIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$url = $value['image_url'];
 		$alt = $value['alt'] ?? 'Image';
 

@@ -22,7 +22,7 @@ class SetMenuItemsIngredient extends Ingredient {
 	private const MENU_LOCATION = 'primary';
 	private const MENU_NAME     = 'Primary Navigation';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
 			return ValidationResult::invalid_type( 'array' );
 		}
@@ -36,7 +36,7 @@ class SetMenuItemsIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$menu_id = $this->get_or_create_menu();
 
 		if ( ! $menu_id ) {

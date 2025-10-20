@@ -17,7 +17,7 @@ class SetWooCurrencyIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the currency for WooCommerce; accepts 3-letter currency code (e.g., "USD", "EUR", "GBP")';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {
 			return ValidationResult::invalid_type( 'string' );
 		}
@@ -29,7 +29,7 @@ class SetWooCurrencyIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_currency', '' );
 
 		$updated = update_option( 'woocommerce_currency', $value );

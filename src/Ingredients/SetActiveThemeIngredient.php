@@ -17,7 +17,7 @@ class SetActiveThemeIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {
 			return ValidationResult::invalid_type( 'string' );
 		}
@@ -29,7 +29,7 @@ class SetActiveThemeIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$theme = wp_get_theme( $value );
 
 		if ( ! $theme->exists() ) {

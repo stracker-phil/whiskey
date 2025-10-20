@@ -20,7 +20,7 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 	private const OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';
 	private const OPTION_OLD_UI       = 'woocommerce_ppcp-settings-should-use-old-ui';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_bool( $value ) ) {
 			return ValidationResult::invalid_type( 'boolean' );
 		}
@@ -28,7 +28,7 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$changes = [];
 
 		if ( $value ) {

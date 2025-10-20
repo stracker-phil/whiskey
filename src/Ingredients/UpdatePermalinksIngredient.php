@@ -17,7 +17,7 @@ class UpdatePermalinksIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Changes the permalink structure; common values: "/%postname%/", "/%year%/%monthnum%/%postname%/", or empty string for default';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {
 			return ValidationResult::invalid_type( 'string' );
 		}
@@ -25,7 +25,7 @@ class UpdatePermalinksIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$previous_structure = get_option( 'permalink_structure', '' );
 
 		$updated = update_option( 'permalink_structure', $value );

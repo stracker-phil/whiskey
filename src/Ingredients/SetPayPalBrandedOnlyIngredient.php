@@ -22,7 +22,7 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 	private const PATH_BRANDED       = 'core-profiler';
 	private const PATH_DIRECT        = 'direct';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_bool( $value ) ) {
 			return ValidationResult::invalid_type( 'boolean' );
 		}
@@ -30,7 +30,7 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		// Always delete nox_profile option
 		$deleted_nox = delete_option( self::OPTION_NOX_PROFILE );
 

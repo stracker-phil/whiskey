@@ -19,7 +19,7 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 	private const OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( is_bool( $value ) || is_array( $value ) ) {
 			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
@@ -27,7 +27,7 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'boolean or array' );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$previous_value = get_option( self::OPTION_KEY, null );
 
 		// Enable override.

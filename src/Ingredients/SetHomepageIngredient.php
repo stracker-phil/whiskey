@@ -18,7 +18,7 @@ class SetHomepageIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
 
-	public function validate( $value ): ValidationResult {
+	public function validate( mixed $value ): ValidationResult {
 		if ( is_string( $value ) || is_int( $value ) ) {
 			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
@@ -26,7 +26,7 @@ class SetHomepageIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'string or integer' );
 	}
 
-	private function execute( $value ): ExecutionResult {
+	private function execute( mixed $value ): ExecutionResult {
 		$page_id = $this->page_id_from_value( $value );
 
 		if ( ! $page_id ) {
