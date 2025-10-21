@@ -5,7 +5,6 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Activates a WordPress theme by its name.

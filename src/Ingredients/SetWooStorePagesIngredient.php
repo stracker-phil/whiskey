@@ -6,7 +6,6 @@ namespace Whiskey\Ingredients;
 use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Sets WooCommerce store pages (cart, checkout, my-account).

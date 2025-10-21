@@ -5,7 +5,6 @@
 
 declare( strict_types = 1 );
 
-use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Ingredients\CreatePagesIngredient;
 use Whiskey\Ingredients\SetHomepageIngredient;
 use Whiskey\Ingredients\SetActiveThemeIngredient;

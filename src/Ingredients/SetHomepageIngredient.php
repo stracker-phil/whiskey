@@ -6,7 +6,6 @@ namespace Whiskey\Ingredients;
 use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Updates the "home_page" setting.

@@ -5,7 +5,6 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Completely removes all PayPal plugin settings from the database.

@@ -5,7 +5,6 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
-use Whiskey\Registry\IngredientRegistry;
 
 /**
  * Updates the permalink structure of the WordPress site.
