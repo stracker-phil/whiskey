@@ -5,6 +5,7 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Configures PayPal UI mode (legacy vs modern).
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetPayPalLegacyModeIngredient extends Ingredient {
 	public const NAME        = 'set_paypal_legacy_mode';
-	public const CATEGORY    = 'paypal';
+	public const CATEGORY    = IngredientCategory::PAYPAL;
 	public const DESCRIPTION = 'Switches PayPal between legacy and modern UI; true = legacy mode, false = modern UI';
 
 	private const OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';

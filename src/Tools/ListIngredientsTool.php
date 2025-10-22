@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tools;
 
 use WP_CLI;
+use Whiskey\IngredientCategory;
 
 /**
  * Tool to list all available ingredients
@@ -46,6 +47,8 @@ class ListIngredientsTool extends WhiskeyTool {
 		}
 
 		WP_CLI::log( 'Available ingredients:' );
+		WP_CLI::log( '' );
+
 		$categories = [];
 
 		foreach ( $ingredients as $ingredient ) {
@@ -55,15 +58,24 @@ class ListIngredientsTool extends WhiskeyTool {
 			if ( ! isset( $categories[ $category ] ) ) {
 				$categories[ $category ] = [];
 			}
-			$categories[ $category ][] = $ingredient;
+			$categories[ $category ][] = [
+				'name'        => $ingredient,
+				'description' => $meta['description'] ?? '',
+			];
 		}
 
-		foreach ( $categories as $category => $ingredients ) {
-			WP_CLI::log( "[$category]" );
+		foreach ( $categories as $category => $items ) {
+			$color         = IngredientCategory::get_color( $category );
+			$display_name  = IngredientCategory::get_display_name( $category );
+			$reset         = "\033[0m";
 
-			foreach ( $ingredients as $ingredient ) {
-				WP_CLI::log( "  - $ingredient" );
+			WP_CLI::log( $color . $display_name . $reset );
+
+			foreach ( $items as $item ) {
+				WP_CLI::log( sprintf( '  - %s: %s', $item['name'], $item['description'] ) );
 			}
+
+			WP_CLI::log( '' );
 		}
 
 		WP_CLI::success( sprintf( 'Found %d ingredient(s).', count( $ingredients ) ) );

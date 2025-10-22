@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
+use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
 
 /**
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetActiveThemeIngredient extends Ingredient {
 	public const NAME        = 'set_active_theme';
-	public const CATEGORY    = 'wordpress';
+	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
 
 	public function validate( $value ): bool {

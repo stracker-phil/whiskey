@@ -5,6 +5,7 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Manages the PayPal BCDC migration override setting.
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class PayPalBcdcOverrideIngredient extends Ingredient {
 	public const NAME        = 'paypal_bcdc_override';
-	public const CATEGORY    = 'paypal';
+	public const CATEGORY    = IngredientCategory::PAYPAL;
 	public const DESCRIPTION = 'Controls PayPal BCDC migration override: true to enable, false to delete, array to set custom data';
 
 	private const OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';

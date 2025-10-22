@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
+use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
 
 /**
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetPayPalMerchantIngredient extends Ingredient {
 	public const NAME        = 'set_paypal_merchant';
-	public const CATEGORY    = 'paypal';
+	public const CATEGORY    = IngredientCategory::PAYPAL;
 	public const DESCRIPTION = 'Sets PayPal merchant credentials; accepts array with merchant_id, merchant_email, client_id, client_secret, or false to clear';
 
 	private const MODERN_OPTION = 'woocommerce-ppcp-data-common';

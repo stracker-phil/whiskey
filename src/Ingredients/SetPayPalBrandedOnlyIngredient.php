@@ -5,6 +5,7 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Configures PayPal installation path (branded-only vs white-label).
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetPayPalBrandedOnlyIngredient extends Ingredient {
 	public const NAME        = 'set_paypal_branded_only';
-	public const CATEGORY    = 'paypal';
+	public const CATEGORY    = IngredientCategory::PAYPAL;
 	public const DESCRIPTION = 'Sets PayPal installation mode; true = branded-only (core-profiler), false = white-label (direct)';
 
 	private const OPTION_NOX_PROFILE = 'woocommerce_payments_nox_profile';

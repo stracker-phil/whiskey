@@ -5,6 +5,7 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Sets the WooCommerce default country/state.
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetWooCountryIngredient extends Ingredient {
 	public const NAME        = 'set_woo_country';
-	public const CATEGORY    = 'woocommerce';
+	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the default country/state for WooCommerce; accepts "US:CA", "AT", or ["US", "CA"]';
 
 	public function validate( $value ): bool {

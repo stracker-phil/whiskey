@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
+use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
 
 /**
@@ -12,7 +13,7 @@ use Whiskey\ExecutionResult;
  */
 class SetWooCurrencyIngredient extends Ingredient {
 	public const NAME        = 'set_woo_currency';
-	public const CATEGORY    = 'woocommerce';
+	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the currency for WooCommerce; accepts 3-letter currency code (e.g., "USD", "EUR", "GBP")';
 
 	public function validate( $value ): bool {

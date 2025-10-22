@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Creates a primary navigation menu with specified pages.
@@ -14,7 +15,7 @@ use Whiskey\ExecutionResult;
  */
 class SetMenuItemsIngredient extends Ingredient {
 	public const NAME        = 'set_menu_items';
-	public const CATEGORY    = 'wordpress';
+	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Creates or replaces the primary navigation menu with the specified page slugs';
 
 	private const MENU_LOCATION = 'primary';

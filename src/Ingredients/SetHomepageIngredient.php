@@ -5,6 +5,7 @@ namespace Whiskey\Ingredients;
 
 use WP_Post;
 use Whiskey\Ingredient;
+use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
 
 /**
@@ -13,7 +14,7 @@ use Whiskey\ExecutionResult;
  */
 class SetHomepageIngredient extends Ingredient {
 	public const NAME        = 'set_homepage';
-	public const CATEGORY    = 'wordpress';
+	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
 
 	public function validate( $value ): bool {

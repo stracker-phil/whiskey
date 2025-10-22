@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\IngredientCategory;
 
 /**
  * Sets WooCommerce store pages (cart, checkout, my-account).
@@ -13,7 +14,7 @@ use Whiskey\ExecutionResult;
  */
 class SetWooStorePagesIngredient extends Ingredient {
 	public const NAME        = 'set_woo_store_pages';
-	public const CATEGORY    = 'woocommerce';
+	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Configures WooCommerce store pages; accepts array with keys: cart, checkout, my-account';
 
 	private const ALLOWED_KEYS = [ 'cart', 'checkout', 'my-account' ];
