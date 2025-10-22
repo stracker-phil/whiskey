@@ -198,23 +198,23 @@ abstract class WhiskeyTool {
 	protected function get_http_code( Exception $e ): int {
 		$message_lower = strtolower( $e->getMessage() );
 
-		if ( strpos( $message_lower, 'not found' ) !== false ) {
+		if ( str_contains( $message_lower, 'not found' ) ) {
 			return 404;
 		}
 
-		if ( strpos( $message_lower, 'unauthorized' ) !== false ) {
+		if ( str_contains( $message_lower, 'unauthorized' ) ) {
 			return 401;
 		}
 
-		if ( strpos( $message_lower, 'forbidden' ) !== false ) {
+		if ( str_contains( $message_lower, 'forbidden' ) ) {
 			return 403;
 		}
 
-		if ( strpos( $message_lower, 'invalid' ) !== false ) {
+		if ( str_contains( $message_lower, 'invalid' ) ) {
 			return 400;
 		}
 
-		if ( strpos( $message_lower, 'conflict' ) !== false ) {
+		if ( str_contains( $message_lower, 'conflict' ) ) {
 			return 409;
 		}
 
