@@ -198,14 +198,33 @@ abstract class WhiskeyTool {
 	/**
 	 * Map exception to HTTP status code.
 	 * Override to customize error codes.
+	 *
+	 * Note: Using if/else chain - will convert to match expression on php-8.0
 	 */
 	protected function get_http_code( Exception $e ): int {
-		// Common pattern: "not found" exceptions map to 404
-		if ( strpos( $e->getMessage(), 'not found' ) !== false ) {
+		$message_lower = strtolower( $e->getMessage() );
+
+		if ( strpos( $message_lower, 'not found' ) !== false ) {
 			return 404;
 		}
 
-		return 400;
+		if ( strpos( $message_lower, 'unauthorized' ) !== false ) {
+			return 401;
+		}
+
+		if ( strpos( $message_lower, 'forbidden' ) !== false ) {
+			return 403;
+		}
+
+		if ( strpos( $message_lower, 'invalid' ) !== false ) {
+			return 400;
+		}
+
+		if ( strpos( $message_lower, 'conflict' ) !== false ) {
+			return 409;
+		}
+
+		return 500;
 	}
 
 	protected function is_cli_available(): bool {

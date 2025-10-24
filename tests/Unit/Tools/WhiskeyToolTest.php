@@ -184,7 +184,7 @@ class WhiskeyToolTest extends ToolTest {
 		$response = $this->tool->handle_rest( $request );
 
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
-		$this->assertSame( 400, $response->get_status() );
+		$this->assertSame( 500, $response->get_status() );
 
 		$data = $response->get_data();
 		$this->assertFalse( $data['success'] );
@@ -348,8 +348,14 @@ class WhiskeyToolTest extends ToolTest {
 
 	// ===== get_http_code() tests =====
 
-	public function test_get_http_code_returns_404_for_not_found(): void {
-		$exception = new Exception( 'Recipe not found: test' );
+	/**
+	 * @dataProvider http_code_data_provider
+	 */
+	public function test_get_http_code_maps_error_messages_to_codes(
+		string $message,
+		int $expected_code
+	): void {
+		$exception = new Exception( $message );
 
 		$code = $this->invoke_protected_method(
 			$this->tool,
@@ -357,18 +363,23 @@ class WhiskeyToolTest extends ToolTest {
 			[ $exception ]
 		);
 
-		$this->assertSame( 404, $code );
+		$this->assertSame( $expected_code, $code );
 	}
 
-	public function test_get_http_code_returns_400_by_default(): void {
-		$exception = new Exception( 'Some other error' );
-
-		$code = $this->invoke_protected_method(
-			$this->tool,
-			'get_http_code',
-			[ $exception ]
-		);
-
-		$this->assertSame( 400, $code );
+	public function http_code_data_provider(): array {
+		return [
+			'not found'       => [ 'Recipe not found', 404 ],
+			'NOT FOUND caps'  => [ 'File NOT FOUND in directory', 404 ],
+			'unauthorized'    => [ 'User unauthorized', 401 ],
+			'UNAUTHORIZED'    => [ 'UNAUTHORIZED access', 401 ],
+			'forbidden'       => [ 'Access forbidden', 403 ],
+			'Forbidden mixed' => [ 'Forbidden resource', 403 ],
+			'invalid'         => [ 'Invalid parameter', 400 ],
+			'Invalid caps'    => [ 'Invalid request format', 400 ],
+			'conflict'        => [ 'Resource conflict', 409 ],
+			'CONFLICT'        => [ 'CONFLICT detected', 409 ],
+			'default case'    => [ 'Some unexpected error', 500 ],
+			'empty message'   => [ '', 500 ],
+		];
 	}
 }
