@@ -216,3 +216,22 @@ function register_rest_route( string $namespace, string $route, array $args = []
 global $registered_cli_commands;
 $registered_cli_commands = [];
 
+// Image processing functions
+function download_url( string $url ) {
+	return WP_Functions::call( 'download_url', $url );
+}
+
+function media_handle_sideload( array $file, int $post_id ) {
+	$result = WP_Functions::call( 'media_handle_sideload', $file, $post_id );
+
+	return $result !== null ? $result : 0;
+}
+
+function get_attached_file( int $attachment_id ) {
+	return WP_Functions::call( 'get_attached_file', $attachment_id );
+}
+
+function wp_get_image_editor( string $path ) {
+	return WP_Functions::call( 'wp_get_image_editor', $path );
+}
+
