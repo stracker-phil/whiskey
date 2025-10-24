@@ -11,6 +11,7 @@ use Whiskey\Registry\IngredientRegistry;
 use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 class RecipeExecutorTest extends WhiskeyTest {
 
@@ -29,7 +30,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 	public function test_validate_returns_false_for_empty_config(): void {
 		$result = $this->executor->validate( [] );
 
-		$this->assertFalse( $result );
+		$this->assertFalse( $result->is_valid() );
 	}
 
 	public function test_validate_returns_true_for_valid_config(): void {
@@ -37,7 +38,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
 			->with( 'value' )
-			->willReturn( true );
+			->willReturn( ValidationResult::valid() );
 
 		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
@@ -46,7 +47,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 
 		$result = $this->executor->validate( [ 'ingredient_name' => 'value' ] );
 
-		$this->assertTrue( $result );
+		$this->assertTrue( $result->is_valid() );
 	}
 
 	public function test_validate_skips_unknown_ingredients(): void {
@@ -54,7 +55,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
 			->with( 'valid_value' )
-			->willReturn( true );
+			->willReturn( ValidationResult::valid() );
 
 		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
@@ -72,7 +73,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 			]
 		);
 
-		$this->assertTrue( $result );
+		$this->assertTrue( $result->is_valid() );
 	}
 
 	public function test_validate_returns_false_when_ingredient_validation_fails(): void {
@@ -80,7 +81,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
 			->with( 'invalid_value' )
-			->willReturn( false );
+			->willReturn( ValidationResult::invalid_type( 'string' ) );
 
 		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
@@ -89,7 +90,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 
 		$result = $this->executor->validate( [ 'ingredient_name' => 'invalid_value' ] );
 
-		$this->assertFalse( $result );
+		$this->assertFalse( $result->is_valid() );
 	}
 
 	public function test_validate_returns_true_when_only_unknown_ingredients_present(): void {
@@ -109,7 +110,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 			]
 		);
 
-		$this->assertTrue( $result );
+		$this->assertTrue( $result->is_valid() );
 	}
 
 	public function test_execute_skips_unknown_ingredients(): void {
@@ -220,7 +221,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$ingredient->expects( $this->once() )
 			->method( 'validate' )
 			->with( 'value' )
-			->willReturn( true );
+			->willReturn( ValidationResult::valid() );
 
 		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
@@ -234,7 +235,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 			]
 		);
 
-		$this->assertTrue( $result );
+		$this->assertTrue( $result->is_valid() );
 	}
 
 	public function test_execute_handles_single_extends(): void {

@@ -10,6 +10,7 @@ use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 class IngredientRegistryTest extends WhiskeyTest {
 
@@ -233,8 +234,8 @@ class TestIngredient extends Ingredient {
 	public const CATEGORY    = 'test';
 	public const DESCRIPTION = 'Test ingredient for testing';
 
-	public function validate( $value ): bool {
-		return true;
+	public function validate( $value ): ValidationResult {
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {
@@ -250,8 +251,8 @@ class TestIngredient2 extends Ingredient {
 	public const CATEGORY    = 'test';
 	public const DESCRIPTION = 'Second test ingredient';
 
-	public function validate( $value ): bool {
-		return true;
+	public function validate( $value ): ValidationResult {
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {
@@ -267,8 +268,8 @@ class TestIngredientEmptyName extends Ingredient {
 	public const CATEGORY    = 'test';
 	public const DESCRIPTION = 'Should be skipped';
 
-	public function validate( $value ): bool {
-		return true;
+	public function validate( $value ): ValidationResult {
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

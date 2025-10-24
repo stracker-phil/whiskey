@@ -141,8 +141,9 @@ abstract class IngredientTest extends WhiskeyTest {
 
 		$message = $description ?: "Expected validation to accept $type value";
 
+		$result = $this->ingredient->validate( $value );
 		$this->assertTrue(
-			$this->ingredient->validate( $value ),
+			$result->is_valid(),
 			$message
 		);
 	}
@@ -161,8 +162,9 @@ abstract class IngredientTest extends WhiskeyTest {
 
 		$message = $description ?: "Expected validation to reject $type value";
 
+		$result = $this->ingredient->validate( $value );
 		$this->assertFalse(
-			$this->ingredient->validate( $value ),
+			$result->is_valid(),
 			$message
 		);
 	}

@@ -24,19 +24,19 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 	}
 
 	public function test_validate_accepts_string(): void {
-		$this->assertTrue( $this->ingredient->validate( '/%postname%/' ) );
+		$this->assertTrue( $this->ingredient->validate( '/%postname%/' )->is_valid() );
 	}
 
 	public function test_validate_accepts_empty_string(): void {
-		$this->assertTrue( $this->ingredient->validate( '' ) );
+		$this->assertTrue( $this->ingredient->validate( '' )->is_valid() );
 	}
 
 	public function test_validate_rejects_integer(): void {
-		$this->assertFalse( $this->ingredient->validate( 123 ) );
+		$this->assertFalse( $this->ingredient->validate( 123 )->is_valid() );
 	}
 
 	public function test_validate_rejects_array(): void {
-		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] ) );
+		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] )->is_valid() );
 	}
 
 	public function test_execute_updates_permalink_structure(): void {

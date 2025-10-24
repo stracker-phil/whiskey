@@ -24,19 +24,19 @@ class SetHomepageIngredientTest extends IngredientTest {
 	}
 
 	public function test_validate_accepts_string(): void {
-		$this->assertTrue( $this->ingredient->validate( 'home' ) );
+		$this->assertTrue( $this->ingredient->validate( 'home' )->is_valid() );
 	}
 
 	public function test_validate_accepts_integer(): void {
-		$this->assertTrue( $this->ingredient->validate( 42 ) );
+		$this->assertTrue( $this->ingredient->validate( 42 )->is_valid() );
 	}
 
 	public function test_validate_rejects_array(): void {
-		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] ) );
+		$this->assertFalse( $this->ingredient->validate( [ 'invalid' ] )->is_valid() );
 	}
 
 	public function test_validate_rejects_boolean(): void {
-		$this->assertFalse( $this->ingredient->validate( true ) );
+		$this->assertFalse( $this->ingredient->validate( true )->is_valid() );
 	}
 
 	public function test_execute_with_valid_string_slug(): void {

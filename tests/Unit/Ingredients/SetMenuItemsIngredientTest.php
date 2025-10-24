@@ -26,19 +26,19 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 	}
 
 	public function test_validate_accepts_array_of_strings(): void {
-		$this->assertTrue( $this->ingredient->validate( [ 'home', 'about', 'contact' ] ) );
+		$this->assertTrue( $this->ingredient->validate( [ 'home', 'about', 'contact' ] )->is_valid() );
 	}
 
 	public function test_validate_accepts_empty_array(): void {
-		$this->assertTrue( $this->ingredient->validate( [] ) );
+		$this->assertTrue( $this->ingredient->validate( [] )->is_valid() );
 	}
 
 	public function test_validate_rejects_string(): void {
-		$this->assertFalse( $this->ingredient->validate( 'home' ) );
+		$this->assertFalse( $this->ingredient->validate( 'home' )->is_valid() );
 	}
 
 	public function test_validate_rejects_array_with_non_string_value(): void {
-		$this->assertFalse( $this->ingredient->validate( [ 'home', 123 ] ) );
+		$this->assertFalse( $this->ingredient->validate( [ 'home', 123 ] )->is_valid() );
 	}
 
 	public function test_execute_creates_new_menu_if_not_exists(): void {
