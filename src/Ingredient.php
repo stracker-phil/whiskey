@@ -18,7 +18,7 @@ abstract class Ingredient {
 	 * Ingredient category for documentation/filtering
 	 * Can be overwritten in the child class.
 	 */
-	public const CATEGORY = 'general';
+	public const CATEGORY = IngredientCategory::GENERAL;
 
 	/**
 	 * Optional. Description provided by the child class to document

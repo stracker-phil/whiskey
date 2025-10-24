@@ -7,6 +7,7 @@ namespace Whiskey;
  * Ingredient category constants and helpers.
  */
 class IngredientCategory {
+	public const GENERAL     = 'general';
 	public const WORDPRESS   = 'wordpress';
 	public const WOOCOMMERCE = 'woocommerce';
 	public const PAYPAL      = 'paypal';
@@ -24,6 +25,10 @@ class IngredientCategory {
 	 * @return string Display name.
 	 */
 	public static function get_display_name( string $category ): string {
+		if ( self::GENERAL === $category ) {
+			return 'Generic';
+		}
+
 		if ( self::WORDPRESS === $category ) {
 			return 'WordPress Core';
 		}
