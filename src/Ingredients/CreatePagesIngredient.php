@@ -43,8 +43,12 @@ class CreatePagesIngredient extends Ingredient {
 				continue;
 			}
 
-			$post_id        = $this->create_or_update_page( $slug, $template );
-			$pages[ $slug ] = $post_id;
+			$pages[ $slug ] = $this->create_or_update_page(
+				$slug,
+				$template['post_type'],
+				$template['title'],
+				$template['content']
+			);
 		}
 
 		$failed_count = count( array_filter( $pages, fn( $id ) => $id === 0 ) );
@@ -93,15 +97,15 @@ class CreatePagesIngredient extends Ingredient {
 		return __DIR__ . '/PageTemplates/' . $slug . '.php';
 	}
 
-	private function create_or_update_page( string $slug, array $template ): int {
-		$existing_page = get_page_by_path( $slug );
+	private function create_or_update_page( string $slug, string $post_type = 'page', string $title = '', string $content = '' ): int {
+		$existing_page = get_page_by_path( $slug, 'OBJECT', $post_type );
 
 		$post_data = [
-			'post_title'   => $template['title'],
-			'post_content' => $template['content'],
+			'post_title'   => $title,
+			'post_content' => $content,
 			'post_status'  => 'publish',
 			'post_name'    => $slug,
-			'post_type'    => $template['post_type'],
+			'post_type'    => $post_type,
 		];
 
 		if ( $existing_page instanceof WP_Post ) {
@@ -113,8 +117,6 @@ class CreatePagesIngredient extends Ingredient {
 				return 0;
 			}
 
-			$this->update_post_meta( $result, $template['post_meta'] );
-
 			return $result;
 		}
 
@@ -125,15 +127,7 @@ class CreatePagesIngredient extends Ingredient {
 			return 0;
 		}
 
-		$this->update_post_meta( $result, $template['post_meta'] );
-
 		return $result;
-	}
-
-	private function update_post_meta( int $post_id, array $post_meta ): void {
-		foreach ( $post_meta as $key => $value ) {
-			update_post_meta( $post_id, $key, $value );
-		}
 	}
 }
 

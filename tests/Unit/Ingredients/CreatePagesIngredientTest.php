@@ -171,39 +171,6 @@ class CreatePagesIngredientTest extends IngredientTest {
 		$this->assertSame( 102, $data['pages']['page2'] );
 	}
 
-	public function test_execute_handles_post_meta_in_template(): void {
-		$meta_calls = [];
-		WP_Functions::mock( 'get_page_by_path', null );
-		WP_Functions::mock( 'wp_insert_post', 123 );
-		WP_Functions::mock( 'update_post_meta', static function ( $post_id, $key, $value ) use ( &$meta_calls ) {
-			$meta_calls[] = [ $post_id, $key, $value ];
-
-			return true;
-		} );
-
-		// Create template with post_meta
-		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
-		if ( ! is_dir( $template_dir ) ) {
-			mkdir( $template_dir, 0755, true );
-		}
-
-		$template_file = $template_dir . '/meta-page.php';
-		file_put_contents(
-			$template_file,
-			'<?php return ["title" => "Test", "content" => "Test", "post_meta" => ["key1" => "value1", "key2" => "value2"]];'
-		);
-
-		$result = $this->ingredient->execute( [ 'meta-page' ] );
-
-		// Clean up
-		unlink( $template_file );
-
-		$this->assertExecutionSuccess( $result );
-		$this->assertCount( 2, $meta_calls );
-		$this->assertSame( 123, $meta_calls[0][0] );
-		$this->assertSame( 'key1', $meta_calls[0][1] );
-	}
-
 	public function test_execute_handles_invalid_template_format(): void {
 		// Create a template file with invalid format (missing required fields)
 		$template_dir = __DIR__ . '/../../../src/Ingredients/PageTemplates';
