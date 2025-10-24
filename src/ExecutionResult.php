@@ -1,6 +1,6 @@
 <?php
 /**
- * Recipe Execution Result
+ * Recipe execution result
  *
  * @package Whiskey
  */
@@ -9,9 +9,6 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
-/**
- * Result of recipe execution
- */
 class ExecutionResult {
 
 	private bool $success;
