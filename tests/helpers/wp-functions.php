@@ -235,3 +235,10 @@ function wp_get_image_editor( string $path ) {
 	return WP_Functions::call( 'wp_get_image_editor', $path );
 }
 
+function wp_get_attachment_metadata( int $attachment_id, bool $unfiltered = false ) {
+	return [];
+}
+
+function wp_update_attachment_metadata( int $attachment_id, array $data ) {
+	return WP_Functions::call( 'wp_update_attachment_metadata', $attachment_id, $data );
+}

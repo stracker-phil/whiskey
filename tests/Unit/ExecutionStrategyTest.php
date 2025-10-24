@@ -12,147 +12,219 @@ class ExecutionStrategyTest extends WhiskeyTest {
 
 	// ===== Constants Tests =====
 
-	public function test_sequential_constant_is_defined(): void {
-		$this->assertSame( 'sequential', ExecutionStrategy::SEQUENTIAL );
+	/**
+	 * GIVEN ExecutionStrategy class constants
+	 * WHEN accessing constant values
+	 * THEN should return expected string values
+	 *
+	 * @dataProvider constants_provider
+	 */
+	public function test_constants_have_correct_values( string $constant_name, string $expected_value ): void {
+		$reflection = new \ReflectionClass( ExecutionStrategy::class );
+		$constants  = $reflection->getConstants();
+
+		$this->assertArrayHasKey( $constant_name, $constants );
+		$this->assertSame( $expected_value, $constants[ $constant_name ] );
 	}
 
-	public function test_continue_on_error_constant_is_defined(): void {
-		$this->assertSame( 'continue_on_error', ExecutionStrategy::CONTINUE_ON_ERROR );
+	public function constants_provider(): array {
+		return [
+			'sequential'        => [ 'SEQUENTIAL', 'sequential' ],
+			'continue on error' => [ 'CONTINUE_ON_ERROR', 'continue_on_error' ],
+			'dry run'           => [ 'DRY_RUN', 'dry_run' ],
+		];
 	}
 
-	public function test_dry_run_constant_is_defined(): void {
-		$this->assertSame( 'dry_run', ExecutionStrategy::DRY_RUN );
+	// ===== Strategy Behavior Tests =====
+
+	/**
+	 * GIVEN different execution strategies
+	 * WHEN checking behavior flags
+	 * THEN should return expected stop_on_failure and should_execute values
+	 *
+	 * @dataProvider strategy_behavior_provider
+	 */
+	public function test_strategy_behavior(
+		string $strategy,
+		bool $expected_stop_on_failure,
+		bool $expected_should_execute
+	): void {
+		$this->assertSame(
+			$expected_stop_on_failure,
+			ExecutionStrategy::should_stop_on_failure( $strategy )
+		);
+
+		$this->assertSame(
+			$expected_should_execute,
+			ExecutionStrategy::should_execute( $strategy )
+		);
 	}
 
-	// ===== should_stop_on_failure() Tests =====
-
-	public function test_sequential_should_stop_on_failure(): void {
-		$this->assertTrue( ExecutionStrategy::should_stop_on_failure( ExecutionStrategy::SEQUENTIAL ) );
-	}
-
-	public function test_continue_on_error_should_not_stop_on_failure(): void {
-		$this->assertFalse( ExecutionStrategy::should_stop_on_failure( ExecutionStrategy::CONTINUE_ON_ERROR ) );
-	}
-
-	public function test_dry_run_should_not_stop_on_failure(): void {
-		$this->assertFalse( ExecutionStrategy::should_stop_on_failure( ExecutionStrategy::DRY_RUN ) );
-	}
-
-	// ===== should_execute() Tests =====
-
-	public function test_sequential_should_execute(): void {
-		$this->assertTrue( ExecutionStrategy::should_execute( ExecutionStrategy::SEQUENTIAL ) );
-	}
-
-	public function test_continue_on_error_should_execute(): void {
-		$this->assertTrue( ExecutionStrategy::should_execute( ExecutionStrategy::CONTINUE_ON_ERROR ) );
-	}
-
-	public function test_dry_run_should_not_execute(): void {
-		$this->assertFalse( ExecutionStrategy::should_execute( ExecutionStrategy::DRY_RUN ) );
+	public function strategy_behavior_provider(): array {
+		return [
+			'sequential stops and executes'            => [
+				ExecutionStrategy::SEQUENTIAL,
+				true,
+				true,
+			],
+			'continue_on_error continues and executes' => [
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+				false,
+				true,
+			],
+			'dry_run continues but does not execute'   => [
+				ExecutionStrategy::DRY_RUN,
+				false,
+				false,
+			],
+		];
 	}
 
 	// ===== is_valid() Tests =====
 
-	public function test_is_valid_returns_true_for_sequential(): void {
-		$this->assertTrue( ExecutionStrategy::is_valid( ExecutionStrategy::SEQUENTIAL ) );
+	/**
+	 * GIVEN various strategy strings
+	 * WHEN validating strategy
+	 * THEN should return true only for known strategies
+	 *
+	 * @dataProvider is_valid_provider
+	 */
+	public function test_is_valid( string $strategy, bool $expected ): void {
+		$this->assertSame( $expected, ExecutionStrategy::is_valid( $strategy ) );
 	}
 
-	public function test_is_valid_returns_true_for_continue_on_error(): void {
-		$this->assertTrue( ExecutionStrategy::is_valid( ExecutionStrategy::CONTINUE_ON_ERROR ) );
-	}
-
-	public function test_is_valid_returns_true_for_dry_run(): void {
-		$this->assertTrue( ExecutionStrategy::is_valid( ExecutionStrategy::DRY_RUN ) );
-	}
-
-	public function test_is_valid_returns_false_for_unknown_strategy(): void {
-		$this->assertFalse( ExecutionStrategy::is_valid( 'unknown' ) );
-	}
-
-	public function test_is_valid_returns_false_for_empty_string(): void {
-		$this->assertFalse( ExecutionStrategy::is_valid( '' ) );
+	public function is_valid_provider(): array {
+		return [
+			'sequential is valid'        => [ ExecutionStrategy::SEQUENTIAL, true ],
+			'continue_on_error is valid' => [ ExecutionStrategy::CONTINUE_ON_ERROR, true ],
+			'dry_run is valid'           => [ ExecutionStrategy::DRY_RUN, true ],
+			'unknown is invalid'         => [ 'unknown', false ],
+			'empty string is invalid'    => [ '', false ],
+		];
 	}
 
 	// ===== get_default() Tests =====
 
+	/**
+	 * GIVEN no strategy specified
+	 * WHEN getting default strategy
+	 * THEN should return sequential
+	 */
 	public function test_get_default_returns_sequential(): void {
 		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::get_default() );
 	}
 
 	// ===== from_string() Tests =====
 
-	public function test_from_string_returns_sequential_for_sequential(): void {
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_string( 'sequential' ) );
+	/**
+	 * GIVEN various string inputs
+	 * WHEN converting to strategy
+	 * THEN should normalize to correct strategy constant
+	 *
+	 * @dataProvider from_string_provider
+	 */
+	public function test_from_string( ?string $input, string $expected ): void {
+		$this->assertSame( $expected, ExecutionStrategy::from_string( $input ) );
 	}
 
-	public function test_from_string_returns_continue_for_continue(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_string( 'continue' ) );
+	public function from_string_provider(): array {
+		return [
+			// Exact matches
+			'sequential exact'             => [ 'sequential', ExecutionStrategy::SEQUENTIAL ],
+
+			// Continue variations
+			'continue short form'          => [ 'continue', ExecutionStrategy::CONTINUE_ON_ERROR ],
+			'continue_on_error underscore' => [
+				'continue_on_error',
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+			],
+			'continue-on-error hyphen'     => [
+				'continue-on-error',
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+			],
+
+			// Dry run variations
+			'dry_run underscore'           => [ 'dry_run', ExecutionStrategy::DRY_RUN ],
+			'dry-run hyphen'               => [ 'dry-run', ExecutionStrategy::DRY_RUN ],
+			'dryrun no separator'          => [ 'dryrun', ExecutionStrategy::DRY_RUN ],
+
+			// Case insensitivity
+			'CONTINUE uppercase'           => [ 'CONTINUE', ExecutionStrategy::CONTINUE_ON_ERROR ],
+			'DRY-RUN uppercase'            => [ 'DRY-RUN', ExecutionStrategy::DRY_RUN ],
+			'Sequential mixed case'        => [ 'Sequential', ExecutionStrategy::SEQUENTIAL ],
+
+			// Whitespace handling
+			'continue with spaces'         => [
+				'  continue  ',
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+			],
+
+			// Defaults
+			'null returns default'         => [ null, ExecutionStrategy::SEQUENTIAL ],
+			'empty string returns default' => [ '', ExecutionStrategy::SEQUENTIAL ],
+			'unknown returns default'      => [ 'unknown', ExecutionStrategy::SEQUENTIAL ],
+		];
 	}
 
-	public function test_from_string_returns_continue_for_continue_on_error(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_string( 'continue_on_error' ) );
-	}
+	/**
+	 * GIVEN any output from from_string
+	 * WHEN validating the result
+	 * THEN should always be a valid strategy
+	 */
+	public function test_from_string_always_produces_valid_strategies(): void {
+		$inputs = [ 'continue', 'dry-run', 'sequential', null, '', 'invalid', 'random' ];
 
-	public function test_from_string_returns_continue_for_continue_with_hyphen(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_string( 'continue-on-error' ) );
-	}
-
-	public function test_from_string_returns_dry_run_for_dry_run_with_hyphen(): void {
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_string( 'dry-run' ) );
-	}
-
-	public function test_from_string_returns_dry_run_for_dry_run_with_underscore(): void {
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_string( 'dry_run' ) );
-	}
-
-	public function test_from_string_returns_dry_run_for_dryrun(): void {
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_string( 'dryrun' ) );
-	}
-
-	public function test_from_string_is_case_insensitive(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_string( 'CONTINUE' ) );
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_string( 'DRY-RUN' ) );
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_string( 'Sequential' ) );
-	}
-
-	public function test_from_string_trims_whitespace(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_string( '  continue  ' ) );
-	}
-
-	public function test_from_string_returns_default_for_null(): void {
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_string( null ) );
-	}
-
-	public function test_from_string_returns_default_for_empty_string(): void {
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_string( '' ) );
-	}
-
-	public function test_from_string_returns_default_for_unknown_value(): void {
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_string( 'unknown' ) );
+		foreach ( $inputs as $input ) {
+			$strategy = ExecutionStrategy::from_string( $input );
+			$this->assertTrue(
+				ExecutionStrategy::is_valid( $strategy ),
+				"from_string('{$input}') should produce a valid strategy but got: {$strategy}"
+			);
+		}
 	}
 
 	// ===== from_cli_args() Tests =====
 
-	public function test_from_cli_args_returns_sequential_when_no_flags(): void {
-		$this->assertSame( ExecutionStrategy::SEQUENTIAL, ExecutionStrategy::from_cli_args( false, false ) );
+	/**
+	 * GIVEN CLI flag combinations
+	 * WHEN determining strategy from flags
+	 * THEN should return correct strategy with proper precedence
+	 *
+	 * @dataProvider from_cli_args_provider
+	 */
+	public function test_from_cli_args( bool $dry_run, bool $continue, string $expected ): void {
+		$this->assertSame( $expected, ExecutionStrategy::from_cli_args( $dry_run, $continue ) );
 	}
 
-	public function test_from_cli_args_returns_dry_run_when_dry_run_flag_present(): void {
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_cli_args( true, false ) );
-	}
-
-	public function test_from_cli_args_returns_continue_when_continue_flag_present(): void {
-		$this->assertSame( ExecutionStrategy::CONTINUE_ON_ERROR, ExecutionStrategy::from_cli_args( false, true ) );
-	}
-
-	public function test_from_cli_args_dry_run_takes_precedence_over_continue(): void {
-		$this->assertSame( ExecutionStrategy::DRY_RUN, ExecutionStrategy::from_cli_args( true, true ) );
+	public function from_cli_args_provider(): array {
+		return [
+			'no flags returns sequential'             => [
+				false,
+				false,
+				ExecutionStrategy::SEQUENTIAL,
+			],
+			'dry_run flag returns dry_run'            => [
+				true,
+				false,
+				ExecutionStrategy::DRY_RUN,
+			],
+			'continue flag returns continue_on_error' => [
+				false,
+				true,
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+			],
+			'both flags dry_run takes precedence'     => [ true, true, ExecutionStrategy::DRY_RUN ],
+		];
 	}
 
 	// ===== get_all() Tests =====
 
-	public function test_get_all_returns_array_with_all_strategies(): void {
+	/**
+	 * GIVEN ExecutionStrategy class
+	 * WHEN getting all strategies
+	 * THEN should return array containing all strategy constants
+	 */
+	public function test_get_all_returns_all_strategies(): void {
 		$strategies = ExecutionStrategy::get_all();
 
 		$this->assertIsArray( $strategies );
@@ -164,71 +236,35 @@ class ExecutionStrategyTest extends WhiskeyTest {
 
 	// ===== get_description() Tests =====
 
-	public function test_get_description_returns_correct_text_for_sequential(): void {
-		$this->assertSame( 'Stop on first failure', ExecutionStrategy::get_description( ExecutionStrategy::SEQUENTIAL ) );
+	/**
+	 * GIVEN strategy constant
+	 * WHEN getting description
+	 * THEN should return human-readable description
+	 *
+	 * @dataProvider description_provider
+	 */
+	public function test_get_description( string $strategy, string $expected_description ): void {
+		$this->assertSame( $expected_description, ExecutionStrategy::get_description( $strategy ) );
 	}
 
-	public function test_get_description_returns_correct_text_for_continue_on_error(): void {
-		$this->assertSame(
-			'Continue executing even if ingredients fail',
-			ExecutionStrategy::get_description( ExecutionStrategy::CONTINUE_ON_ERROR )
-		);
-	}
-
-	public function test_get_description_returns_correct_text_for_dry_run(): void {
-		$this->assertSame(
-			'Validate ingredients without executing',
-			ExecutionStrategy::get_description( ExecutionStrategy::DRY_RUN )
-		);
-	}
-
-	public function test_get_description_returns_unknown_for_invalid_strategy(): void {
-		$this->assertSame( 'Unknown strategy', ExecutionStrategy::get_description( 'invalid' ) );
-	}
-
-	// ===== Integration Tests =====
-
-	public function test_from_string_produces_valid_strategies(): void {
-		$inputs = [ 'continue', 'dry-run', 'sequential', null, 'invalid' ];
-
-		foreach ( $inputs as $input ) {
-			$strategy = ExecutionStrategy::from_string( $input );
-			$this->assertTrue(
-				ExecutionStrategy::is_valid( $strategy ),
-				"from_string('{$input}') should produce a valid strategy"
-			);
-		}
-	}
-
-	public function test_strategy_behavior_matrix(): void {
-		// Test the behavior matrix for all strategies
-		$expectations = [
-			ExecutionStrategy::SEQUENTIAL        => [
-				'stop_on_failure' => true,
-				'should_execute'  => true,
+	public function description_provider(): array {
+		return [
+			'sequential'        => [
+				ExecutionStrategy::SEQUENTIAL,
+				'Stop on first failure',
 			],
-			ExecutionStrategy::CONTINUE_ON_ERROR => [
-				'stop_on_failure' => false,
-				'should_execute'  => true,
+			'continue_on_error' => [
+				ExecutionStrategy::CONTINUE_ON_ERROR,
+				'Continue executing even if ingredients fail',
 			],
-			ExecutionStrategy::DRY_RUN           => [
-				'stop_on_failure' => false,
-				'should_execute'  => false,
+			'dry_run'           => [
+				ExecutionStrategy::DRY_RUN,
+				'Validate ingredients without executing',
+			],
+			'invalid strategy'  => [
+				'invalid',
+				'Unknown strategy',
 			],
 		];
-
-		foreach ( $expectations as $strategy => $expected ) {
-			$this->assertSame(
-				$expected['stop_on_failure'],
-				ExecutionStrategy::should_stop_on_failure( $strategy ),
-				"should_stop_on_failure() for {$strategy}"
-			);
-
-			$this->assertSame(
-				$expected['should_execute'],
-				ExecutionStrategy::should_execute( $strategy ),
-				"should_execute() for {$strategy}"
-			);
-		}
 	}
 }

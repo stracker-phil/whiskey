@@ -12,6 +12,7 @@ use Whiskey\Registry\RecipeRegistry;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\ValidationResult;
+use Whiskey\ExecutionStrategy;
 
 class RecipeExecutorTest extends WhiskeyTest {
 
@@ -27,12 +28,24 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->executor    = new RecipeExecutor( $this->ingredients, $this->recipes );
 	}
 
+	// ===== validate() Tests =====
+
+	/**
+	 * GIVEN empty configuration
+	 * WHEN validating
+	 * THEN should return invalid result
+	 */
 	public function test_validate_returns_false_for_empty_config(): void {
 		$result = $this->executor->validate( [] );
 
 		$this->assertFalse( $result->is_valid() );
 	}
 
+	/**
+	 * GIVEN valid ingredient configuration
+	 * WHEN validating
+	 * THEN should return valid result
+	 */
 	public function test_validate_returns_true_for_valid_config(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
@@ -50,32 +63,57 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertTrue( $result->is_valid() );
 	}
 
-	public function test_validate_skips_unknown_ingredients(): void {
-		$ingredient = $this->createMock( Ingredient::class );
-		$ingredient->expects( $this->once() )
-			->method( 'validate' )
-			->with( 'valid_value' )
-			->willReturn( ValidationResult::valid() );
-
-		$this->ingredients->expects( $this->exactly( 2 ) )
+	/**
+	 * GIVEN configuration with unknown ingredients
+	 * WHEN validating
+	 * THEN should skip unknown ingredients and validate known ones
+	 *
+	 * @dataProvider unknown_ingredients_provider
+	 */
+	public function test_validate_skips_unknown_ingredients(
+		array $config,
+		array $ingredient_map,
+		bool $expected_valid
+	): void {
+		$this->ingredients->expects( $this->exactly( count( $config ) ) )
 			->method( 'get' )
-			->willReturnMap(
-				[
-					[ 'unknown', null ],
-					[ 'known', $ingredient ],
-				]
-			);
+			->willReturnMap( $ingredient_map );
 
-		$result = $this->executor->validate(
-			[
-				'unknown' => 'value',
-				'known'   => 'valid_value',
-			]
-		);
+		$result = $this->executor->validate( $config );
 
-		$this->assertTrue( $result->is_valid() );
+		$this->assertSame( $expected_valid, $result->is_valid() );
 	}
 
+	public function unknown_ingredients_provider(): array {
+		$valid_ingredient = $this->createMock( Ingredient::class );
+		$valid_ingredient->method( 'validate' )
+			->willReturn( ValidationResult::valid() );
+
+		return [
+			'mixed known and unknown'  => [
+				[ 'unknown' => 'value', 'known' => 'valid_value' ],
+				[
+					[ 'unknown', null ],
+					[ 'known', $valid_ingredient ],
+				],
+				true,
+			],
+			'only unknown ingredients' => [
+				[ 'unknown1' => 'value1', 'unknown2' => 'value2' ],
+				[
+					[ 'unknown1', null ],
+					[ 'unknown2', null ],
+				],
+				true,
+			],
+		];
+	}
+
+	/**
+	 * GIVEN configuration with invalid ingredient value
+	 * WHEN validating
+	 * THEN should return invalid result
+	 */
 	public function test_validate_returns_false_when_ingredient_validation_fails(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
@@ -93,26 +131,61 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertFalse( $result->is_valid() );
 	}
 
-	public function test_validate_returns_true_when_only_unknown_ingredients_present(): void {
-		$this->ingredients->expects( $this->exactly( 2 ) )
+	/**
+	 * GIVEN configuration with 'extends' keyword
+	 * WHEN validating
+	 * THEN should ignore extends and validate other ingredients
+	 */
+	public function test_validate_ignores_extends_keyword(): void {
+		$ingredient = $this->createMock( Ingredient::class );
+		$ingredient->expects( $this->once() )
+			->method( 'validate' )
+			->with( 'value' )
+			->willReturn( ValidationResult::valid() );
+
+		$this->ingredients->expects( $this->once() )
 			->method( 'get' )
-			->willReturnMap(
-				[
-					[ 'unknown1', null ],
-					[ 'unknown2', null ],
-				]
-			);
+			->with( 'ingredient_name' )
+			->willReturn( $ingredient );
 
 		$result = $this->executor->validate(
 			[
-				'unknown1' => 'value1',
-				'unknown2' => 'value2',
+				'extends'         => 'parent-recipe',
+				'ingredient_name' => 'value',
 			]
 		);
 
 		$this->assertTrue( $result->is_valid() );
 	}
 
+	// ===== execute() Basic Tests =====
+
+	/**
+	 * GIVEN valid ingredient configuration
+	 * WHEN executing
+	 * THEN should return success result with appropriate message
+	 */
+	public function test_execute_returns_success_result(): void {
+		$ingredient = $this->createMock( Ingredient::class );
+		$ingredient->expects( $this->once() )
+			->method( 'execute' )
+			->willReturn( new ExecutionResult( true, 'Success', [] ) );
+
+		$this->ingredients->expects( $this->once() )
+			->method( 'get' )
+			->willReturn( $ingredient );
+
+		$result = $this->executor->execute( [ 'test' => 'value' ] );
+
+		$this->assertTrue( $result->is_success() );
+		$this->assertSame( 'Recipe executed successfully', $result->get_message() );
+	}
+
+	/**
+	 * GIVEN configuration with unknown ingredients
+	 * WHEN executing
+	 * THEN should skip unknown ingredients and execute known ones
+	 */
 	public function test_execute_skips_unknown_ingredients(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
@@ -142,6 +215,11 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertArrayNotHasKey( 'unknown', $data );
 	}
 
+	/**
+	 * GIVEN multiple ingredients
+	 * WHEN executing
+	 * THEN should collect all ingredient results in data array
+	 */
 	public function test_execute_collects_all_ingredient_results(): void {
 		$ingredient1 = $this->createMock( Ingredient::class );
 		$ingredient1->expects( $this->once() )
@@ -178,22 +256,11 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertArrayHasKey( 'ingredient2', $data );
 	}
 
-	public function test_execute_returns_success_result(): void {
-		$ingredient = $this->createMock( Ingredient::class );
-		$ingredient->expects( $this->once() )
-			->method( 'execute' )
-			->willReturn( new ExecutionResult( true, 'Success', [] ) );
-
-		$this->ingredients->expects( $this->once() )
-			->method( 'get' )
-			->willReturn( $ingredient );
-
-		$result = $this->executor->execute( [ 'test' => 'value' ] );
-
-		$this->assertTrue( $result->is_success() );
-		$this->assertSame( 'Recipe executed successfully', $result->get_message() );
-	}
-
+	/**
+	 * GIVEN ingredient execution result
+	 * WHEN storing results
+	 * THEN should store as array with success/message/data keys
+	 */
 	public function test_execute_stores_results_as_arrays(): void {
 		$ingredient = $this->createMock( Ingredient::class );
 		$ingredient->expects( $this->once() )
@@ -214,32 +281,64 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertSame( 'Failed', $data['ingredient_name']['message'] );
 	}
 
-	// ===== Tests for 'extends' functionality =====
+	/**
+	 * GIVEN configuration with dry-run strategy
+	 * WHEN executing recipe
+	 * THEN should validate ingredients without executing them
+	 */
+	public function test_execute_validates_ingredients_in_dry_run_mode(): void {
+		$ingredient1 = $this->createMock( Ingredient::class );
+		// Ingredient should NOT have execute() called in dry-run mode
+		$ingredient1->expects( $this->never() )
+			->method( 'execute' );
 
-	public function test_validate_ignores_extends_keyword(): void {
-		$ingredient = $this->createMock( Ingredient::class );
-		$ingredient->expects( $this->once() )
-			->method( 'validate' )
-			->with( 'value' )
-			->willReturn( ValidationResult::valid() );
+		$ingredient2 = $this->createMock( Ingredient::class );
+		$ingredient2->expects( $this->never() )
+			->method( 'execute' );
 
-		$this->ingredients->expects( $this->once() )
+		$this->ingredients->expects( $this->exactly( 2 ) )
 			->method( 'get' )
-			->with( 'ingredient_name' )
-			->willReturn( $ingredient );
+			->willReturnMap(
+				[
+					[ 'ingredient1', $ingredient1 ],
+					[ 'ingredient2', $ingredient2 ],
+				]
+			);
 
-		$result = $this->executor->validate(
+		$result = $this->executor->execute(
 			[
-				'extends'         => 'parent-recipe',
-				'ingredient_name' => 'value',
-			]
+				'ingredient1' => 'value1',
+				'ingredient2' => 'value2',
+			],
+			ExecutionStrategy::DRY_RUN
 		);
 
-		$this->assertTrue( $result->is_valid() );
+		$this->assertTrue( $result->is_success() );
+		$this->assertSame( 'Recipe validated successfully (dry-run mode)', $result->get_message() );
+
+		$data = $result->get_data();
+		$this->assertCount( 2, $data );
+
+		// Verify both ingredients have dry-run results
+		$this->assertArrayHasKey( 'ingredient1', $data );
+		$this->assertTrue( $data['ingredient1']['success'] );
+		$this->assertSame( 'Validated (not executed)', $data['ingredient1']['message'] );
+		$this->assertSame( [], $data['ingredient1']['data'] );
+
+		$this->assertArrayHasKey( 'ingredient2', $data );
+		$this->assertTrue( $data['ingredient2']['success'] );
+		$this->assertSame( 'Validated (not executed)', $data['ingredient2']['message'] );
+		$this->assertSame( [], $data['ingredient2']['data'] );
 	}
 
+	// ===== execute() with 'extends' Tests =====
+
+	/**
+	 * GIVEN configuration extending single parent recipe
+	 * WHEN executing
+	 * THEN should execute parent ingredients then child ingredients
+	 */
 	public function test_execute_handles_single_extends(): void {
-		// Setup parent recipe
 		$parent_config = [ 'parent_ingredient' => 'parent_value' ];
 
 		$parent_ingredient = $this->createMock( Ingredient::class );
@@ -280,8 +379,12 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertArrayHasKey( 'child_ingredient', $data );
 	}
 
+	/**
+	 * GIVEN configuration extending multiple parent recipes
+	 * WHEN executing
+	 * THEN should execute all parent ingredients then child ingredients
+	 */
 	public function test_execute_handles_multiple_extends(): void {
-		// Setup parent recipes
 		$parent1_config = [ 'ingredient1' => 'value1' ];
 		$parent2_config = [ 'ingredient2' => 'value2' ];
 
@@ -329,42 +432,54 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertTrue( $result->is_success() );
 	}
 
-	public function test_execute_detects_circular_dependency(): void {
-		// Recipe A extends B, B extends A
-		$recipe_a = [ 'extends' => 'recipe-b' ];
-		$recipe_b = [ 'extends' => 'recipe-a' ];
-
-		$this->recipes->expects( $this->exactly( 2 ) )
+	/**
+	 * GIVEN configuration with circular recipe dependency
+	 * WHEN executing
+	 * THEN should detect cycle and return error with dependency chain
+	 *
+	 * @dataProvider circular_dependency_provider
+	 */
+	public function test_execute_detects_circular_dependencies(
+		array $config,
+		array $recipe_map,
+		string $expected_chain
+	): void {
+		$this->recipes->expects( $this->atLeastOnce() )
 			->method( 'get' )
-			->willReturnMap(
+			->willReturnMap( $recipe_map );
+
+		$result = $this->executor->execute( $config );
+
+		$this->assertFalse( $result->is_success() );
+		$this->assertStringContainsString( 'Circular recipe dependency', $result->get_message() );
+		$this->assertStringContainsString( $expected_chain, $result->get_message() );
+	}
+
+	public function circular_dependency_provider(): array {
+		return [
+			'mutual dependency' => [
+				[ 'extends' => 'recipe-a' ],
 				[
-					[ 'recipe-a', $recipe_a ],
-					[ 'recipe-b', $recipe_b ],
-				]
-			);
-
-		$result = $this->executor->execute( [ 'extends' => 'recipe-a' ] );
-
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Circular recipe dependency', $result->get_message() );
-		$this->assertStringContainsString( 'recipe-a -> recipe-b -> recipe-a', $result->get_message() );
+					[ 'recipe-a', [ 'extends' => 'recipe-b' ] ],
+					[ 'recipe-b', [ 'extends' => 'recipe-a' ] ],
+				],
+				'recipe-a -> recipe-b -> recipe-a',
+			],
+			'self reference'    => [
+				[ 'extends' => 'self-recipe' ],
+				[
+					[ 'self-recipe', [ 'extends' => 'self-recipe' ] ],
+				],
+				'self-recipe -> self-recipe',
+			],
+		];
 	}
 
-	public function test_execute_detects_self_reference(): void {
-		$recipe_config = [ 'extends' => 'self-recipe' ];
-
-		$this->recipes->expects( $this->once() )
-			->method( 'get' )
-			->with( 'self-recipe' )
-			->willReturn( $recipe_config );
-
-		$result = $this->executor->execute( [ 'extends' => 'self-recipe' ] );
-
-		$this->assertFalse( $result->is_success() );
-		$this->assertStringContainsString( 'Circular recipe dependency', $result->get_message() );
-		$this->assertStringContainsString( 'self-recipe -> self-recipe', $result->get_message() );
-	}
-
+	/**
+	 * GIVEN configuration extending non-existent recipe
+	 * WHEN executing
+	 * THEN should return error indicating recipe not found
+	 */
 	public function test_execute_returns_error_when_parent_recipe_not_found(): void {
 		$this->recipes->expects( $this->once() )
 			->method( 'get' )
@@ -377,6 +492,11 @@ class RecipeExecutorTest extends WhiskeyTest {
 		$this->assertStringContainsString( 'Recipe not found: non-existent', $result->get_message() );
 	}
 
+	/**
+	 * GIVEN parent recipe that fails during execution
+	 * WHEN executing child recipe
+	 * THEN should stop execution and not execute child ingredients
+	 */
 	public function test_execute_stops_on_parent_failure(): void {
 		$parent_config = [ 'failing_ingredient' => 'value' ];
 
@@ -404,7 +524,7 @@ class RecipeExecutorTest extends WhiskeyTest {
 
 		$this->assertFalse( $result->is_success() );
 		$this->assertStringContainsString( 'Recipe execution failed', $result->get_message() );
-		
+
 		// Verify child ingredient was not executed
 		$data = $result->get_data();
 		$this->assertArrayNotHasKey( 'child_ingredient', $data );

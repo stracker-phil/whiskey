@@ -25,85 +25,100 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 
 	// ===== Validation Tests =====
 
-	public function test_validate_accepts_true(): void {
-		$this->assertValidationAccepts( true );
+	/**
+	 * GIVEN various input types
+	 * WHEN validating
+	 * THEN should accept only boolean or array values
+	 *
+	 * @dataProvider validation_provider
+	 */
+	public function test_validate( $input, bool $expected_valid ): void {
+		$result = $this->ingredient->validate( $input );
+
+		$this->assertSame( $expected_valid, $result->is_valid() );
 	}
 
-	public function test_validate_accepts_false(): void {
-		$this->assertValidationAccepts( false );
-	}
-
-	public function test_validate_accepts_empty_array(): void {
-		$this->assertValidationAccepts( [] );
-	}
-
-	public function test_validate_accepts_array_with_data(): void {
-		$this->assertValidationAccepts( [ 'key' => 'value' ] );
-	}
-
-	public function test_validate_accepts_complex_array(): void {
-		$this->assertValidationAccepts( [
-			'enabled'  => true,
-			'settings' => [ 'mode' => 'test' ],
-			'version'  => 2,
-		] );
-	}
-
-	public function test_validate_rejects_string(): void {
-		$this->assertValidationRejects( 'true' );
-	}
-
-	public function test_validate_rejects_integer(): void {
-		$this->assertValidationRejects( 1 );
-	}
-
-	public function test_validate_rejects_null(): void {
-		$this->assertValidationRejects( null );
-	}
-
-	public function test_validate_rejects_object(): void {
-		$this->assertValidationRejects( (object) [ 'key' => 'value' ] );
+	public function validation_provider(): array {
+		return [
+			'boolean true'     => [ true, true ],
+			'boolean false'    => [ false, true ],
+			'empty array'      => [ [], true ],
+			'simple array'     => [ [ 'key' => 'value' ], true ],
+			'complex array'    => [
+				[
+					'enabled'  => true,
+					'settings' => [ 'mode' => 'test' ],
+					'version'  => 2,
+				],
+				true,
+			],
+			'string rejected'  => [ 'true', false ],
+			'integer rejected' => [ 1, false ],
+			'null rejected'    => [ null, false ],
+			'object rejected'  => [ (object) [ 'key' => 'value' ], false ],
+		];
 	}
 
 	// ===== Execution Tests: Boolean true =====
 
-	public function test_execute_enables_flag_when_true(): void {
-		WP_Functions::mock( 'get_option', null );
-		WP_Functions::mock( 'update_option', true );
+	/**
+	 * GIVEN true value with various previous states
+	 * WHEN executing
+	 * THEN should enable flag and return appropriate state
+	 *
+	 * @dataProvider execute_true_provider
+	 */
+	public function test_execute_enables_flag_when_true(
+		$previous_value,
+		bool $update_return,
+		bool $expected_current,
+		$expected_previous,
+		string $expected_message_fragment
+	): void {
+		WP_Functions::mock( 'get_option', $previous_value );
+		WP_Functions::mock( 'update_option', $update_return );
 
 		$result = $this->ingredient->execute( true );
 
 		$this->assertExecutionSuccess( $result );
-		$this->assertStringContainsString( 'enabled', $result->get_message() );
+		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
+
 		$data = $result->get_data();
-		$this->assertTrue( $data['current'] );
-		$this->assertNull( $data['previous'] );
+		$this->assertSame( $expected_current, $data['current'] );
+		$this->assertSame( $expected_previous, $data['previous'] );
 	}
 
-	public function test_execute_enables_flag_when_previously_false(): void {
-		WP_Functions::mock( 'get_option', false );
-		WP_Functions::mock( 'update_option', true );
-
-		$result = $this->ingredient->execute( true );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertTrue( $data['current'] );
-		$this->assertFalse( $data['previous'] );
+	public function execute_true_provider(): array {
+		return [
+			'enable from null'  => [
+				null,
+				true,
+				true,
+				null,
+				'enabled',
+			],
+			'enable from false' => [
+				false,
+				true,
+				true,
+				false,
+				'enabled',
+			],
+			'already enabled'   => [
+				true,
+				false, // update_option returns false when unchanged
+				true,
+				true,
+				'enabled',
+			],
+		];
 	}
 
-	public function test_execute_succeeds_when_already_enabled(): void {
-		WP_Functions::mock( 'get_option', true );
-		WP_Functions::mock( 'update_option', false ); // Returns false when unchanged
-
-		$result = $this->ingredient->execute( true );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertTrue( $data['current'] );
-		$this->assertTrue( $data['previous'] );
-	}
-
+	/**
+	 * GIVEN true value and update failure
+	 * WHEN executing
+	 * THEN should return failure
+	 */
 	public function test_execute_fails_when_enable_fails(): void {
 		WP_Functions::mock( 'get_option', false );
 		WP_Functions::mock( 'update_option', false );
@@ -116,43 +131,60 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 
 	// ===== Execution Tests: Boolean false =====
 
-	public function test_execute_deletes_flag_when_false(): void {
-		WP_Functions::mock( 'get_option', true );
-		WP_Functions::mock( 'delete_option', true );
+	/**
+	 * GIVEN false value with various previous states
+	 * WHEN executing
+	 * THEN should delete flag and return appropriate state
+	 *
+	 * @dataProvider execute_false_provider
+	 */
+	public function test_execute_deletes_flag_when_false(
+		$previous_value,
+		bool $delete_return,
+		$expected_previous,
+		string $expected_message_fragment
+	): void {
+		WP_Functions::mock( 'get_option', $previous_value );
+		WP_Functions::mock( 'delete_option', $delete_return );
 
 		$result = $this->ingredient->execute( false );
 
 		$this->assertExecutionSuccess( $result );
-		$this->assertStringContainsString( 'deleted', $result->get_message() );
+		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
+
 		$data = $result->get_data();
 		$this->assertNull( $data['current'] );
-		$this->assertTrue( $data['previous'] );
+		$this->assertSame( $expected_previous, $data['previous'] );
 	}
 
-	public function test_execute_deletes_when_previously_array(): void {
-		WP_Functions::mock( 'get_option', [ 'key' => 'value' ] );
-		WP_Functions::mock( 'delete_option', true );
-
-		$result = $this->ingredient->execute( false );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertNull( $data['current'] );
-		$this->assertIsArray( $data['previous'] );
+	public function execute_false_provider(): array {
+		return [
+			'delete from true'  => [
+				true,
+				true,
+				true,
+				'deleted',
+			],
+			'delete from array' => [
+				[ 'key' => 'value' ],
+				true,
+				[ 'key' => 'value' ],
+				'deleted',
+			],
+			'already deleted'   => [
+				null,
+				false, // delete_option returns false when already absent
+				null,
+				'deleted',
+			],
+		];
 	}
 
-	public function test_execute_succeeds_when_already_deleted(): void {
-		WP_Functions::mock( 'get_option', null );
-		WP_Functions::mock( 'delete_option', false ); // Returns false when already absent
-
-		$result = $this->ingredient->execute( false );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertNull( $data['current'] );
-		$this->assertNull( $data['previous'] );
-	}
-
+	/**
+	 * GIVEN false value and delete failure
+	 * WHEN executing
+	 * THEN should return failure
+	 */
 	public function test_execute_fails_when_delete_fails(): void {
 		WP_Functions::mock( 'get_option', true );
 		WP_Functions::mock( 'delete_option', false );
@@ -165,62 +197,84 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 
 	// ===== Execution Tests: Array =====
 
-	public function test_execute_saves_array_data(): void {
-		WP_Functions::mock( 'get_option', null );
-		WP_Functions::mock( 'update_option', true );
-
-		$data_to_save = [ 'mode' => 'sandbox', 'version' => 2 ];
-		$result       = $this->ingredient->execute( $data_to_save );
-
-		$this->assertExecutionSuccess( $result );
-		$this->assertStringContainsString( 'updated', $result->get_message() );
-		$data = $result->get_data();
-		$this->assertSame( $data_to_save, $data['current'] );
-		$this->assertNull( $data['previous'] );
-	}
-
-	public function test_execute_updates_existing_array(): void {
-		$old_data = [ 'old' => 'value' ];
-		$new_data = [ 'new' => 'value' ];
-
-		WP_Functions::mock( 'get_option', $old_data );
-		WP_Functions::mock( 'update_option', true );
+	/**
+	 * GIVEN array value with various previous states
+	 * WHEN executing
+	 * THEN should save array and return appropriate state
+	 *
+	 * @dataProvider execute_array_provider
+	 */
+	public function test_execute_saves_array_data(
+		array $new_data,
+		$previous_value,
+		bool $update_return,
+		array $expected_current,
+		$expected_previous,
+		string $expected_message_fragment
+	): void {
+		WP_Functions::mock( 'get_option', $previous_value );
+		WP_Functions::mock( 'update_option', $update_return );
 
 		$result = $this->ingredient->execute( $new_data );
 
 		$this->assertExecutionSuccess( $result );
+		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
+
 		$data = $result->get_data();
-		$this->assertSame( $new_data, $data['current'] );
-		$this->assertSame( $old_data, $data['previous'] );
+		$this->assertSame( $expected_current, $data['current'] );
+		$this->assertSame( $expected_previous, $data['previous'] );
 	}
 
-	public function test_execute_replaces_boolean_with_array(): void {
-		WP_Functions::mock( 'get_option', true );
-		WP_Functions::mock( 'update_option', true );
-
-		$array_data = [ 'migration' => 'complete' ];
-		$result     = $this->ingredient->execute( $array_data );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertSame( $array_data, $data['current'] );
-		$this->assertTrue( $data['previous'] );
+	public function execute_array_provider(): array {
+		return [
+			'save new array'             => [
+				[ 'mode' => 'sandbox', 'version' => 2 ],
+				null,
+				true,
+				[ 'mode' => 'sandbox', 'version' => 2 ],
+				null,
+				'updated',
+			],
+			'update existing array'      => [
+				[ 'new' => 'value' ],
+				[ 'old' => 'value' ],
+				true,
+				[ 'new' => 'value' ],
+				[ 'old' => 'value' ],
+				'updated',
+			],
+			'replace boolean with array' => [
+				[ 'migration' => 'complete' ],
+				true,
+				true,
+				[ 'migration' => 'complete' ],
+				true,
+				'updated',
+			],
+			'array unchanged'            => [
+				[ 'key' => 'value' ],
+				[ 'key' => 'value' ],
+				false, // update_option returns false when unchanged
+				[ 'key' => 'value' ],
+				[ 'key' => 'value' ],
+				'updated',
+			],
+			'empty array replaces data'  => [
+				[],
+				[ 'old' => 'data' ],
+				true,
+				[],
+				[ 'old' => 'data' ],
+				'updated',
+			],
+		];
 	}
 
-	public function test_execute_succeeds_when_array_unchanged(): void {
-		$data = [ 'key' => 'value' ];
-
-		WP_Functions::mock( 'get_option', $data );
-		WP_Functions::mock( 'update_option', false ); // Returns false when unchanged
-
-		$result = $this->ingredient->execute( $data );
-
-		$this->assertExecutionSuccess( $result );
-		$result_data = $result->get_data();
-		$this->assertSame( $data, $result_data['current'] );
-		$this->assertSame( $data, $result_data['previous'] );
-	}
-
+	/**
+	 * GIVEN array value and update failure
+	 * WHEN executing
+	 * THEN should return failure
+	 */
 	public function test_execute_fails_when_array_update_fails(): void {
 		WP_Functions::mock( 'get_option', null );
 		WP_Functions::mock( 'update_option', false );
@@ -229,16 +283,5 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );
-	}
-
-	public function test_execute_handles_empty_array(): void {
-		WP_Functions::mock( 'get_option', [ 'old' => 'data' ] );
-		WP_Functions::mock( 'update_option', true );
-
-		$result = $this->ingredient->execute( [] );
-
-		$this->assertExecutionSuccess( $result );
-		$data = $result->get_data();
-		$this->assertSame( [], $data['current'] );
 	}
 }
