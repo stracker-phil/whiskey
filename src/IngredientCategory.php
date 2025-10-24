@@ -67,6 +67,7 @@ class IngredientCategory {
 	 */
 	public static function all(): array {
 		return [
+			self::GENERAL,
 			self::WORDPRESS,
 			self::WOOCOMMERCE,
 			self::PAYPAL,
