@@ -117,8 +117,8 @@ class RecipeExecutorTest extends WhiskeyTest {
 
     public function test_validate_returns_false_for_empty_config(): void {
         $result = $this->executor->validate( array() );
-        
-        $this->assertFalse( $result );
+
+        $this->assertFalse( $result->is_valid() );
     }
 }
 ```

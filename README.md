@@ -51,7 +51,14 @@ GET /wp-json/whiskey/v1/recipes
 Apply the recipe for `paypal-us-merchant`:
 
 ```bash
+# Execute recipe, stop on error.
 POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply
+
+# Validate recipe without executing it.
+POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply?strategy=dry-run
+
+# Execute recipe, continue on error.
+POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply?strategy=continue
 ```
 
 ### API Endpoints
@@ -70,8 +77,9 @@ POST /wp-json/whiskey/v1/recipe/paypal-us-merchant/apply
 ```bash
 wp whiskey recipes                    # List all recipes
 wp whiskey recipe <name>              # Show recipe details
-wp whiskey apply <name>               # Execute a recipe
+wp whiskey apply <name>               # Execute a recipe, stop on error
 wp whiskey apply <name> --dry-run     # Validate without executing
+wp whiskey apply <name> --continue    # Execute recipe and continue on error
 wp whiskey ingredients                # List all ingredients
 wp whiskey ingredient <name>          # Show ingredient details
 wp whiskey status                     # Show plugin status
@@ -96,7 +104,7 @@ Think of it this way:
 
 ```bash
 # Install dependencies
-composer install
+ddev composer install
 
 # Run PHPUnit tests
 ddev composer test
@@ -156,15 +164,18 @@ class MyCustomIngredient extends Ingredient {
     public const NAME = 'my_custom_setting';
     public const CATEGORY = 'my-plugin';
     public const DESCRIPTION = 'Optional description for documentation';
-    
-    public function validate( $value ): bool {
-        return is_string( $value );
+
+    public function validate( $value ): ValidationResult {
+        if ( ! is_string( $value ) ) {
+            return ValidationResult::invalid_type( 'string' );
+        }
+        return ValidationResult::valid();
     }
-    
+
     public function execute( $value ): ExecutionResult {
         // Collect response details for output.
         $details = [];
-        
+
         // Do the configuration work
         return new ExecutionResult( true, 'Success', $details );
     }

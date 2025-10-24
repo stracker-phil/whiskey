@@ -55,7 +55,7 @@ Creates a custom ingredient and uses it in a new recipe, as a custom WordPress p
 ### Validation
 
 - **Type check only** - Don't verify objects exist in `validate()`
-- Return `false` for invalid input (no exceptions)
+- Return `ValidationResult` using factory methods (`valid()`, `invalid_type()`, `invalid_format()`, etc.)
 - Keep it simple - "Can we execute with this input?"
 
 ### Execution

@@ -69,6 +69,7 @@ namespace Whiskey\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 use Whiskey\Registry\IngredientRegistry;
 
 class MyIngredient extends Ingredient {
@@ -76,9 +77,12 @@ class MyIngredient extends Ingredient {
 	public const CATEGORY    = 'wordpress'; // wordpress|woocommerce|paypal
 	public const DESCRIPTION = 'What this does';
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		// Type check only - can we execute with this value?
-		return is_string( $value );
+		if ( ! is_string( $value ) ) {
+			return ValidationResult::invalid_type( 'string' );
+		}
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {
@@ -104,7 +108,7 @@ add_action(
 
 **Validation:**
 - Check type only (`is_string`, `is_int`, `is_array`)
-- Return `false` for invalid input (no exceptions)
+- Return `ValidationResult` using factory methods (`valid()`, `invalid_type()`, etc.)
 - Keep simple - just verify we CAN execute
 
 **Execution:**
