@@ -44,7 +44,7 @@ class RecipeExecutor {
 		return ValidationResult::valid();
 	}
 
-	public function execute( array $config ): ExecutionResult {
+	public function execute( array $config, string $strategy = ExecutionStrategy::SEQUENTIAL ): ExecutionResult {
 		$extends = $config[ self::EXTENDS ] ?? null;
 		unset( $config[ self::EXTENDS ] );
 
@@ -52,7 +52,7 @@ class RecipeExecutor {
 			$parent_recipes = is_array( $extends ) ? $extends : [ $extends ];
 
 			foreach ( $parent_recipes as $parent_name ) {
-				$parent_result = $this->execute_recipe( $parent_name );
+				$parent_result = $this->execute_recipe( $parent_name, $strategy );
 
 				if ( ! $parent_result->is_success() ) {
 					return $parent_result;
@@ -71,11 +71,26 @@ class RecipeExecutor {
 				continue;
 			}
 
-			$result          = $ingredient->execute( $value );
-			$results[ $key ] = $result->to_array();
+			// Check if we should execute or just validate (dry-run)
+			if ( ExecutionStrategy::should_execute( $strategy ) ) {
+				$result          = $ingredient->execute( $value );
+				$results[ $key ] = $result->to_array();
 
-			if ( ! $result->is_success() ) {
-				$has_failure = true;
+				if ( ! $result->is_success() ) {
+					$has_failure = true;
+
+					// Stop on first failure if strategy requires it
+					if ( ExecutionStrategy::should_stop_on_failure( $strategy ) ) {
+						break;
+					}
+				}
+			} else {
+				// Dry-run mode: only validate
+				$results[ $key ] = [
+					'success' => true,
+					'message' => 'Validated (not executed)',
+					'data'    => [],
+				];
 			}
 		}
 
@@ -87,9 +102,13 @@ class RecipeExecutor {
 			);
 		}
 
+		$message = ExecutionStrategy::should_execute( $strategy )
+			? 'Recipe executed successfully'
+			: 'Recipe validated successfully (dry-run mode)';
+
 		return new ExecutionResult(
 			true,
-			'Recipe executed successfully',
+			$message,
 			$results
 		);
 	}
@@ -97,7 +116,7 @@ class RecipeExecutor {
 	/**
 	 * Execute a recipe by name with circular dependency detection.
 	 */
-	private function execute_recipe( string $recipe_name ): ExecutionResult {
+	private function execute_recipe( string $recipe_name, string $strategy = ExecutionStrategy::SEQUENTIAL ): ExecutionResult {
 		// Check for circular dependency
 		if ( in_array( $recipe_name, $this->execution_stack, true ) ) {
 			$chain = implode( ' -> ', [ ...$this->execution_stack, $recipe_name ] );
@@ -122,7 +141,7 @@ class RecipeExecutor {
 		$this->execution_stack[] = $recipe_name;
 
 		// Execute recipe (may include extends)
-		$result = $this->execute( $config );
+		$result = $this->execute( $config, $strategy );
 
 		// Remove from stack after execution
 		array_pop( $this->execution_stack );

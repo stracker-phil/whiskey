@@ -12,6 +12,7 @@ namespace Whiskey\Tools;
 use Exception;
 use WP_CLI;
 use WP_REST_Response;
+use Whiskey\ExecutionStrategy;
 
 /**
  * Tool to apply/execute a recipe
@@ -22,6 +23,13 @@ class ApplyRecipeTool extends WhiskeyTool {
 		return [
 			'method' => 'POST',
 			'path'   => '/recipe/(?P<n>[a-zA-Z0-9-_]+)/apply',
+			'args'   => [
+				'strategy' => [
+					'required'          => false,
+					'default'           => ExecutionStrategy::SEQUENTIAL,
+					'sanitize_callback' => 'sanitize_text_field',
+				],
+			],
 		];
 	}
 
