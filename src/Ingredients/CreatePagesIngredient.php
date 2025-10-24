@@ -7,6 +7,7 @@ use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Creates or updates pre-defined pages.
@@ -17,18 +18,18 @@ class CreatePagesIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'array' );
 		}
 
 		foreach ( $value as $slug ) {
 			if ( ! is_string( $slug ) ) {
-				return false;
+				return ValidationResult::invalid_type( 'array of strings' );
 			}
 		}
 
-		return true;
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

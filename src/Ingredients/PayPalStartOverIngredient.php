@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Completely removes all PayPal plugin settings from the database.
@@ -28,9 +29,9 @@ class PayPalStartOverIngredient extends Ingredient {
 		'ppcp-webhook',
 	];
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		// This ingredient doesn't require any input value
-		return true;
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

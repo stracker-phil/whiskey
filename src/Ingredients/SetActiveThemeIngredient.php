@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Activates a WordPress theme by its name.
@@ -16,8 +17,16 @@ class SetActiveThemeIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
 
-	public function validate( $value ): bool {
-		return is_string( $value ) && $value !== '';
+	public function validate( $value ): ValidationResult {
+		if ( ! is_string( $value ) ) {
+			return ValidationResult::invalid_type( 'string' );
+		}
+
+		if ( $value === '' ) {
+			return ValidationResult::invalid_value( 'non-empty string' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

@@ -7,6 +7,7 @@ use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Creates a primary navigation menu with specified pages.
@@ -21,18 +22,18 @@ class SetMenuItemsIngredient extends Ingredient {
 	private const MENU_LOCATION = 'primary';
 	private const MENU_NAME     = 'Primary Navigation';
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'array' );
 		}
 
 		foreach ( $value as $slug ) {
 			if ( ! is_string( $slug ) ) {
-				return false;
+				return ValidationResult::invalid_type( 'array of strings' );
 			}
 		}
 
-		return true;
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

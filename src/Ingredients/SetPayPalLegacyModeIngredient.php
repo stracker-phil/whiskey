@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Configures PayPal UI mode (legacy vs modern).
@@ -19,8 +20,12 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 	private const OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';
 	private const OPTION_OLD_UI       = 'woocommerce_ppcp-settings-should-use-old-ui';
 
-	public function validate( $value ): bool {
-		return is_bool( $value );
+	public function validate( $value ): ValidationResult {
+		if ( ! is_bool( $value ) ) {
+			return ValidationResult::invalid_type( 'boolean' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

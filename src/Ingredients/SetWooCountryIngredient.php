@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Sets the WooCommerce default country/state.
@@ -16,23 +17,34 @@ class SetWooCountryIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the default country/state for WooCommerce; accepts "US:CA", "AT", or ["US", "CA"]';
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		// Accept string like "US:CA" or "AT"
 		if ( is_string( $value ) ) {
-			// Pattern: 2 letters, optionally followed by colon and 2 more letters
-			return (bool) preg_match( '/^\w{2}(:\w{2})?$/', $value );
+			if ( ! preg_match( '/^\w{2}(:\w{2})?$/', $value ) ) {
+				return ValidationResult::invalid_format( 'country code format (e.g., "US:CA" or "AT")' );
+			}
+
+			return ValidationResult::valid();
 		}
 
 		// Accept array like ['US', 'CA']
 		if ( is_array( $value ) ) {
-			return count( $value ) === 2
-				&& is_string( $value[0] )
-				&& is_string( $value[1] )
-				&& preg_match( '/^\w{2}$/', $value[0] )
-				&& preg_match( '/^\w{2}$/', $value[1] );
+			if ( count( $value ) !== 2 ) {
+				return ValidationResult::invalid_array_structure();
+			}
+
+			if ( ! is_string( $value[0] ) || ! is_string( $value[1] ) ) {
+				return ValidationResult::invalid_type( 'array with two strings' );
+			}
+
+			if ( ! preg_match( '/^\w{2}$/', $value[0] ) || ! preg_match( '/^\w{2}$/', $value[1] ) ) {
+				return ValidationResult::invalid_format( 'two-letter country and state codes' );
+			}
+
+			return ValidationResult::valid();
 		}
 
-		return false;
+		return ValidationResult::invalid_type( 'string or array' );
 	}
 
 	public function execute( $value ): ExecutionResult {

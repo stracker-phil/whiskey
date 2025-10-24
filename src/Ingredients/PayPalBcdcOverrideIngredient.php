@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Manages the PayPal BCDC migration override setting.
@@ -18,8 +19,12 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 	private const OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';
 
-	public function validate( $value ): bool {
-		return is_bool( $value ) || is_array( $value );
+	public function validate( $value ): ValidationResult {
+		if ( is_bool( $value ) || is_array( $value ) ) {
+			return ValidationResult::valid();
+		}
+
+		return ValidationResult::invalid_type( 'boolean or array' );
 	}
 
 	public function execute( $value ): ExecutionResult {

@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Updates the permalink structure of the WordPress site.
@@ -16,8 +17,12 @@ class UpdatePermalinksIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Changes the permalink structure; common values: "/%postname%/", "/%year%/%monthnum%/%postname%/", or empty string for default';
 
-	public function validate( $value ): bool {
-		return is_string( $value );
+	public function validate( $value ): ValidationResult {
+		if ( ! is_string( $value ) ) {
+			return ValidationResult::invalid_type( 'string' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

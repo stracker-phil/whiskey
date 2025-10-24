@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Configures PayPal merchant credentials for both Legacy and Modern UI.
@@ -32,20 +33,24 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		'casual_seller',
 	];
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		// Accept false to clear merchant data
 		if ( false === $value ) {
-			return true;
+			return ValidationResult::valid();
 		}
 
 		if ( ! is_array( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'array or false' );
 		}
 
 		// Check all required keys are present and are strings
 		foreach ( self::REQUIRED_KEYS as $key ) {
-			if ( ! isset( $value[ $key ] ) || ! is_string( $value[ $key ] ) ) {
-				return false;
+			if ( ! isset( $value[ $key ] ) ) {
+				return ValidationResult::missing_key( $key );
+			}
+
+			if ( ! is_string( $value[ $key ] ) ) {
+				return ValidationResult::invalid_type( "string for key '{$key}'" );
 			}
 		}
 
@@ -57,16 +62,16 @@ class SetPayPalMerchantIngredient extends Ingredient {
 
 			// casual_seller must be boolean
 			if ( $key === 'casual_seller' && ! is_bool( $value[ $key ] ) ) {
-				return false;
+				return ValidationResult::invalid_type( "boolean for key '{$key}'" );
 			}
 
 			// merchant_country must be string
 			if ( $key === 'merchant_country' && ! is_string( $value[ $key ] ) ) {
-				return false;
+				return ValidationResult::invalid_type( "string for key '{$key}'" );
 			}
 		}
 
-		return true;
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Configures PayPal installation path (branded-only vs white-label).
@@ -21,8 +22,12 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 	private const PATH_BRANDED       = 'core-profiler';
 	private const PATH_DIRECT        = 'direct';
 
-	public function validate( $value ): bool {
-		return is_bool( $value );
+	public function validate( $value ): ValidationResult {
+		if ( ! is_bool( $value ) ) {
+			return ValidationResult::invalid_type( 'boolean' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

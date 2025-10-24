@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Sets the PayPal plugin installed version to trigger update logic.
@@ -18,18 +19,22 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 
 	private const OPTION_NAME = 'woocommerce-ppcp-version';
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'string' );
 		}
 
 		// Allow empty string (for deletion)
 		if ( $value === '' ) {
-			return true;
+			return ValidationResult::valid();
 		}
 
 		// Validate semantic version format (e.g., "2.0.0", "1.2.3-beta")
-		return preg_match( '/^\d+\.\d+\.\d+/', $value ) === 1;
+		if ( preg_match( '/^\d+\.\d+\.\d+/', $value ) !== 1 ) {
+			return ValidationResult::invalid_format( 'semantic version (e.g., "2.0.0", "1.2.3-beta")' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

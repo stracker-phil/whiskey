@@ -46,8 +46,9 @@ class ApplyRecipeTool extends WhiskeyTool {
 			throw new Exception( sprintf( 'Recipe not found: %s', $name ) );
 		}
 
-		if ( ! $this->executor->validate( $config ) ) {
-			throw new Exception( 'Invalid recipe configuration.' );
+		$result = $this->executor->validate( $config );
+		if ( ! $result->is_valid() ) {
+			throw new Exception( $result->get_message() );
 		}
 
 		if ( $dry_run ) {

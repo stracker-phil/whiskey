@@ -26,7 +26,7 @@ abstract class Ingredient {
 	 */
 	public const DESCRIPTION = '';
 
-	abstract public function validate( $value ): bool;
+	abstract public function validate( $value ): ValidationResult;
 
 	abstract public function execute( $value ): ExecutionResult;
 }

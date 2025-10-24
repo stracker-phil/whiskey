@@ -7,6 +7,7 @@ use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
 use Whiskey\IngredientCategory;
+use Whiskey\ValidationResult;
 
 /**
  * Sets WooCommerce store pages (cart, checkout, my-account).
@@ -24,22 +25,26 @@ class SetWooStorePagesIngredient extends Ingredient {
 		'my-account' => 'woocommerce_myaccount_page_id',
 	];
 
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'array' );
+		}
+
+		if ( count( $value ) === 0 ) {
+			return ValidationResult::invalid_array_structure();
 		}
 
 		foreach ( $value as $key => $slug ) {
 			if ( ! in_array( $key, self::ALLOWED_KEYS, true ) ) {
-				return false;
+				return ValidationResult::invalid_value( 'allowed keys: cart, checkout, my-account' );
 			}
 
 			if ( ! is_string( $slug ) ) {
-				return false;
+				return ValidationResult::invalid_type( 'string values for page slugs' );
 			}
 		}
 
-		return count( $value ) > 0;
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

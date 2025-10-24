@@ -6,6 +6,7 @@ namespace Whiskey\Ingredients;
 use Whiskey\Ingredient;
 use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Sets the WooCommerce currency.
@@ -16,8 +17,16 @@ class SetWooCurrencyIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
 	public const DESCRIPTION = 'Sets the currency for WooCommerce; accepts 3-letter currency code (e.g., "USD", "EUR", "GBP")';
 
-	public function validate( $value ): bool {
-		return is_string( $value ) && preg_match( '/^[A-Z]{3}$/', $value ) === 1;
+	public function validate( $value ): ValidationResult {
+		if ( ! is_string( $value ) ) {
+			return ValidationResult::invalid_type( 'string' );
+		}
+
+		if ( preg_match( '/^[A-Z]{3}$/', $value ) !== 1 ) {
+			return ValidationResult::invalid_format( '3-letter uppercase currency code (e.g., USD, EUR, GBP)' );
+		}
+
+		return ValidationResult::valid();
 	}
 
 	public function execute( $value ): ExecutionResult {

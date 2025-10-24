@@ -7,6 +7,7 @@ use WP_Post;
 use Whiskey\Ingredient;
 use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Updates the "home_page" setting.
@@ -17,8 +18,12 @@ class SetHomepageIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::WORDPRESS;
 	public const DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
 
-	public function validate( $value ): bool {
-		return is_string( $value ) || is_int( $value );
+	public function validate( $value ): ValidationResult {
+		if ( is_string( $value ) || is_int( $value ) ) {
+			return ValidationResult::valid();
+		}
+
+		return ValidationResult::invalid_type( 'string or integer' );
 	}
 
 	public function execute( $value ): ExecutionResult {

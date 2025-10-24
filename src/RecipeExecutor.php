@@ -18,9 +18,9 @@ class RecipeExecutor {
 		$this->recipes     = $recipes;
 	}
 
-	public function validate( array $config ): bool {
+	public function validate( array $config ): ValidationResult {
 		if ( empty( $config ) ) {
-			return false;
+			return ValidationResult::invalid_value( 'no configuration found' );
 		}
 
 		foreach ( $config as $key => $value ) {
@@ -35,12 +35,13 @@ class RecipeExecutor {
 				continue;
 			}
 
-			if ( ! $ingredient->validate( $value ) ) {
-				return false;
+			$result = $ingredient->validate( $value );
+			if ( ! $result->is_valid() ) {
+				return $result;
 			}
 		}
 
-		return true;
+		return ValidationResult::valid();
 	}
 
 	public function execute( array $config ): ExecutionResult {
@@ -60,7 +61,7 @@ class RecipeExecutor {
 		}
 
 		// Execute ingredients in this recipe
-		$results = [];
+		$results     = [];
 		$has_failure = false;
 
 		foreach ( $config as $key => $value ) {
@@ -70,7 +71,7 @@ class RecipeExecutor {
 				continue;
 			}
 
-			$result = $ingredient->execute( $value );
+			$result          = $ingredient->execute( $value );
 			$results[ $key ] = $result->to_array();
 
 			if ( ! $result->is_success() ) {
