@@ -18,9 +18,6 @@ class ValidationCode {
 	public const INVALID_FORMAT          = 'invalid_format';
 	public const INVALID_VALUE           = 'invalid_value';
 
-	private function __construct() {
-	}
-
 	public static function is_valid( string $result ): bool {
 		return self::VALID === $result;
 	}

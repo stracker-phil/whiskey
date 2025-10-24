@@ -16,13 +16,6 @@ class ExecutionStrategy {
 	public const DRY_RUN           = 'dry_run';
 
 	/**
-	 * Private constructor prevents instantiation.
-	 * This is a static utility class.
-	 */
-	private function __construct() {
-	}
-
-	/**
 	 * Check if execution should stop on the first ingredient failure.
 	 *
 	 * @param string $strategy The execution strategy

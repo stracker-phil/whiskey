@@ -13,12 +13,6 @@ class IngredientCategory {
 	public const PAYPAL      = 'paypal';
 
 	/**
-	 * Prevent instantiation.
-	 */
-	private function __construct() {
-	}
-
-	/**
 	 * Get the display name for a category.
 	 *
 	 * @param string $category One of the category constants.
