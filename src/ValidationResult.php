@@ -25,7 +25,7 @@ class ValidationResult {
 	 */
 	private function __construct(
 		private string $code,
-		private $context = null,
+		private mixed $context = null,
 		private ?Closure $executor = null
 	) {
 	}
@@ -106,8 +106,8 @@ class ValidationResult {
 	public function execute( ...$args ): ExecutionResult {
 		if ( ! $this->executor || ! $this->is_valid() ) {
 			return new ExecutionResult(
-				false,
-				'Cannot execute invalid result: ' . $this->get_message()
+				success: false,
+				message: 'Cannot execute invalid result: ' . $this->get_message()
 			);
 		}
 
