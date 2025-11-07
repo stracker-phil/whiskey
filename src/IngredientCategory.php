@@ -19,23 +19,13 @@ class IngredientCategory {
 	 * @return string Display name.
 	 */
 	public static function get_display_name( string $category ): string {
-		if ( self::GENERAL === $category ) {
-			return 'Generic';
-		}
-
-		if ( self::WORDPRESS === $category ) {
-			return 'WordPress Core';
-		}
-
-		if ( self::WOOCOMMERCE === $category ) {
-			return 'WooCommerce';
-		}
-
-		if ( self::PAYPAL === $category ) {
-			return 'PayPal Integration';
-		}
-
-		return $category;
+		return match ( $category ) {
+			self::GENERAL => 'Generic',
+			self::WORDPRESS => 'WordPress Core',
+			self::WOOCOMMERCE => 'WooCommerce',
+			self::PAYPAL => 'PayPal Integration',
+			default => $category,
+		};
 	}
 
 	/**
@@ -45,19 +35,12 @@ class IngredientCategory {
 	 * @return string ANSI color code.
 	 */
 	public static function get_color( string $category ): string {
-		if ( self::WORDPRESS === $category ) {
-			return "\033[94m"; // Blue
-		}
-
-		if ( self::WOOCOMMERCE === $category ) {
-			return "\033[95m"; // Magenta
-		}
-
-		if ( self::PAYPAL === $category ) {
-			return "\033[96m"; // Cyan
-		}
-
-		return "\033[0m"; // Reset
+		return match ( $category ) {
+			self::WORDPRESS => "\033[94m", // Blue
+			self::WOOCOMMERCE => "\033[95m", // Magenta
+			self::PAYPAL => "\033[96m", // Cyan
+			default => "\033[0m", // Reset
+		};
 	}
 
 	/**

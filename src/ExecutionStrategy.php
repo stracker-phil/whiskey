@@ -106,16 +106,11 @@ class ExecutionStrategy {
 	 * @return string A valid strategy constant
 	 */
 	public static function from_cli_args( bool $dry_run, bool $continue ): string {
-		// --dry-run takes precedence
-		if ( $dry_run ) {
-			return self::DRY_RUN;
-		}
-
-		if ( $continue ) {
-			return self::CONTINUE_ON_ERROR;
-		}
-
-		return self::SEQUENTIAL;
+		return match ( true ) {
+			$dry_run => self::DRY_RUN,        // --dry-run takes precedence
+			$continue => self::CONTINUE_ON_ERROR,
+			default => self::SEQUENTIAL,
+		};
 	}
 
 	/**
@@ -138,18 +133,11 @@ class ExecutionStrategy {
 	 * @return string Description text
 	 */
 	public static function get_description( string $strategy ): string {
-		switch ( $strategy ) {
-			case self::SEQUENTIAL:
-				return 'Stop on first failure';
-
-			case self::CONTINUE_ON_ERROR:
-				return 'Continue executing even if ingredients fail';
-
-			case self::DRY_RUN:
-				return 'Validate ingredients without executing';
-
-			default:
-				return 'Unknown strategy';
-		}
+		return match ( $strategy ) {
+			self::SEQUENTIAL => 'Stop on first failure',
+			self::CONTINUE_ON_ERROR => 'Continue executing even if ingredients fail',
+			self::DRY_RUN => 'Validate ingredients without executing',
+			default => 'Unknown strategy',
+		};
 	}
 }

@@ -198,27 +198,14 @@ abstract class WhiskeyTool {
 	protected function get_http_code( Exception $e ): int {
 		$message_lower = strtolower( $e->getMessage() );
 
-		if ( str_contains( $message_lower, 'not found' ) ) {
-			return 404;
-		}
-
-		if ( str_contains( $message_lower, 'unauthorized' ) ) {
-			return 401;
-		}
-
-		if ( str_contains( $message_lower, 'forbidden' ) ) {
-			return 403;
-		}
-
-		if ( str_contains( $message_lower, 'invalid' ) ) {
-			return 400;
-		}
-
-		if ( str_contains( $message_lower, 'conflict' ) ) {
-			return 409;
-		}
-
-		return 500;
+		return match ( true ) {
+			str_contains( $message_lower, 'not found' ) => 404,
+			str_contains( $message_lower, 'unauthorized' ) => 401,
+			str_contains( $message_lower, 'forbidden' ) => 403,
+			str_contains( $message_lower, 'invalid' ) => 400,
+			str_contains( $message_lower, 'conflict' ) => 409,
+			default => 500,
+		};
 	}
 
 	protected function is_cli_available(): bool {

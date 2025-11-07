@@ -23,30 +23,14 @@ class ValidationCode {
 	}
 
 	public static function get_message( string $result, $context = null ): string {
-		if ( self::VALID === $result ) {
-			return 'Validation passed';
-		}
-
-		if ( self::INVALID_TYPE === $result ) {
-			return sprintf( 'Invalid type: expected %s', $context ?? 'unknown' );
-		}
-
-		if ( self::MISSING_REQUIRED_KEY === $result ) {
-			return sprintf( 'Missing required key: %s', $context ?? 'unknown' );
-		}
-
-		if ( self::INVALID_ARRAY_STRUCTURE === $result ) {
-			return 'Invalid array structure';
-		}
-
-		if ( self::INVALID_FORMAT === $result ) {
-			return sprintf( 'Invalid format: %s', $context ?? 'unknown' );
-		}
-
-		if ( self::INVALID_VALUE === $result ) {
-			return sprintf( 'Invalid value: %s', $context ?? 'unknown' );
-		}
-
-		return 'Unknown validation error';
+		return match ( $result ) {
+			self::VALID => 'Validation passed',
+			self::INVALID_TYPE => sprintf( 'Invalid type: expected %s', $context ?? 'unknown' ),
+			self::MISSING_REQUIRED_KEY => sprintf( 'Missing required key: %s', $context ?? 'unknown' ),
+			self::INVALID_ARRAY_STRUCTURE => 'Invalid array structure',
+			self::INVALID_FORMAT => sprintf( 'Invalid format: %s', $context ?? 'unknown' ),
+			self::INVALID_VALUE => sprintf( 'Invalid value: %s', $context ?? 'unknown' ),
+			default => 'Unknown validation error',
+		};
 	}
 }
