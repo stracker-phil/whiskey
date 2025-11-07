@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tools;
 
-use Exception;
+use RuntimeException;
 use WP_CLI;
 use WP_REST_Response;
 use Whiskey\ExecutionStrategy;
@@ -45,18 +45,18 @@ class ApplyRecipeTool extends WhiskeyTool {
 		$dry_run = isset( $args['dry-run'] );
 
 		if ( ! $name ) {
-			throw new Exception( 'Recipe name is required.' );
+			throw new RuntimeException( 'Recipe name is required.' );
 		}
 
 		$config = $this->recipes->get( $name );
 
 		if ( ! $config ) {
-			throw new Exception( sprintf( 'Recipe not found: %s', $name ) );
+			throw new RuntimeException( sprintf( 'Recipe not found: %s', $name ) );
 		}
 
 		$validation_result = $this->executor->validate( $config );
 		if ( ! $validation_result->is_valid() ) {
-			throw new Exception( $validation_result->get_message() );
+			throw new RuntimeException( $validation_result->get_message() );
 		}
 
 		if ( $dry_run ) {
@@ -71,7 +71,7 @@ class ApplyRecipeTool extends WhiskeyTool {
 		$execution_result = $validation_result->execute();
 
 		if ( ! $execution_result->is_success() ) {
-			throw new Exception( sprintf( 'Recipe execution failed: %s', $execution_result->get_message() ) );
+			throw new RuntimeException( sprintf( 'Recipe execution failed: %s', $execution_result->get_message() ) );
 		}
 
 		return [

@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tools;
 
-use Exception;
+use RuntimeException;
 use WP_CLI;
 
 /**
@@ -35,13 +35,13 @@ class ShowRecipeTool extends WhiskeyTool {
 		$name = $args['name'] ?? $args[0] ?? null;
 
 		if ( ! $name ) {
-			throw new Exception( 'Recipe name is required.' );
+			throw new RuntimeException( 'Recipe name is required.' );
 		}
 
 		$recipe = $this->recipes->get( $name );
 
 		if ( ! $recipe ) {
-			throw new Exception( sprintf( 'Recipe not found: %s', $name ) );
+			throw new RuntimeException( sprintf( 'Recipe not found: %s', $name ) );
 		}
 
 		return [

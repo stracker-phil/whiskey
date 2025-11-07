@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tools;
 
-use Exception;
+use RuntimeException;
 use WP_CLI;
 use function WP_CLI\Utils\format_items;
 
@@ -36,13 +36,13 @@ class ShowIngredientTool extends WhiskeyTool {
 		$name = $args['name'] ?? $args[0] ?? null;
 
 		if ( ! $name ) {
-			throw new Exception( 'Ingredient name is required.' );
+			throw new RuntimeException( 'Ingredient name is required.' );
 		}
 
 		$metadata = $this->ingredients->get_metadata( $name );
 
 		if ( ! $metadata ) {
-			throw new Exception( sprintf( 'Ingredient not found: %s', $name ) );
+			throw new RuntimeException( sprintf( 'Ingredient not found: %s', $name ) );
 		}
 
 		return [
