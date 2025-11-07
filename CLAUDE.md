@@ -4,7 +4,7 @@ Educational WordPress plugin demonstrating PHP 7.4 → 8.3 evolution through pra
 
 ## Quick Reference
 
-**Create Ingredient:** `src/Ingredients/MyIngredient.php` extending `Ingredient` with `validate()` and `execute()`  
+**Create Ingredient:** `src/Ingredients/MyIngredient.php` extending `Ingredient` with `validate()` and private `execute()`  
 **Register Ingredient:** `add_action('whiskey:register_ingredient', fn($r) => $r->add(MyIngredient::class))`  
 **Create Recipe:** `add_action('whiskey:register_recipe', fn($r) => $r->add('name', ['ingredient' => 'value']))`  
 **Run Tests:** `composer test`
@@ -82,13 +82,15 @@ class MyIngredient extends Ingredient {
 		if ( ! is_string( $value ) ) {
 			return ValidationResult::invalid_type( 'string' );
 		}
-		return ValidationResult::valid();
+
+		// Return valid result with execution callback
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		// Do the work, return result with details
 		$result = update_option( 'my_key', $value );
-		
+
 		return new ExecutionResult(
 			$result,
 			$result ? "Set to {$value}" : 'Failed to update',
@@ -109,9 +111,11 @@ add_action(
 **Validation:**
 - Check type only (`is_string`, `is_int`, `is_array`)
 - Return `ValidationResult` using factory methods (`valid()`, `invalid_type()`, etc.)
+- When valid, return `ValidationResult::valid( fn() => $this->execute( $value ) )` with execution callback
 - Keep simple - just verify we CAN execute
 
 **Execution:**
+- **Must be private** - can only be called via ValidationResult::execute()
 - Always return `ExecutionResult` (never throw exceptions)
 - Extract complex logic to private methods
 - Check WordPress function returns (many return false on failure)
@@ -140,13 +144,13 @@ private function resolve_page( $value ): ?WP_Post {
 	return null;
 }
 
-public function execute( $value ): ExecutionResult {
+private function execute( $value ): ExecutionResult {
 	$page = $this->resolve_page( $value );
-	
+
 	if ( ! $page ) {
 		return new ExecutionResult( false, 'Page not found', [ 'input' => $value ] );
 	}
-	
+
 	update_option( 'page_on_front', $page->ID );
 	return new ExecutionResult( true, "Set homepage to {$page->ID}", [ 'page_id' => $page->ID ] );
 }
@@ -316,18 +320,23 @@ class MyIngredientTest extends WhiskeyTest {
 	}
 
 	public function testValidateAcceptsString(): void {
-		$this->assertTrue( $this->ingredient->validate( 'valid' ) );
+		$validation_result = $this->ingredient->validate( 'valid' );
+
+		$this->assertTrue( $validation_result->is_valid() );
 	}
 
 	public function testValidateRejectsInteger(): void {
-		$this->assertFalse( $this->ingredient->validate( 123 ) );
+		$validation_result = $this->ingredient->validate( 123 );
+
+		$this->assertFalse( $validation_result->is_valid() );
 	}
 
 	public function testExecuteSuccess(): void {
 		// Mock WordPress functions as needed
 		// See tests/helpers/wp-functions.php for available stubs
-		
-		$result = $this->ingredient->execute( 'value' );
+
+		$validation_result = $this->ingredient->validate( 'value' );
+		$result            = $validation_result->execute();
 
 		$this->assertTrue( $result->is_success() );
 		$this->assertSame( 'Set to value', $result->get_message() );

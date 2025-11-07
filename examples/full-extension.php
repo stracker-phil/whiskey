@@ -8,6 +8,7 @@ namespace MyPlugin\Whiskey;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 use Whiskey\Registry\IngredientRegistry;
 
 /**
@@ -18,11 +19,16 @@ class MySettingIngredient extends Ingredient {
 	public const CATEGORY    = 'myplugin';
 	public const DESCRIPTION = 'Configure my plugin';
 
-	public function validate( $value ): bool {
-		return is_string( $value );
+	public function validate( $value ): ValidationResult {
+		if ( ! is_string( $value ) ) {
+			return ValidationResult::invalid_type( 'string' );
+		}
+
+		// Return valid result with execution callback
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		update_option( 'my_plugin_setting', $value );
 
 		return new ExecutionResult( true, 'Setting updated', [ 'value' => $value ] );

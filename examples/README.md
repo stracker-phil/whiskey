@@ -56,10 +56,12 @@ Creates a custom ingredient and uses it in a new recipe, as a custom WordPress p
 
 - **Type check only** - Don't verify objects exist in `validate()`
 - Return `ValidationResult` using factory methods (`valid()`, `invalid_type()`, `invalid_format()`, etc.)
+- When valid, return `ValidationResult::valid( fn() => $this->execute( $value ) )` with execution callback
 - Keep it simple - "Can we execute with this input?"
 
 ### Execution
 
+- **Must be private** - Can only be called via ValidationResult::execute()
 - **Always return `ExecutionResult`** (never throw exceptions)
 - Provide helpful error messages (users see these via REST/CLI)
 - Include execution details in the data array

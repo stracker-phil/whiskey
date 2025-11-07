@@ -153,9 +153,10 @@ Ingredients are individual configuration operations that recipes can use.
 **Steps:**
 
 1. Create ingredient class in `src/Ingredients/` extending `Ingredient` base class
-2. Implement `validate()` and `execute()` methods
-3. Add self-registration via `whiskey:register_ingredients` filter at bottom of file
-4. Write tests
+2. Implement `validate()` method (returns ValidationResult with execution callback)
+3. Implement private `execute()` method (returns ExecutionResult)
+4. Add self-registration via `whiskey:register_ingredients` filter at bottom of file
+5. Write tests
 
 **Example ingredient:**
 
@@ -169,10 +170,12 @@ class MyCustomIngredient extends Ingredient {
         if ( ! is_string( $value ) ) {
             return ValidationResult::invalid_type( 'string' );
         }
-        return ValidationResult::valid();
+
+        // Return valid result with execution callback
+        return ValidationResult::valid( fn() => $this->execute( $value ) );
     }
 
-    public function execute( $value ): ExecutionResult {
+    private function execute( $value ): ExecutionResult {
         // Collect response details for output.
         $details = [];
 

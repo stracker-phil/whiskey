@@ -14,6 +14,7 @@ namespace YourPlugin\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Sets a custom plugin option
@@ -26,15 +27,20 @@ class CustomPluginSettingIngredient extends Ingredient {
 	/**
 	 * Validate input - keep it simple, just type checking
 	 */
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		// Accept string or boolean
-		return is_string( $value ) || is_bool( $value );
+		if ( ! is_string( $value ) && ! is_bool( $value ) ) {
+			return ValidationResult::invalid_type( 'string or boolean' );
+		}
+
+		// Return valid result with execution callback
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
 	/**
-	 * Execute the configuration
+	 * Execute the configuration (private - only called via ValidationResult::execute())
 	 */
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		// Normalize the value
 		$normalized = $this->normalize_value( $value );
 

@@ -14,6 +14,7 @@ namespace YourPlugin\Ingredients;
 
 use Whiskey\Ingredient;
 use Whiskey\ExecutionResult;
+use Whiskey\ValidationResult;
 
 /**
  * Assigns a custom menu to a theme location
@@ -28,33 +29,38 @@ class AssignMenuToLocationIngredient extends Ingredient {
 	 *
 	 * Expects: [ 'menu' => 'menu-slug-or-id', 'location' => 'primary' ]
 	 */
-	public function validate( $value ): bool {
+	public function validate( $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'array' );
 		}
 
 		// Check required keys
-		if ( ! isset( $value['menu'], $value['location'] ) ) {
-			return false;
+		if ( ! isset( $value['menu'] ) ) {
+			return ValidationResult::missing_key( 'menu' );
+		}
+
+		if ( ! isset( $value['location'] ) ) {
+			return ValidationResult::missing_key( 'location' );
 		}
 
 		// Menu can be string or int
 		if ( ! is_string( $value['menu'] ) && ! is_int( $value['menu'] ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'string or int for menu' );
 		}
 
 		// Location must be string
 		if ( ! is_string( $value['location'] ) ) {
-			return false;
+			return ValidationResult::invalid_type( 'string for location' );
 		}
 
-		return true;
+		// Return valid result with execution callback
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
 	/**
-	 * Execute the menu assignment
+	 * Execute the menu assignment (private - only called via ValidationResult::execute())
 	 */
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$menu     = $value['menu'];
 		$location = $value['location'];
 

@@ -90,11 +90,10 @@ Works well, no improvements needed in PHP 8.0+.
 **Used in:** Abstract base class
 
 ```php
-abstract public function validate($value): bool;
-abstract public function execute($value): ExecutionResult;
+abstract public function validate($value): ValidationResult;
 ```
 
-Cannot type as `mixed` in PHP 7.4.
+Cannot type as `mixed` in PHP 7.4. The `execute()` method is implemented as private in each ingredient, accepting type-safe parameters via closures.
 
 ### 5. Array Return Types
 
