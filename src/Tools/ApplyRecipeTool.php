@@ -54,9 +54,9 @@ class ApplyRecipeTool extends WhiskeyTool {
 			throw new Exception( sprintf( 'Recipe not found: %s', $name ) );
 		}
 
-		$result = $this->executor->validate( $config );
-		if ( ! $result->is_valid() ) {
-			throw new Exception( $result->get_message() );
+		$validation_result = $this->executor->validate( $config );
+		if ( ! $validation_result->is_valid() ) {
+			throw new Exception( $validation_result->get_message() );
 		}
 
 		if ( $dry_run ) {
@@ -68,17 +68,17 @@ class ApplyRecipeTool extends WhiskeyTool {
 			];
 		}
 
-		$result = $this->executor->execute( $config );
+		$execution_result = $validation_result->execute();
 
-		if ( ! $result->is_success() ) {
-			throw new Exception( sprintf( 'Recipe execution failed: %s', $result->get_message() ) );
+		if ( ! $execution_result->is_success() ) {
+			throw new Exception( sprintf( 'Recipe execution failed: %s', $execution_result->get_message() ) );
 		}
 
 		return [
 			'name'    => $name,
-			'success' => $result->is_success(),
-			'message' => $result->get_message(),
-			'data'    => $result->get_data(),
+			'success' => $execution_result->is_success(),
+			'message' => $execution_result->get_message(),
+			'data'    => $execution_result->get_data(),
 		];
 	}
 

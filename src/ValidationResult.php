@@ -101,9 +101,10 @@ class ValidationResult {
 	 * As the executor can only be set via the `::valid()` factory, it's impossible to execute an
 	 * ingredient that does not pass validation.
 	 *
+	 * @param mixed ...$args Optional arguments to pass to the executor callback
 	 * @return ExecutionResult
 	 */
-	public function execute(): ExecutionResult {
+	public function execute( ...$args ): ExecutionResult {
 		if ( ! $this->executor || ! $this->is_valid() ) {
 			return new ExecutionResult(
 				false,
@@ -111,6 +112,6 @@ class ValidationResult {
 			);
 		}
 
-		return call_user_func( $this->executor );
+		return call_user_func( $this->executor, ...$args );
 	}
 }
