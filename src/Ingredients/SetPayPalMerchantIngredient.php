@@ -17,8 +17,8 @@ class SetPayPalMerchantIngredient extends Ingredient {
 	public const CATEGORY    = IngredientCategory::PAYPAL;
 	public const DESCRIPTION = 'Sets PayPal merchant credentials; accepts array with merchant_id, merchant_email, client_id, client_secret, or false to clear';
 
-	private const MODERN_OPTION = 'woocommerce-ppcp-data-common';
-	private const LEGACY_OPTION = 'woocommerce-ppcp-settings';
+	private const MODERN_OPTION     = 'woocommerce-ppcp-data-common';
+	private const LEGACY_OPTION     = 'woocommerce-ppcp-settings';
 	private const ONBOARDING_OPTION = 'woocommerce-ppcp-data-onboarding';
 
 	private const REQUIRED_KEYS = [
@@ -80,8 +80,8 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		}
 
 		// Update Modern UI, Legacy UI, and Onboarding options
-		$modern_result = $this->update_modern_ui( $value );
-		$legacy_result = $this->update_legacy_ui( $value );
+		$modern_result     = $this->update_modern_ui( $value );
+		$legacy_result     = $this->update_legacy_ui( $value );
 		$onboarding_result = $this->update_onboarding( $value );
 
 		if ( ! $modern_result || ! $legacy_result || ! $onboarding_result ) {

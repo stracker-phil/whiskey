@@ -11,6 +11,7 @@ namespace Whiskey\Tools;
 
 use Exception;
 use WP_CLI;
+use function WP_CLI\Utils\format_items;
 
 /**
  * Tool to show details of a specific ingredient
@@ -67,7 +68,7 @@ class ShowIngredientTool extends WhiskeyTool {
 				'category'    => $data['category'] ?? '',
 				'description' => $data['description'] ?? '',
 			];
-			\WP_CLI\Utils\format_items( $format, [ $output ], array_keys( $output ) );
+			format_items( $format, [ $output ], array_keys( $output ) );
 		}
 	}
 

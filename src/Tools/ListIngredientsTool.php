@@ -65,9 +65,9 @@ class ListIngredientsTool extends WhiskeyTool {
 		}
 
 		foreach ( $categories as $category => $items ) {
-			$color         = IngredientCategory::get_color( $category );
-			$display_name  = IngredientCategory::get_display_name( $category );
-			$reset         = "\033[0m";
+			$color        = IngredientCategory::get_color( $category );
+			$display_name = IngredientCategory::get_display_name( $category );
+			$reset        = "\033[0m";
 
 			WP_CLI::log( $color . $display_name . $reset );
 

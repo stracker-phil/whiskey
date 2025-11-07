@@ -38,7 +38,6 @@ class SetHomepageIngredient extends Ingredient {
 		}
 		$this->set_home_page( $page_id );
 
-
 		return new ExecutionResult(
 			true,
 			"New home page set to post_id {$page_id}."

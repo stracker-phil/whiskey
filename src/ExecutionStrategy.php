@@ -80,13 +80,13 @@ class ExecutionStrategy {
 
 		// Map user-friendly values to constants
 		$map = [
-			'continue'         => self::CONTINUE_ON_ERROR,
+			'continue'          => self::CONTINUE_ON_ERROR,
 			'continue_on_error' => self::CONTINUE_ON_ERROR,
 			'continue-on-error' => self::CONTINUE_ON_ERROR,
-			'dry-run'          => self::DRY_RUN,
-			'dry_run'          => self::DRY_RUN,
-			'dryrun'           => self::DRY_RUN,
-			'sequential'       => self::SEQUENTIAL,
+			'dry-run'           => self::DRY_RUN,
+			'dry_run'           => self::DRY_RUN,
+			'dryrun'            => self::DRY_RUN,
+			'sequential'        => self::SEQUENTIAL,
 		];
 
 		return $map[ $normalized ] ?? self::get_default();
@@ -101,8 +101,8 @@ class ExecutionStrategy {
 	 * Usage: wp whiskey apply my-recipe --dry-run
 	 *        wp whiskey apply my-recipe --continue
 	 *
-	 * @param bool $dry_run   Whether --dry-run flag is present
-	 * @param bool $continue  Whether --continue flag is present
+	 * @param bool $dry_run  Whether --dry-run flag is present
+	 * @param bool $continue Whether --continue flag is present
 	 * @return string A valid strategy constant
 	 */
 	public static function from_cli_args( bool $dry_run, bool $continue ): string {
