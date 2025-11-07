@@ -65,7 +65,8 @@ class SetActiveThemeIngredientTest extends IngredientTest {
 			$switched = true;
 		} );
 
-		$result = $this->ingredient->execute( 'twentytwentyfour' );
+		$validation_result = $this->ingredient->validate( 'twentytwentyfour' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'activated successfully' );
 		$this->assertSame( 'twentytwentythree', $result->get_data()['previous'] );
@@ -77,7 +78,8 @@ class SetActiveThemeIngredientTest extends IngredientTest {
 
 		WP_Functions::mock( 'wp_get_theme', fn( $stylesheet ) => $non_existent_theme );
 
-		$result = $this->ingredient->execute( 'nonexistent' );
+		$validation_result = $this->ingredient->validate( 'nonexistent' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'does not exist' );
 		$this->assertSame( 'nonexistent', $result->get_data()['theme'] );
@@ -97,7 +99,8 @@ class SetActiveThemeIngredientTest extends IngredientTest {
 		} );
 		WP_Functions::mock( 'switch_theme' );
 
-		$result = $this->ingredient->execute( 'twentytwentyfour' );
+		$validation_result = $this->ingredient->validate( 'twentytwentyfour' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to activate' );
 		$this->assertSame( 'twentytwentyfour', $result->get_data()['requested'] );
@@ -121,7 +124,8 @@ class SetActiveThemeIngredientTest extends IngredientTest {
 			$switched = true;
 		} );
 
-		$result = $this->ingredient->execute( 'astra' );
+		$validation_result = $this->ingredient->validate( 'astra' );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'previous', $data );

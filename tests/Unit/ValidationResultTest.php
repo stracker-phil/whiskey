@@ -19,7 +19,7 @@ class ValidationResultTest extends WhiskeyTest {
 	 * THEN should return true and appropriate message
 	 */
 	public function test_valid_creates_valid_result(): void {
-		$result = ValidationResult::valid();
+		$result = ValidationResult::valid( fn() => new \Whiskey\ExecutionResult( true, 'test' ) );
 
 		$this->assertTrue( $result->is_valid() );
 		$this->assertSame( 'Validation passed', $result->get_message() );
@@ -129,8 +129,10 @@ class ValidationResultTest extends WhiskeyTest {
 	}
 
 	public function validation_status_provider(): array {
+		$executor = fn() => new \Whiskey\ExecutionResult( true, 'test' );
+
 		return [
-			'valid code'        => [ ValidationResult::valid(), true ],
+			'valid code'        => [ ValidationResult::valid( $executor ), true ],
 			'invalid type'      => [ ValidationResult::invalid_type(), false ],
 			'missing key'       => [ ValidationResult::missing_key( 'test' ), false ],
 			'invalid structure' => [ ValidationResult::invalid_array_structure(), false ],
@@ -176,11 +178,59 @@ class ValidationResultTest extends WhiskeyTest {
 	 * THEN should create distinct instances
 	 */
 	public function test_factory_methods_create_distinct_instances(): void {
-		$valid1 = ValidationResult::valid();
-		$valid2 = ValidationResult::valid();
+		$executor = fn() => new \Whiskey\ExecutionResult( true, 'test' );
+
+		$valid1 = ValidationResult::valid( $executor );
+		$valid2 = ValidationResult::valid( $executor );
 
 		$this->assertTrue( $valid1->is_valid() );
 		$this->assertTrue( $valid2->is_valid() );
 		$this->assertNotSame( $valid1, $valid2 );
+	}
+
+	// ===== Execution Tests =====
+
+	/**
+	 * GIVEN valid validation result with executor
+	 * WHEN calling execute
+	 * THEN should execute the callback and return result
+	 */
+	public function test_execute_runs_callback_and_returns_result(): void {
+		$expected_result = new \Whiskey\ExecutionResult( true, 'executed successfully' );
+		$result          = ValidationResult::valid( fn() => $expected_result );
+
+		$execution_result = $result->execute();
+
+		$this->assertSame( $expected_result, $execution_result );
+	}
+
+	/**
+	 * GIVEN invalid validation result
+	 * WHEN calling execute
+	 * THEN should return error execution result
+	 */
+	public function test_execute_on_invalid_result_returns_error(): void {
+		$result = ValidationResult::invalid_type( 'string' );
+
+		$execution_result = $result->execute();
+
+		$this->assertFalse( $execution_result->is_success() );
+		$this->assertStringContainsString( 'Cannot execute invalid result', $execution_result->get_message() );
+	}
+
+	/**
+	 * GIVEN valid validation result with parameterized executor
+	 * WHEN calling execute with arguments
+	 * THEN should forward arguments to callback
+	 */
+	public function test_execute_forwards_arguments_to_callback(): void {
+		$result = ValidationResult::valid(
+			fn( $arg1, $arg2 ) => new \Whiskey\ExecutionResult( true, "{$arg1} {$arg2}" )
+		);
+
+		$execution_result = $result->execute( 'hello', 'world' );
+
+		$this->assertTrue( $execution_result->is_success() );
+		$this->assertSame( 'hello world', $execution_result->get_message() );
 	}
 }

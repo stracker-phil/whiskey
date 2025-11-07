@@ -62,9 +62,6 @@ class ApplyRecipeToolTest extends ToolTest {
 		if ( $validation_result ) {
 			$executor->method( 'validate' )->willReturn( $validation_result );
 		}
-		if ( $execution_result ) {
-			$executor->method( 'execute' )->willReturn( $execution_result );
-		}
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
@@ -100,7 +97,9 @@ class ApplyRecipeToolTest extends ToolTest {
 			'execution failure'     => [
 				[ 'name' => 'test-recipe' ],
 				[ 'ingredient1' => 'value1' ],
-				ValidationResult::valid(),
+				ValidationResult::valid(
+					fn() => new ExecutionResult( false, 'Ingredient failed' )
+				),
 				new ExecutionResult( false, 'Ingredient failed' ),
 				'Recipe execution failed: Ingredient failed',
 			],
@@ -120,8 +119,12 @@ class ApplyRecipeToolTest extends ToolTest {
 		$recipes = $this->createStub( RecipeRegistry::class );
 		$recipes->method( 'get' )->willReturn( $recipe_config );
 
+		$validation_result = ValidationResult::valid(
+			fn() => new ExecutionResult( true, 'Success' )
+		);
+
 		$executor = $this->createStub( RecipeExecutor::class );
-		$executor->method( 'validate' )->willReturn( ValidationResult::valid() );
+		$executor->method( 'validate' )->willReturn( $validation_result );
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
@@ -156,9 +159,10 @@ class ApplyRecipeToolTest extends ToolTest {
 			[ 'ingredient1' => [ 'success' => true, 'message' => 'Done' ] ]
 		);
 
+		$validation_result = ValidationResult::valid( fn() => $execution_result );
+
 		$executor = $this->createStub( RecipeExecutor::class );
-		$executor->method( 'validate' )->willReturn( ValidationResult::valid() );
-		$executor->method( 'execute' )->willReturn( $execution_result );
+		$executor->method( 'validate' )->willReturn( $validation_result );
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 
@@ -183,9 +187,10 @@ class ApplyRecipeToolTest extends ToolTest {
 
 		$execution_result = new ExecutionResult( true, 'Success' );
 
+		$validation_result = ValidationResult::valid( fn() => $execution_result );
+
 		$executor = $this->createStub( RecipeExecutor::class );
-		$executor->method( 'validate' )->willReturn( ValidationResult::valid() );
-		$executor->method( 'execute' )->willReturn( $execution_result );
+		$executor->method( 'validate' )->willReturn( $validation_result );
 
 		$tool = new ApplyRecipeTool( $recipes, $this->ingredients, $executor );
 

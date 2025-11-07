@@ -115,7 +115,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'US:CA' );
+		$validation_result = $this->ingredient->validate( 'US:CA' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'US:CA' );
 		$this->assertSame( '', $result->get_data()['previous'] );
@@ -126,7 +127,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'AT' );
+		$validation_result = $this->ingredient->validate( 'AT' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'AT' );
 		$this->assertSame( 'AT', $result->get_data()['current'] );
@@ -138,7 +140,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'US', 'CA' ] );
+		$validation_result = $this->ingredient->validate( [ 'US', 'CA' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'US:CA' );
 		$this->assertSame( 'US:CA', $result->get_data()['current'] );
@@ -148,7 +151,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'DE' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'GB', 'LN' ] );
+		$validation_result = $this->ingredient->validate( [ 'GB', 'LN' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertSame( 'GB:LN', $result->get_data()['current'] );
@@ -160,7 +164,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'US:NY' );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( 'US:CA' );
+		$validation_result = $this->ingredient->validate( 'US:CA' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to update' );
 		$this->assertSame( 'US:NY', $result->get_data()['previous'] );
@@ -171,7 +176,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'US:CA' );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( 'US:CA' );
+		$validation_result = $this->ingredient->validate( 'US:CA' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}
@@ -180,7 +186,8 @@ class SetWooCountryIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'DE' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'AT' );
+		$validation_result = $this->ingredient->validate( 'AT' );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'previous', $data );

@@ -92,7 +92,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'cart' => 'block-cart' ] );
+		$validation_result = $this->ingredient->validate( [ 'cart' => 'block-cart' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -109,7 +110,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'checkout' => 'block-checkout' ] );
+		$validation_result = $this->ingredient->validate( [ 'checkout' => 'block-checkout' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -126,7 +128,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'my-account' => 'my-account' ] );
+		$validation_result = $this->ingredient->validate( [ 'my-account' => 'my-account' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -145,11 +148,12 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [
+		$validation_result = $this->ingredient->validate( [
 			'cart'       => 'block-cart',
 			'checkout'   => 'block-checkout',
 			'my-account' => 'my-account',
 		] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -167,7 +171,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 999 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [ 'cart' => 'block-cart' ] );
+		$validation_result = $this->ingredient->validate( [ 'cart' => 'block-cart' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -177,7 +182,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 	public function test_execute_fails_when_page_not_found(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 
-		$result = $this->ingredient->execute( [ 'cart' => 'non-existent' ] );
+		$validation_result = $this->ingredient->validate( [ 'cart' => 'non-existent' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$data = $result->get_data();
@@ -193,7 +199,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( [ 'cart' => 'block-cart' ] );
+		$validation_result = $this->ingredient->validate( [ 'cart' => 'block-cart' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$data = $result->get_data();
@@ -211,10 +218,11 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 0 );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( [
+		$validation_result = $this->ingredient->validate( [
 			'cart'     => 'block-cart',
 			'checkout' => 'non-existent',
 		] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$data = $result->get_data();
@@ -231,7 +239,8 @@ class SetWooStorePagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 123 ); // Already set to same value
 		WP_Functions::mock( 'update_option', false ); // Returns false when unchanged
 
-		$result = $this->ingredient->execute( [ 'cart' => 'block-cart' ] );
+		$validation_result = $this->ingredient->validate( [ 'cart' => 'block-cart' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();

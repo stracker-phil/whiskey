@@ -95,7 +95,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'GBP' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'USD' );
+		$validation_result = $this->ingredient->validate( 'USD' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'USD' );
 		$this->assertSame( 'GBP', $result->get_data()['previous'] );
@@ -106,7 +107,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'USD' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'EUR' );
+		$validation_result = $this->ingredient->validate( 'EUR' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'EUR' );
 		$this->assertSame( 'EUR', $result->get_data()['current'] );
@@ -116,7 +118,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'JPY' );
+		$validation_result = $this->ingredient->validate( 'JPY' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertSame( '', $result->get_data()['previous'] );
@@ -127,7 +130,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'USD' );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( 'EUR' );
+		$validation_result = $this->ingredient->validate( 'EUR' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to update' );
 		$this->assertSame( 'USD', $result->get_data()['previous'] );
@@ -138,7 +142,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'USD' );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( 'USD' );
+		$validation_result = $this->ingredient->validate( 'USD' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}
@@ -147,7 +152,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', 'GBP' );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'EUR' );
+		$validation_result = $this->ingredient->validate( 'EUR' );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'previous', $data );
@@ -163,7 +169,8 @@ class SetWooCurrencyIngredientTest extends IngredientTest {
 			WP_Functions::mock( 'get_option', '' );
 			WP_Functions::mock( 'update_option', true );
 
-			$result = $this->ingredient->execute( $currency );
+			$validation_result = $this->ingredient->validate( $currency );
+			$result = $validation_result->execute();
 
 			$this->assertTrue( $result->is_success(), "Failed for currency: $currency" );
 			$this->assertSame( $currency, $result->get_data()['current'] );

@@ -81,7 +81,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute( $branded_mode );
+		$validation_result = $this->ingredient->validate( $branded_mode );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 
@@ -136,7 +137,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$validation_result->execute();
 
 		$this->assertArrayHasKey( 'some_key', $updated_data );
 		$this->assertArrayHasKey( 'other_data', $updated_data );
@@ -159,7 +161,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $option_value );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -194,7 +197,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', [ 'wc_installation_path' => 'core-profiler' ] );
 		WP_Functions::mock( 'update_option', false ); // Returns false when unchanged
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}
@@ -209,7 +213,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', [ 'wc_installation_path' => 'direct' ] );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );
@@ -225,7 +230,8 @@ class SetPayPalBrandedOnlyIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', [ 'wc_installation_path' => 'direct' ] );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'deleted_nox_profile', $data );

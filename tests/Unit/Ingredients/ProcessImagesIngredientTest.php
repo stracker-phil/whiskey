@@ -83,12 +83,13 @@ class ProcessImagesIngredientTest extends IngredientTest {
 	public function test_execute_processes_all_five_variants(): void {
 		$this->mock_successful_image_processing();
 
-		$result = $this->ingredient->execute(
+		$validation_result = $this->ingredient->validate(
 			[
 				'image_url' => 'https://example.com/product.jpg',
 				'alt'       => 'Product image',
 			]
 		);
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, 'Successfully processed image with 5 custom variants.' );
 
@@ -113,7 +114,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 	public function test_execute_uses_default_alt_when_not_provided(): void {
 		$this->mock_successful_image_processing();
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}
@@ -135,12 +137,13 @@ class ProcessImagesIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute(
+		$validation_result = $this->ingredient->validate(
 			[
 				'image_url' => 'https://example.com/product.jpg',
 				'alt'       => 'Premium Soap',
 			]
 		);
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertSame( 'Premium Soap', $alt_value );
@@ -170,7 +173,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertIsArray( $updated_metadata );
@@ -207,7 +211,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertIsArray( $updated_metadata, 'Metadata should have been captured' );
@@ -231,7 +236,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'download_url', 'WP_Error_object' );
 		WP_Functions::mock( 'is_wp_error', true );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/broken.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/broken.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to download image from URL.' );
 	}
@@ -249,7 +255,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		} );
 		WP_Functions::mock( 'unlink', true ); // Just mock it to return true
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to import image to media library.' );
 	}
@@ -267,7 +274,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'unlink', true );
 		WP_Functions::mock( 'get_attached_file', false ); // No file path
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to get attachment file path.' );
 	}
@@ -288,7 +296,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_attached_file', '/path/to/file.jpg' );
 		WP_Functions::mock( 'wp_get_image_editor', 'WP_Error_editor' );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed to initialize image editor.' );
 	}
@@ -312,7 +321,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		$mock_editor = $this->create_mock_image_editor_with_resize_failure();
 		WP_Functions::mock( 'wp_get_image_editor', $mock_editor );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		// Should still succeed but with no sizes processed (graceful degradation)
 		$this->assertExecutionSuccess( $result );
@@ -337,7 +347,8 @@ class ProcessImagesIngredientTest extends IngredientTest {
 		$mock_editor = $this->create_mock_image_editor_with_save_failure();
 		WP_Functions::mock( 'wp_get_image_editor', $mock_editor );
 
-		$result = $this->ingredient->execute( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$validation_result = $this->ingredient->validate( [ 'image_url' => 'https://example.com/product.jpg' ] );
+		$result = $validation_result->execute();
 
 		// Should still succeed but with no sizes processed
 		$this->assertExecutionSuccess( $result );

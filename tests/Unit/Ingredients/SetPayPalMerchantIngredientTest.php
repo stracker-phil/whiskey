@@ -149,7 +149,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$result = $this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -189,7 +190,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$validation_result->execute();
 
 		$this->assertTrue( $onboarding_data['completed'] );
 		$this->assertFalse( $onboarding_data['setup_done'] );
@@ -228,7 +230,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$validation_result->execute();
 
 		$this->assertSame( 'MERCHANT123', $legacy_data['merchant_id'] );
 		$this->assertSame( 'merchant@example.com', $legacy_data['merchant_email'] );
@@ -270,7 +273,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$validation_result->execute();
 
 		$this->assertSame( $expected_country, $modern_data['merchant_country'] );
 		$this->assertSame( $expected_seller_type, $modern_data['seller_type'] );
@@ -344,7 +348,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$validation_result->execute();
 
 		$this->assertSame( 'existing_value', $modern_data['existing_key'] );
 		$this->assertSame( 'other_value', $legacy_data['other_key'] );
@@ -366,7 +371,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$result = $this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}
@@ -393,7 +399,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			'client_secret'  => 'SECRET123',
 		);
 
-		$result = $this->ingredient->execute( $config );
+		$validation_result = $this->ingredient->validate( $config );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 	}
@@ -463,7 +470,8 @@ class SetPayPalMerchantIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();

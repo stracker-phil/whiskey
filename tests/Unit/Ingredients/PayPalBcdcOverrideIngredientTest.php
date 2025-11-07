@@ -78,7 +78,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $previous_value );
 		WP_Functions::mock( 'update_option', $update_return );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
@@ -123,7 +124,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', false );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );
@@ -147,7 +149,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $previous_value );
 		WP_Functions::mock( 'delete_option', $delete_return );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
@@ -189,7 +192,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', true );
 		WP_Functions::mock( 'delete_option', false );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );
@@ -215,7 +219,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $previous_value );
 		WP_Functions::mock( 'update_option', $update_return );
 
-		$result = $this->ingredient->execute( $new_data );
+		$validation_result = $this->ingredient->validate( $new_data );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( $expected_message_fragment, $result->get_message() );
@@ -279,7 +284,8 @@ class PayPalBcdcOverrideIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', null );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( [ 'key' => 'value' ] );
+		$validation_result = $this->ingredient->validate( [ 'key' => 'value' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );

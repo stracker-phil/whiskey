@@ -73,7 +73,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_theme_mod', [] );
 		WP_Functions::mock( 'set_theme_mod' );
 
-		$result = $this->ingredient->execute( [ 'home' ] );
+		$validation_result = $this->ingredient->validate( [ 'home' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -105,7 +106,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'wp_create_nav_menu', $create_return );
 		WP_Functions::mock( 'is_wp_error', $is_wp_error );
 
-		$result = $this->ingredient->execute( [ 'home' ] );
+		$validation_result = $this->ingredient->validate( [ 'home' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed to create', $result->get_message() );
@@ -143,7 +145,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_theme_mod', [] );
 		WP_Functions::mock( 'set_theme_mod' );
 
-		$result = $this->ingredient->execute( [ 'home' ] );
+		$validation_result = $this->ingredient->validate( [ 'home' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertContains( 1, $deleted_posts );
@@ -171,7 +174,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_theme_mod', [] );
 		WP_Functions::mock( 'set_theme_mod' );
 
-		$result = $this->ingredient->execute( [ 'home', 'about' ] );
+		$validation_result = $this->ingredient->validate( [ 'home', 'about' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -203,7 +207,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_theme_mod', [] );
 		WP_Functions::mock( 'set_theme_mod' );
 
-		$result = $this->ingredient->execute( $slugs );
+		$validation_result = $this->ingredient->validate( $slugs );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed to add 1 menu item', $result->get_message() );
@@ -260,7 +265,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 			$theme_mod_calls[] = [ $name, $value ];
 		} );
 
-		$result = $this->ingredient->execute( [ 'home' ] );
+		$validation_result = $this->ingredient->validate( [ 'home' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertCount( 1, $theme_mod_calls );
@@ -287,7 +293,8 @@ class SetMenuItemsIngredientTest extends IngredientTest {
 			$theme_mod_calls[] = [ $name, $value ];
 		} );
 
-		$result = $this->ingredient->execute( [ 'home' ] );
+		$validation_result = $this->ingredient->validate( [ 'home' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 

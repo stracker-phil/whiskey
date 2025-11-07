@@ -43,7 +43,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_page_by_path', $this->createMockPost( 123 ) );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 'home' );
+		$validation_result = $this->ingredient->validate( 'home' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, '123' );
 	}
@@ -52,7 +53,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'page' ) );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( 456 );
+		$validation_result = $this->ingredient->validate( 456 );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result, '456' );
 	}
@@ -60,7 +62,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 	public function test_execute_fails_with_invalid_slug(): void {
 		WP_Functions::mock( 'get_page_by_path', null );
 
-		$result = $this->ingredient->execute( 'nonexistent' );
+		$validation_result = $this->ingredient->validate( 'nonexistent' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
@@ -68,7 +71,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 	public function test_execute_fails_with_invalid_post_id(): void {
 		WP_Functions::mock( 'get_post', null );
 
-		$result = $this->ingredient->execute( 999 );
+		$validation_result = $this->ingredient->validate( 999 );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Did not find' );
 	}
@@ -76,7 +80,8 @@ class SetHomepageIngredientTest extends IngredientTest {
 	public function test_execute_fails_when_post_is_not_apage(): void {
 		WP_Functions::mock( 'get_post', fn( $id ) => $this->createMockPost( $id, 'post' ) );
 
-		$result = $this->ingredient->execute( 789 );
+		$validation_result = $this->ingredient->validate( 789 );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Did not find' );
 	}

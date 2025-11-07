@@ -47,7 +47,8 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 			$flush_called = true;
 		} );
 
-		$result = $this->ingredient->execute( '/%postname%/' );
+		$validation_result = $this->ingredient->validate( '/%postname%/' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertTrue( $flush_called );
@@ -59,7 +60,8 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_option', true );
 		WP_Functions::mock( 'flush_rewrite_rules' );
 
-		$result = $this->ingredient->execute( '/%postname%/' );
+		$validation_result = $this->ingredient->validate( '/%postname%/' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -72,7 +74,8 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_option', false );
 		WP_Functions::mock( 'flush_rewrite_rules' );
 
-		$result = $this->ingredient->execute( '/%postname%/' );
+		$validation_result = $this->ingredient->validate( '/%postname%/' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed' );
 	}
@@ -82,7 +85,8 @@ class UpdatePermalinksIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'update_option', false );
 		WP_Functions::mock( 'flush_rewrite_rules' );
 
-		$result = $this->ingredient->execute( '/%postname%/' );
+		$validation_result = $this->ingredient->validate( '/%postname%/' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 	}

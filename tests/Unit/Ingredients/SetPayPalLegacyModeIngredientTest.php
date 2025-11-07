@@ -59,7 +59,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( 'legacy UI', $result->get_message() );
@@ -73,7 +74,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		} );
 		WP_Functions::mock( 'update_option', true );
 
-		$this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$validation_result->execute();
 
 		$this->assertContains( 'woocommerce-ppcp-is-new-merchant', $deleted_options );
 	}
@@ -86,7 +88,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$validation_result->execute();
 
 		$this->assertArrayHasKey( 'woocommerce_ppcp-settings-should-use-old-ui', $updated_options );
 		$this->assertSame( 'yes', $updated_options['woocommerce_ppcp-settings-should-use-old-ui'] );
@@ -96,7 +99,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'deleted_new_merchant', $data );
@@ -107,7 +111,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( true );
+		$validation_result = $this->ingredient->validate( true );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );
@@ -119,7 +124,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( 'modern UI', $result->get_message() );
@@ -133,7 +139,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$validation_result->execute();
 
 		$this->assertArrayHasKey( 'woocommerce-ppcp-is-new-merchant', $updated_options );
 		$this->assertSame( '1', $updated_options['woocommerce-ppcp-is-new-merchant'] );
@@ -147,7 +154,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		} );
 		WP_Functions::mock( 'update_option', true );
 
-		$this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$validation_result->execute();
 
 		$this->assertContains( 'woocommerce_ppcp-settings-should-use-old-ui', $deleted_options );
 	}
@@ -156,7 +164,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', true );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$data = $result->get_data();
 		$this->assertArrayHasKey( 'enabled_new_merchant', $data );
@@ -167,7 +176,8 @@ class SetPayPalLegacyModeIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'delete_option', true );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( false );
+		$validation_result = $this->ingredient->validate( false );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 		$this->assertStringContainsString( 'Failed', $result->get_message() );

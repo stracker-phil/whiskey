@@ -80,7 +80,8 @@ class PayPalSetPreviousVersionIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $previous_value );
 		WP_Functions::mock( 'update_option', $update_return );
 
-		$result = $this->ingredient->execute( $new_version );
+		$validation_result = $this->ingredient->validate( $new_version );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 
@@ -139,7 +140,8 @@ class PayPalSetPreviousVersionIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '' );
 		WP_Functions::mock( 'update_option', false );
 
-		$result = $this->ingredient->execute( '2.0.0' );
+		$validation_result = $this->ingredient->validate( '2.0.0' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 
@@ -166,7 +168,8 @@ class PayPalSetPreviousVersionIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', $previous_value );
 		WP_Functions::mock( 'delete_option', $delete_return );
 
-		$result = $this->ingredient->execute( '' );
+		$validation_result = $this->ingredient->validate( '' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 
@@ -200,7 +203,8 @@ class PayPalSetPreviousVersionIngredientTest extends IngredientTest {
 		WP_Functions::mock( 'get_option', '2.0.0' );
 		WP_Functions::mock( 'delete_option', false );
 
-		$result = $this->ingredient->execute( '' );
+		$validation_result = $this->ingredient->validate( '' );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result );
 

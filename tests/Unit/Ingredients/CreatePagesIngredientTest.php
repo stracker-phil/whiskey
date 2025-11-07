@@ -64,7 +64,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'test-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'test-page' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -93,7 +94,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'test-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'test-page' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -104,7 +106,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 	}
 
 	public function test_execute_handles_missing_template(): void {
-		$result = $this->ingredient->execute( [ 'nonexistent-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'nonexistent-page' ] );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionFailure( $result, 'Failed' );
 		$data = $result->get_data();
@@ -127,7 +130,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'test-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'test-page' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -159,7 +163,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Page 2", "content" => "Content 2"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'page1', 'page2' ] );
+		$validation_result = $this->ingredient->validate( [ 'page1', 'page2' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_dir . '/page1.php' );
@@ -184,7 +189,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test"];' // Missing content field
 		);
 
-		$result = $this->ingredient->execute( [ 'invalid-template' ] );
+		$validation_result = $this->ingredient->validate( [ 'invalid-template' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -204,7 +210,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 		$template_file = $template_dir . '/bad-template.php';
 		file_put_contents( $template_file, '<?php return "not an array";' );
 
-		$result = $this->ingredient->execute( [ 'bad-template' ] );
+		$validation_result = $this->ingredient->validate( [ 'bad-template' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -234,7 +241,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test", "content" => "Test"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'no-type' ] );
+		$validation_result = $this->ingredient->validate( [ 'no-type' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -265,7 +273,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test", "content" => "Test"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'no-meta' ] );
+		$validation_result = $this->ingredient->validate( [ 'no-meta' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -291,7 +300,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'test-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'test-page' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );
@@ -320,7 +330,8 @@ class CreatePagesIngredientTest extends IngredientTest {
 			'<?php return ["title" => "Test Page", "content" => "Test content"];'
 		);
 
-		$result = $this->ingredient->execute( [ 'test-page' ] );
+		$validation_result = $this->ingredient->validate( [ 'test-page' ] );
+		$result = $validation_result->execute();
 
 		// Clean up
 		unlink( $template_file );

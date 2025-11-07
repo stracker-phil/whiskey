@@ -62,7 +62,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		$this->mock_wpdb_query( [ 'woocommerce-ppcp-setting1', 'woocommerce-ppcp-setting2' ] );
 		WP_Functions::mock( 'delete_option', true );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -75,7 +76,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		$this->mock_wpdb_query( [ 'woocommerce_ppcp-gateway', 'woocommerce_ppcp-merchant' ] );
 		WP_Functions::mock( 'delete_option', true );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -92,7 +94,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 			return true;
 		} );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertContains( 'ppcp-settings', $deleted_options );
@@ -108,7 +111,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		] );
 		WP_Functions::mock( 'delete_option', true );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -121,7 +125,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		$this->mock_wpdb_query( [] );
 		WP_Functions::mock( 'delete_option', false );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$this->assertStringContainsString( 'No PayPal settings found', $result->get_message() );
@@ -138,7 +143,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 			return $call_count === 1;
 		} );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -151,7 +157,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		$this->mock_wpdb_query( [ 'woocommerce-ppcp-test' ] );
 		WP_Functions::mock( 'delete_option', true );
 
-		$result = $this->ingredient->execute( null );
+		$validation_result = $this->ingredient->validate( null );
+		$result = $validation_result->execute();
 
 		$this->assertExecutionSuccess( $result );
 		$data = $result->get_data();
@@ -169,7 +176,8 @@ class PayPalStartOverIngredientTest extends IngredientTest {
 		$test_values = [ null, true, false, 'anything', 123, [] ];
 
 		foreach ( $test_values as $value ) {
-			$result = $this->ingredient->execute( $value );
+			$validation_result = $this->ingredient->validate( $value );
+			$result = $validation_result->execute();
 			$this->assertExecutionSuccess( $result );
 		}
 	}
