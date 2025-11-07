@@ -82,7 +82,7 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		// Update Modern UI, Legacy UI, and Onboarding options
 		$modern_result     = $this->update_modern_ui( $value );
 		$legacy_result     = $this->update_legacy_ui( $value );
-		$onboarding_result = $this->update_onboarding( $value );
+		$onboarding_result = $this->complete_onboarding();
 
 		if ( ! $modern_result || ! $legacy_result || ! $onboarding_result ) {
 			return new ExecutionResult(
@@ -108,11 +108,7 @@ class SetPayPalMerchantIngredient extends Ingredient {
 	}
 
 	private function update_modern_ui( array $config ): bool {
-		$data = get_option( self::MODERN_OPTION, [] );
-
-		if ( ! is_array( $data ) ) {
-			$data = [];
-		}
+		$data = $this->get_option_array( self::MODERN_OPTION );
 
 		$data['merchant_id']        = $config['merchant_id'];
 		$data['merchant_email']     = $config['merchant_email'];
@@ -127,11 +123,7 @@ class SetPayPalMerchantIngredient extends Ingredient {
 	}
 
 	private function update_legacy_ui( array $config ): bool {
-		$data = get_option( self::LEGACY_OPTION, [] );
-
-		if ( ! is_array( $data ) ) {
-			$data = [];
-		}
+		$data = $this->get_option_array( self::LEGACY_OPTION );
 
 		$data['merchant_id']            = $config['merchant_id'];
 		$data['merchant_email']         = $config['merchant_email'];
@@ -143,12 +135,8 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		return update_option( self::LEGACY_OPTION, $data );
 	}
 
-	private function update_onboarding( array $config ): bool {
-		$data = get_option( self::ONBOARDING_OPTION, [] );
-
-		if ( ! is_array( $data ) ) {
-			$data = [];
-		}
+	private function complete_onboarding(): bool {
+		$data = $this->get_option_array( self::ONBOARDING_OPTION );
 
 		$data['completed']          = true;
 		$data['setup_done']         = false;
@@ -156,6 +144,12 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		$data['gateways_refreshed'] = false;
 
 		return update_option( self::ONBOARDING_OPTION, $data );
+	}
+
+	private function get_option_array( string $option_name ): array {
+		$data = get_option( $option_name, [] );
+
+		return is_array( $data ) ? $data : [];
 	}
 
 	private function clear_merchant_data(): ExecutionResult {
