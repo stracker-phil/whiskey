@@ -113,7 +113,7 @@ protected function get_http_code( Exception $e ): int {
 
 ## Type-hint for `mixed`
 
-Usage: **35** uses
+Usage: **20** uses
 > 🔎 Search for `: mixed|mixed \$` (regex, except comments & string literals)
 
 ### Before
@@ -140,22 +140,22 @@ public function validate( mixed $value ): ValidationResult
 
 ## Union types
 
-Usage: **?** uses
+Usage: **6** uses
 > 🔎 Search for `\b\w+\|\w+\b` (regex, except comments & string literals)
 
 ### Before
 
 ```php
 /**
- * @param mixed $value
+ * @param string|int $value
  */
-public function execute( $value ): ExecutionResult
+private function page_id_from_value( $value ): int
 ```
 
 ### After
 
 ```php
-public function execute( mixed $value ): ExecutionResult
+private function page_id_from_value( string|int $value ): int
 ```
 
 ### Impact
@@ -166,9 +166,9 @@ public function execute( mixed $value ): ExecutionResult
 
 ## Named Arguments
 
-Usage: **53** uses in 16 files
+Usage: **51** uses in 17 files
 
-- 48 `new ExecutionResult` constructors
+- 46 `new ExecutionResult` constructors
 - 5 `ProcessImagesIngredient::create_image_size()` calls
 
 > 🔎 Search for `\w+: ["'\[\s]*\$?\w+` (regex, except comments & string literals)

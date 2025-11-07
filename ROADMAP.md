@@ -129,14 +129,8 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Union Types
 
-- [/] Refactor: Ingredients
-- [/] Document changes
-
-#### Nullsafe Operator
-
-- [ ] Refactor: Registry access chains
-- [ ] Refactor: Optional parameter handling in ingredients
-- [ ] Document changes
+- [x] Refactor: Ingredients
+- [x] Document changes
 
 #### Additional Features
 
@@ -145,7 +139,7 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Documentation
 
-- [ ] Pass all tests
+- [x] Pass all tests
 - [x] Finish the before/after documentation in `docs/changes-8.0.md`
 - [ ] Capture new complexity metrics
 
