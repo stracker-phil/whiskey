@@ -37,7 +37,7 @@ class ProcessImagesIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( array $value ): ExecutionResult {
 		$url = $value['image_url'];
 		$alt = $value['alt'] ?? 'Image';
 

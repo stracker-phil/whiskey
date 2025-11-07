@@ -26,7 +26,7 @@ class SetHomepageIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'string or integer' );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( int|string $value ): ExecutionResult {
 		$page_id = $this->page_id_from_value( $value );
 
 		if ( ! $page_id ) {

@@ -29,7 +29,7 @@ class SetWooCurrencyIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( string $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_currency', '' );
 
 		$updated = update_option( 'woocommerce_currency', $value );

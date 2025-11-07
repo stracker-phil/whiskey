@@ -28,7 +28,7 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( bool $value ): ExecutionResult {
 		$changes = [];
 
 		if ( $value ) {

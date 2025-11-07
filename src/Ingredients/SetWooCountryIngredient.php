@@ -47,7 +47,7 @@ class SetWooCountryIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'string or array' );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( string|array $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_default_country', '' );
 
 		// Convert array format to string format

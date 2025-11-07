@@ -29,7 +29,7 @@ class SetActiveThemeIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( string $value ): ExecutionResult {
 		$theme = wp_get_theme( $value );
 
 		if ( ! $theme->exists() ) {

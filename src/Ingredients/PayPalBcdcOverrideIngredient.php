@@ -27,7 +27,7 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 		return ValidationResult::invalid_type( 'boolean or array' );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( bool|array $value ): ExecutionResult {
 		$previous_value = get_option( self::OPTION_KEY, null );
 
 		// Enable override.

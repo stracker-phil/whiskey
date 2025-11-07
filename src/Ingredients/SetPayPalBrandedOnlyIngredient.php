@@ -30,7 +30,7 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	private function execute( mixed $value ): ExecutionResult {
+	private function execute( bool $value ): ExecutionResult {
 		// Always delete nox_profile option
 		$deleted_nox = delete_option( self::OPTION_NOX_PROFILE );
 
