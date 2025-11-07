@@ -24,7 +24,7 @@ class SetWooCountryIngredient extends Ingredient {
 				return ValidationResult::invalid_format( 'country code format (e.g., "US:CA" or "AT")' );
 			}
 
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
 
 		// Accept array like ['US', 'CA']
@@ -41,13 +41,13 @@ class SetWooCountryIngredient extends Ingredient {
 				return ValidationResult::invalid_format( 'two-letter country and state codes' );
 			}
 
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
 
 		return ValidationResult::invalid_type( 'string or array' );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_default_country', '' );
 
 		// Convert array format to string format

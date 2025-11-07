@@ -31,10 +31,10 @@ class PayPalStartOverIngredient extends Ingredient {
 
 	public function validate( $value ): ValidationResult {
 		// This ingredient doesn't require any input value
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute() );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute(): ExecutionResult {
 		$deleted_options = [];
 
 		// Delete options by prefix

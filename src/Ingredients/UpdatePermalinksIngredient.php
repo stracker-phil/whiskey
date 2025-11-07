@@ -22,10 +22,10 @@ class UpdatePermalinksIngredient extends Ingredient {
 			return ValidationResult::invalid_type( 'string' );
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$previous_structure = get_option( 'permalink_structure', '' );
 
 		$updated = update_option( 'permalink_structure', $value );

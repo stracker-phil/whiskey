@@ -29,10 +29,10 @@ class CreatePagesIngredient extends Ingredient {
 			}
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$pages = [];
 
 		foreach ( $value as $slug ) {

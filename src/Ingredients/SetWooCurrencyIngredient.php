@@ -26,10 +26,10 @@ class SetWooCurrencyIngredient extends Ingredient {
 			return ValidationResult::invalid_format( '3-letter uppercase currency code (e.g., USD, EUR, GBP)' );
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$previous_value = get_option( 'woocommerce_currency', '' );
 
 		$updated = update_option( 'woocommerce_currency', $value );

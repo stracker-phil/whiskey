@@ -21,13 +21,13 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 	public function validate( $value ): ValidationResult {
 		if ( is_bool( $value ) || is_array( $value ) ) {
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
 
 		return ValidationResult::invalid_type( 'boolean or array' );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$previous_value = get_option( self::OPTION_KEY, null );
 
 		// Enable override.

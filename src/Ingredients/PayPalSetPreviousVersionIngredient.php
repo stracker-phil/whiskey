@@ -26,7 +26,7 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 
 		// Allow empty string (for deletion)
 		if ( $value === '' ) {
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( '' ) );
 		}
 
 		// Validate semantic version format (e.g., "2.0.0", "1.2.3-beta")
@@ -34,10 +34,10 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 			return ValidationResult::invalid_format( 'semantic version (e.g., "2.0.0", "1.2.3-beta")' );
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$previous_value = get_option( self::OPTION_NAME, '' );
 
 		// Empty string means delete the option

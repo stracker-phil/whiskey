@@ -16,23 +16,26 @@ class ValidationResult {
 
 	private string $code;
 	private $context;
+	private $executor;
 
 	/**
 	 * Private constructor - use factory methods for type safety.
 	 *
-	 * @param string $code    Validation code constant from ValidationCode
-	 * @param mixed  $context Optional context for error messages
+	 * @param string    $code     Validation code constant from ValidationCode
+	 * @param mixed     $context  Optional context for error messages
+	 * @param ?callable $executor Optional executor to apply the valid ingredient
 	 */
-	private function __construct( string $code, $context = null ) {
-		$this->code    = $code;
-		$this->context = $context;
+	private function __construct( string $code, $context = null, callable $executor = null ) {
+		$this->code     = $code;
+		$this->context  = $context;
+		$this->executor = $executor;
 	}
 
 	/**
 	 * Create successful validation result.
 	 */
-	public static function valid(): self {
-		return new self( ValidationCode::VALID );
+	public static function valid( callable $executor ): self {
+		return new self( ValidationCode::VALID, null, $executor );
 	}
 
 	/**
@@ -90,5 +93,24 @@ class ValidationResult {
 	 */
 	public function get_message(): string {
 		return ValidationCode::get_message( $this->code, $this->context );
+	}
+
+	/**
+	 * The only way to execute the ingredient.
+	 *
+	 * As the executor can only be set via the `::valid()` factory, it's impossible to execute an
+	 * ingredient that does not pass validation.
+	 *
+	 * @return ExecutionResult
+	 */
+	public function execute(): ExecutionResult {
+		if ( ! $this->executor || ! $this->is_valid() ) {
+			return new ExecutionResult(
+				false,
+				'Cannot execute invalid result: ' . $this->get_message()
+			);
+		}
+
+		return call_user_func( $this->executor );
 	}
 }

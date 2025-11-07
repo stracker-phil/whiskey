@@ -36,7 +36,7 @@ class SetPayPalMerchantIngredient extends Ingredient {
 	public function validate( $value ): ValidationResult {
 		// Accept false to clear merchant data
 		if ( false === $value ) {
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( false ) );
 		}
 
 		if ( ! is_array( $value ) ) {
@@ -71,10 +71,10 @@ class SetPayPalMerchantIngredient extends Ingredient {
 			}
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		if ( false === $value ) {
 			return $this->clear_merchant_data();
 		}

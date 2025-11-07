@@ -34,10 +34,10 @@ class ProcessImagesIngredient extends Ingredient {
 			return ValidationResult::invalid_type( 'string for alt text' );
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$url = $value['image_url'];
 		$alt = $value['alt'] ?? 'Image';
 

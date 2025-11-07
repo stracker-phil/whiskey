@@ -20,13 +20,13 @@ class SetHomepageIngredient extends Ingredient {
 
 	public function validate( $value ): ValidationResult {
 		if ( is_string( $value ) || is_int( $value ) ) {
-			return ValidationResult::valid();
+			return ValidationResult::valid( fn() => $this->execute( $value ) );
 		}
 
 		return ValidationResult::invalid_type( 'string or integer' );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$page_id = $this->page_id_from_value( $value );
 
 		if ( ! $page_id ) {

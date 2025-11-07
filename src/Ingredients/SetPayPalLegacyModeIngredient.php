@@ -25,10 +25,10 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 			return ValidationResult::invalid_type( 'boolean' );
 		}
 
-		return ValidationResult::valid();
+		return ValidationResult::valid( fn() => $this->execute( $value ) );
 	}
 
-	public function execute( $value ): ExecutionResult {
+	private function execute( $value ): ExecutionResult {
 		$changes = [];
 
 		if ( $value ) {
