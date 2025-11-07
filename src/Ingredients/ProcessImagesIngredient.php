@@ -206,7 +206,7 @@ class ProcessImagesIngredient extends Ingredient {
 		?bool $crop = false,
 		?string $format = 'jpg',
 		?array $crop_position = null
-	) {
+	): bool|string {
 		// Clone editor to avoid modifying original
 		$size_editor = clone $editor;
 

@@ -43,7 +43,7 @@ class SetHomepageIngredient extends Ingredient {
 		);
 	}
 
-	private function page_id_from_value( $value ): int {
+	private function page_id_from_value( string|int $value ): int {
 		if ( is_string( $value ) ) {
 			$page = get_page_by_path( $value );
 
