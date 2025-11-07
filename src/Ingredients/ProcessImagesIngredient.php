@@ -46,9 +46,9 @@ class ProcessImagesIngredient extends Ingredient {
 
 		if ( is_wp_error( $temp_file ) ) {
 			return new ExecutionResult(
-				false,
-				'Failed to download image from URL.',
-				[ 'url' => $url ]
+				success: false,
+				message: 'Failed to download image from URL.',
+				data: [ 'url' => $url ]
 			);
 		}
 
@@ -69,9 +69,9 @@ class ProcessImagesIngredient extends Ingredient {
 
 		if ( is_wp_error( $attachment_id ) ) {
 			return new ExecutionResult(
-				false,
-				'Failed to import image to media library.',
-				[ 'url' => $url ]
+				success: false,
+				message: 'Failed to import image to media library.',
+				data: [ 'url' => $url ]
 			);
 		}
 
@@ -84,9 +84,9 @@ class ProcessImagesIngredient extends Ingredient {
 		$file = get_attached_file( $attachment_id );
 		if ( ! $file ) {
 			return new ExecutionResult(
-				false,
-				'Failed to get attachment file path.',
-				[ 'attachment_id' => $attachment_id ]
+				success: false,
+				message: 'Failed to get attachment file path.',
+				data: [ 'attachment_id' => $attachment_id ]
 			);
 		}
 
@@ -94,9 +94,9 @@ class ProcessImagesIngredient extends Ingredient {
 		$editor = wp_get_image_editor( $file );
 		if ( is_wp_error( $editor ) ) {
 			return new ExecutionResult(
-				false,
-				'Failed to initialize image editor.',
-				[ 'attachment_id' => $attachment_id ]
+				success: false,
+				message: 'Failed to initialize image editor.',
+				data: [ 'attachment_id' => $attachment_id ]
 			);
 		}
 
@@ -111,75 +111,60 @@ class ProcessImagesIngredient extends Ingredient {
 
 		// CALL SITE 1: Thumbnail - small, cropped, compressed
 		$thumb_data = $this->create_image_size(
-			$editor,
-			$file,
-			'whiskey_thumbnail',
-			150,
-			null,
-			70,
-			true,
-			'jpg',
-			null
+			editor: $editor,
+			original_file: $file,
+			size_name: 'whiskey_thumbnail',
+			width: 150,
+			quality: 70,
+			crop: true,
 		);
 
 		$metadata['sizes']['whiskey_thumbnail'] = $thumb_data;
 
 		// CALL SITE 2: Hero - large, specific dimensions, high quality
 		$hero_data = $this->create_image_size(
-			$editor,
-			$file,
-			'whiskey_hero',
-			1920,
-			600,
-			95,
-			false,
-			'jpg',
-			null
+			editor: $editor,
+			original_file: $file,
+			size_name: 'whiskey_hero',
+			width: 1920,
+			height: 600,
+			quality: 95,
 		);
 
 		$metadata['sizes']['whiskey_hero'] = $hero_data;
 
 		// CALL SITE 3: Gallery - medium size, maintain aspect ratio
 		$gallery_data = $this->create_image_size(
-			$editor,
-			$file,
-			'whiskey_gallery',
-			800,
-			null,
-			85,
-			false,
-			'jpg',
-			null
+			editor: $editor,
+			original_file: $file,
+			size_name: 'whiskey_gallery',
+			width: 800,
 		);
 
 		$metadata['sizes']['whiskey_gallery'] = $gallery_data;
 
 		// CALL SITE 4: Avatar - square crop, webp format
 		$avatar_data = $this->create_image_size(
-			$editor,
-			$file,
-			'whiskey_avatar',
-			200,
-			200,
-			85,
-			true,
-			'webp',
-			null
+			editor: $editor,
+			original_file: $file,
+			size_name: 'whiskey_avatar',
+			width: 200,
+			height: 200,
+			crop: true,
+			format: 'webp',
 		);
 
 		$metadata['sizes']['whiskey_avatar'] = $avatar_data;
 
 		// CALL SITE 5: OG (Open Graph) - specific dimensions with custom crop position
 		$og_data = $this->create_image_size(
-			$editor,
-			$file,
-			'whiskey_og',
-			1200,
-			630,
-			85,
-			true,
-			'jpg',
-			[ 'x' => 'center', 'y' => 'top' ]
+			editor: $editor,
+			original_file: $file,
+			size_name: 'whiskey_og',
+			width: 1200,
+			height: 630,
+			crop: true,
+			crop_position: [ 'x' => 'center', 'y' => 'top' ]
 		);
 
 		$metadata['sizes']['whiskey_og'] = $og_data;
@@ -188,9 +173,9 @@ class ProcessImagesIngredient extends Ingredient {
 		wp_update_attachment_metadata( $attachment_id, $metadata );
 
 		return new ExecutionResult(
-			true,
-			'Successfully processed image with 5 custom variants.',
-			[
+			success: true,
+			message: 'Successfully processed image with 5 custom variants.',
+			data: [
 				'attachment_id' => $attachment_id,
 				'sizes'         => array_keys( $metadata['sizes'] ),
 			]

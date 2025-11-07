@@ -50,9 +50,9 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 
 		if ( ! $updated && $previous_path !== $data_common['wc_installation_path'] ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update PayPal installation path.',
-				[
+				success: false,
+				message: 'Failed to update PayPal installation path.',
+				data: [
 					'deleted_nox_profile' => $deleted_nox,
 					'previous_path'       => $previous_path,
 					'requested_path'      => $data_common['wc_installation_path'],
@@ -63,9 +63,9 @@ class SetPayPalBrandedOnlyIngredient extends Ingredient {
 		$mode = $value ? 'branded-only (core-profiler)' : 'white-label (direct)';
 
 		return new ExecutionResult(
-			true,
-			"PayPal configured to {$mode} mode.",
-			[
+			success: true,
+			message: "PayPal configured to {$mode} mode.",
+			data: [
 				'deleted_nox_profile' => $deleted_nox,
 				'previous_path'       => $previous_path,
 				'current_path'        => $data_common['wc_installation_path'],

@@ -78,9 +78,9 @@ class SetWooStorePagesIngredient extends Ingredient {
 
 		if ( count( $errors ) > 0 ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update some WooCommerce store pages.',
-				[
+				success: false,
+				message: 'Failed to update some WooCommerce store pages.',
+				data: [
 					'updated' => $results,
 					'errors'  => $errors,
 				]
@@ -88,9 +88,9 @@ class SetWooStorePagesIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			'WooCommerce store pages updated successfully.',
-			[ 'pages' => $results ]
+			success: true,
+			message: 'WooCommerce store pages updated successfully.',
+			data: [ 'pages' => $results ]
 		);
 	}
 }

@@ -36,9 +36,9 @@ class SetWooCurrencyIngredient extends Ingredient {
 
 		if ( ! $updated && $previous_value !== $value ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update WooCommerce currency.',
-				[
+				success: false,
+				message: 'Failed to update WooCommerce currency.',
+				data: [
 					'previous'  => $previous_value,
 					'requested' => $value,
 				]
@@ -46,9 +46,9 @@ class SetWooCurrencyIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			"WooCommerce currency updated to '{$value}'.",
-			[
+			success: true,
+			message: "WooCommerce currency updated to '{$value}'.",
+			data: [
 				'previous' => $previous_value,
 				'current'  => $value,
 			]

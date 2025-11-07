@@ -60,9 +60,9 @@ class SetWooCountryIngredient extends Ingredient {
 
 		if ( ! $updated && $previous_value !== $country_value ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update WooCommerce default country.',
-				[
+				success: false,
+				message: 'Failed to update WooCommerce default country.',
+				data: [
 					'previous'  => $previous_value,
 					'requested' => $country_value,
 				]
@@ -70,9 +70,9 @@ class SetWooCountryIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			"WooCommerce default country updated to '{$country_value}'.",
-			[
+			success: true,
+			message: "WooCommerce default country updated to '{$country_value}'.",
+			data: [
 				'previous' => $previous_value,
 				'current'  => $country_value,
 			]

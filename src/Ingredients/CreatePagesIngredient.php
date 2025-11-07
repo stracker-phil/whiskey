@@ -55,16 +55,16 @@ class CreatePagesIngredient extends Ingredient {
 
 		if ( $failed_count > 0 ) {
 			return new ExecutionResult(
-				false,
-				"Failed to create or update {$failed_count} page(s).",
-				[ 'pages' => $pages ]
+				success: false,
+				message: "Failed to create or update {$failed_count} page(s).",
+				data: [ 'pages' => $pages ]
 			);
 		}
 
 		return new ExecutionResult(
-			true,
-			'Shop pages created or updated successfully.',
-			[ 'pages' => $pages ]
+			success: true,
+			message: 'Shop pages created or updated successfully.',
+			data: [ 'pages' => $pages ]
 		);
 	}
 

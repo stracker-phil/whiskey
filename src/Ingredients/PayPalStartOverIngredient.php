@@ -56,16 +56,16 @@ class PayPalStartOverIngredient extends Ingredient {
 
 		if ( count( $deleted_options ) === 0 ) {
 			return new ExecutionResult(
-				true,
-				'No PayPal settings found to delete.',
-				[ 'deleted' => [] ]
+				success: true,
+				message: 'No PayPal settings found to delete.',
+				data: [ 'deleted' => [] ]
 			);
 		}
 
 		return new ExecutionResult(
-			true,
-			'PayPal settings deleted successfully.',
-			[
+			success: true,
+			message: 'PayPal settings deleted successfully.',
+			data: [
 				'deleted' => $deleted_options,
 				'count'   => count( $deleted_options ),
 			]

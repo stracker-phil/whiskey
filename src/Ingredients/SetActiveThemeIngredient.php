@@ -34,9 +34,9 @@ class SetActiveThemeIngredient extends Ingredient {
 
 		if ( ! $theme->exists() ) {
 			return new ExecutionResult(
-				false,
-				"Theme '{$value}' does not exist.",
-				[ 'theme' => $value ]
+				success: false,
+				message: "Theme '{$value}' does not exist.",
+				data: [ 'theme' => $value ]
 			);
 		}
 
@@ -49,9 +49,9 @@ class SetActiveThemeIngredient extends Ingredient {
 
 		if ( $current_theme->get_stylesheet() !== $value ) {
 			return new ExecutionResult(
-				false,
-				"Failed to activate theme '{$value}'.",
-				[
+				success: false,
+				message: "Failed to activate theme '{$value}'.",
+				data: [
 					'requested' => $value,
 					'previous'  => $previous_name,
 					'current'   => $current_theme->get_stylesheet(),
@@ -60,9 +60,9 @@ class SetActiveThemeIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			"Theme '{$value}' activated successfully.",
-			[
+			success: true,
+			message: "Theme '{$value}' activated successfully.",
+			data: [
 				'previous' => $previous_name,
 				'current'  => $value,
 			]

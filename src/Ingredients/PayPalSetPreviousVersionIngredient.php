@@ -46,9 +46,9 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 
 			if ( ! $deleted && $previous_value !== '' ) {
 				return new ExecutionResult(
-					false,
-					'Failed to delete PayPal version option.',
-					[
+					success: false,
+					message: 'Failed to delete PayPal version option.',
+					data: [
 						'previous' => $previous_value,
 						'option'   => self::OPTION_NAME,
 					]
@@ -56,9 +56,9 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 			}
 
 			return new ExecutionResult(
-				true,
-				'PayPal version option deleted successfully.',
-				[
+				success: true,
+				message: 'PayPal version option deleted successfully.',
+				data: [
 					'previous' => $previous_value,
 					'action'   => 'deleted',
 					'option'   => self::OPTION_NAME,
@@ -71,9 +71,9 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 
 		if ( ! $updated && $previous_value !== $value ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update PayPal version.',
-				[
+				success: false,
+				message: 'Failed to update PayPal version.',
+				data: [
 					'previous'  => $previous_value,
 					'requested' => $value,
 					'option'    => self::OPTION_NAME,
@@ -82,9 +82,9 @@ class PayPalSetPreviousVersionIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			"PayPal version set to '{$value}'.",
-			[
+			success: true,
+			message: "PayPal version set to '{$value}'.",
+			data: [
 				'previous' => $previous_value,
 				'current'  => $value,
 				'option'   => self::OPTION_NAME,

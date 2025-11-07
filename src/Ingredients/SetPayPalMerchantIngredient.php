@@ -86,9 +86,9 @@ class SetPayPalMerchantIngredient extends Ingredient {
 
 		if ( ! $modern_result || ! $legacy_result || ! $onboarding_result ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update PayPal merchant credentials.',
-				[
+				success: false,
+				message: 'Failed to update PayPal merchant credentials.',
+				data: [
 					'modern_ui_updated'  => $modern_result,
 					'legacy_ui_updated'  => $legacy_result,
 					'onboarding_updated' => $onboarding_result,
@@ -97,9 +97,9 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			'PayPal merchant credentials configured successfully.',
-			[
+			success: true,
+			message: 'PayPal merchant credentials configured successfully.',
+			data: [
 				'merchant_id'    => $value['merchant_id'],
 				'merchant_email' => $value['merchant_email'],
 				'sandbox_mode'   => true,
@@ -186,9 +186,9 @@ class SetPayPalMerchantIngredient extends Ingredient {
 		delete_option( self::ONBOARDING_OPTION );
 
 		return new ExecutionResult(
-			true,
-			'PayPal merchant credentials cleared.',
-			[ 'cleared' => true ]
+			success: true,
+			message: 'PayPal merchant credentials cleared.',
+			data: [ 'cleared' => true ]
 		);
 	}
 }

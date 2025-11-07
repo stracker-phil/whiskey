@@ -176,9 +176,9 @@ class RecipeExecutor {
 		}
 
 		return new ExecutionResult(
-			! $has_failure,
-			$message,
-			$results
+			success: ! $has_failure,
+			message: $message,
+			data: $results
 		);
 	}
 }

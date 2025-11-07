@@ -41,9 +41,8 @@ class SetMenuItemsIngredient extends Ingredient {
 
 		if ( ! $menu_id ) {
 			return new ExecutionResult(
-				false,
-				'Failed to create or retrieve primary menu.',
-				[]
+				success: false,
+				message: 'Failed to create or retrieve primary menu.'
 			);
 		}
 
@@ -71,9 +70,9 @@ class SetMenuItemsIngredient extends Ingredient {
 
 		if ( $failed_count > 0 ) {
 			return new ExecutionResult(
-				false,
-				"Failed to add {$failed_count} menu item(s).",
-				[
+				success: false,
+				message: "Failed to add {$failed_count} menu item(s).",
+				data: [
 					'menu_id' => $menu_id,
 					'items'   => $items,
 				]
@@ -81,9 +80,9 @@ class SetMenuItemsIngredient extends Ingredient {
 		}
 
 		return new ExecutionResult(
-			true,
-			'Primary menu updated successfully.',
-			[
+			success: true,
+			message: 'Primary menu updated successfully.',
+			data: [
 				'menu_id' => $menu_id,
 				'items'   => $items,
 			]

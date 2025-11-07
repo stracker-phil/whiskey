@@ -36,9 +36,9 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 			if ( ! $updated && $previous_value !== true ) {
 				return new ExecutionResult(
-					false,
-					'Failed to enable BCDC override flag.',
-					[
+					success: false,
+					message: 'Failed to enable BCDC override flag.',
+					data: [
 						'previous'  => $previous_value,
 						'requested' => true,
 					]
@@ -46,9 +46,9 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 			}
 
 			return new ExecutionResult(
-				true,
-				'BCDC override flag enabled.',
-				[
+				success: true,
+				message: 'BCDC override flag enabled.',
+				data: [
 					'previous' => $previous_value,
 					'current'  => true,
 				]
@@ -61,9 +61,9 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 			if ( ! $updated && $previous_value !== $value ) {
 				return new ExecutionResult(
-					false,
-					'Failed to update BCDC override data.',
-					[
+					success: false,
+					message: 'Failed to update BCDC override data.',
+					data: [
 						'previous'  => $previous_value,
 						'requested' => $value,
 					]
@@ -71,9 +71,9 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 			}
 
 			return new ExecutionResult(
-				true,
-				'BCDC override data updated.',
-				[
+				success: true,
+				message: 'BCDC override data updated.',
+				data: [
 					'previous' => $previous_value,
 					'current'  => $value,
 				]
@@ -85,16 +85,16 @@ class PayPalBcdcOverrideIngredient extends Ingredient {
 
 		if ( ! $deleted && $previous_value !== null ) {
 			return new ExecutionResult(
-				false,
-				'Failed to delete BCDC override flag.',
-				[ 'previous' => $previous_value ]
+				success: false,
+				message: 'Failed to delete BCDC override flag.',
+				data: [ 'previous' => $previous_value ]
 			);
 		}
 
 		return new ExecutionResult(
-			true,
-			'BCDC override flag deleted.',
-			[
+			success: true,
+			message: 'BCDC override flag deleted.',
+			data: [
 				'previous' => $previous_value,
 				'current'  => null,
 			]

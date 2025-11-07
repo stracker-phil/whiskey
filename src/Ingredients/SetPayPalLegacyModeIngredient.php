@@ -41,16 +41,16 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 
 			if ( ! $updated_old_ui ) {
 				return new ExecutionResult(
-					false,
-					'Failed to enable legacy UI mode.',
-					$changes
+					success: false,
+					message: 'Failed to enable legacy UI mode.',
+					data: $changes
 				);
 			}
 
 			return new ExecutionResult(
-				true,
-				'PayPal configured to use legacy UI.',
-				$changes
+				success: true,
+				message: 'PayPal configured to use legacy UI.',
+				data: $changes
 			);
 		}
 
@@ -63,16 +63,16 @@ class SetPayPalLegacyModeIngredient extends Ingredient {
 
 		if ( ! $updated_new_merchant ) {
 			return new ExecutionResult(
-				false,
-				'Failed to enable modern UI mode.',
-				$changes
+				success: false,
+				message: 'Failed to enable modern UI mode.',
+				data: $changes
 			);
 		}
 
 		return new ExecutionResult(
-			true,
-			'PayPal configured to use modern UI.',
-			$changes
+			success: true,
+			message: 'PayPal configured to use modern UI.',
+			data: $changes
 		);
 	}
 }

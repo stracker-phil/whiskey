@@ -32,18 +32,18 @@ class UpdatePermalinksIngredient extends Ingredient {
 
 		if ( ! $updated && $previous_structure !== $value ) {
 			return new ExecutionResult(
-				false,
-				'Failed to update permalink structure.',
-				[ 'previous' => $previous_structure ]
+				success: false,
+				message: 'Failed to update permalink structure.',
+				data: [ 'previous' => $previous_structure ]
 			);
 		}
 
 		flush_rewrite_rules();
 
 		return new ExecutionResult(
-			true,
-			'Permalink structure updated and rewrite rules flushed.',
-			[
+			success: true,
+			message: 'Permalink structure updated and rewrite rules flushed.',
+			data: [
 				'previous' => $previous_structure,
 				'current'  => $value,
 			]
