@@ -108,40 +108,46 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Constructor Promotion
 
-- [ ] Refactor: All class constructor properties (Main, Registries, RestController, RecipeExecutor)
-- [ ] Refactor: Ingredient classes with state
-- [ ] Document before/after in `docs/changes-from-7.4.md`
+- [x] Refactor: All class constructor properties (Main, Registries, RestController, RecipeExecutor)
+- [x] Document changes
 
 #### Match Expressions
 
-- [ ] Refactor: RecipeExecutor ingredient instantiation patterns (if applicable)
-- [ ] Refactor: Status code mapping in RestController
-- [ ] Document examples
+- [x] Refactor: ExecutionStrategy, IngredientCategory, WhiskeyTool, ValidationCode
+- [x] Document changes
+
+#### Annotate `mixed` type
+
+- [x] Refactor Ingredients
+- [x] Document changes
 
 #### Named Arguments
 
-- [ ] Refactor: REST response building
-- [ ] Refactor: Ingredient instantiation
-- [ ] Refactor: ExecutionResult creation
-- [ ] Document readability improvements
+- [x] Refactor: ExecutionResult creation
+- [x] Refactor: ProcessImagesIngredient
+- [x] Document changes
 
 #### Union Types
 
-- [ ] Refactor: Ingredient validate() parameter types
-- [ ] Refactor: Ingredient execute() parameter types
-- [ ] Document type safety gains
+- [/] Refactor: Ingredients
+- [/] Document changes
 
 #### Nullsafe Operator
 
 - [ ] Refactor: Registry access chains
 - [ ] Refactor: Optional parameter handling in ingredients
-- [ ] Document null safety improvements
+- [ ] Document changes
 
 #### Additional Features
 
-- [ ] Use `str_contains()`, `str_starts_with()`, `str_ends_with()` in ingredients
+- [x] Use `str_contains()`, `str_starts_with()`, `str_ends_with()` in ingredients
+- [x] Document changes
+
+#### Documentation
+
 - [ ] Pass all tests
-- [ ] Measure complexity reduction
+- [x] Finish the before/after documentation in `docs/changes-8.0.md`
+- [ ] Capture new complexity metrics
 
 ---
 
@@ -152,30 +158,36 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 - [ ] Create `IngredientCategory` enum (WordPress, WooCommerce, PayPal, etc.)
 - [ ] Refactor: Replace `const CATEGORY` strings with enum
 - [ ] Refactor: Registry category filtering
-- [ ] Document before/after in `docs/changes-from-8.0.md`
+- [ ] Document changes
 
 #### Readonly Properties
 
 - [ ] Refactor: ExecutionResult as readonly class
 - [ ] Refactor: Ingredient constructor properties as readonly
 - [ ] Refactor: Registry properties as readonly where appropriate
-- [ ] Document immutability benefits
+- [ ] Document changes
 
 #### Never Return Type
 
 - [ ] Refactor: Error handling methods in ingredients
-- [ ] Document exhaustive validation
+- [ ] Document changes
 
 #### Final Class Constants
 
 - [ ] Refactor: Ingredient CATEGORY constants as final
 - [ ] Refactor: REST namespace constant as final
+- [ ] Document changes
 
 #### Additional Features
 
 - [ ] Use `array_is_list()` in validation where applicable
+- [ ] Document changes
+
+#### Documentation
+
 - [ ] Pass all tests
-- [ ] Measure complexity reduction
+- [ ] Finish the before/after documentation in `docs/changes-8.1.md`
+- [ ] Capture new complexity metrics
 
 ---
 
@@ -185,20 +197,24 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - [ ] Refactor: ExecutionResult as readonly class
 - [ ] Refactor: Simple ingredient classes as readonly
-- [ ] Document before/after in `docs/changes-from-8.1.md`
-- [ ] Document architectural improvements
+- [ ] Document changes
 
 #### DNF Types
 
 - [ ] Review ingredient validate() signatures for DNF type opportunities
 - [ ] Review ingredient execute() return types
-- [ ] Document type precision gains
+- [ ] Document changes
 
 #### Additional Features
 
 - [ ] Use `true`/`false`/`null` types in ingredient validation
+- [ ] Document changes
+
+#### Documentation
+
 - [ ] Pass all tests
-- [ ] Measure complexity reduction
+- [ ] Finish the before/after documentation in `docs/changes-8.2.md`
+- [ ] Capture new complexity metrics
 
 ---
 
@@ -208,24 +224,28 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 - [ ] Add types to all ingredient CATEGORY constants
 - [ ] Add types to REST namespace constant
-- [ ] Document type safety in `docs/changes-from-8.2.md`
+- [ ] Document changes
 
 #### Override Attribute
 
 - [ ] Add `#[Override]` to ingredient validate() implementations
 - [ ] Add `#[Override]` to ingredient execute() implementations
-- [ ] Document inheritance clarity
+- [ ] Document changes
 
 #### Additional Features
 
 - [ ] Use `json_validate()` for recipe config validation
 - [ ] Use anonymous readonly classes if applicable
+- [ ] Document changes
+
+#### Documentation
+
 - [ ] Pass all tests
-- [ ] Measure final complexity reduction
+- [ ] Finish the before/after documentation in `docs/changes-8.3.md`
+- [ ] Capture new complexity metrics
 
-#### Final Documentation
+#### Final Report and Evaluation
 
-- [ ] Complete evolution story across all `docs/changes-from-*.md`
 - [ ] Document 20% complexity reduction achievement
 - [ ] Prepare blog post content
 
