@@ -40,9 +40,9 @@ class ValidationResult {
 	/**
 	 * Create invalid type validation result.
 	 *
-	 * @param mixed $context Expected type description
+	 * @param mixed|null $context Expected type description
 	 */
-	public static function invalid_type( $context = null ): self {
+	public static function invalid_type( mixed $context = null ): self {
 		return new self( ValidationCode::INVALID_TYPE, $context );
 	}
 
@@ -65,18 +65,18 @@ class ValidationResult {
 	/**
 	 * Create invalid format validation result.
 	 *
-	 * @param mixed $context Format description
+	 * @param mixed|null $context Format description
 	 */
-	public static function invalid_format( $context = null ): self {
+	public static function invalid_format( mixed $context = null ): self {
 		return new self( ValidationCode::INVALID_FORMAT, $context );
 	}
 
 	/**
 	 * Create invalid value validation result.
 	 *
-	 * @param mixed $context Value description
+	 * @param mixed|null $context Value description
 	 */
-	public static function invalid_value( $context = null ): self {
+	public static function invalid_value( mixed $context = null ): self {
 		return new self( ValidationCode::INVALID_VALUE, $context );
 	}
 
