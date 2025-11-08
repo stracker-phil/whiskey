@@ -9,6 +9,7 @@ namespace Whiskey\Tests\Unit\Registry;
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Registry\IngredientRegistry;
 use Whiskey\Ingredient;
+use Whiskey\IngredientCategory;
 use Whiskey\ExecutionResult;
 use Whiskey\ValidationResult;
 
@@ -155,7 +156,7 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$metadata = $this->registry->get_metadata( 'test_ingredient' );
 
 		$this->assertSame( 'test_ingredient', $metadata['name'] );
-		$this->assertSame( 'test', $metadata['category'] );
+		$this->assertSame( IngredientCategory::General, $metadata['category'] );
 		$this->assertSame( 'Test ingredient for testing', $metadata['description'] );
 	}
 
@@ -168,8 +169,8 @@ class IngredientRegistryTest extends WhiskeyTest {
 		$this->assertCount( 2, $metadata );
 		$this->assertArrayHasKey( 'test_ingredient', $metadata );
 		$this->assertArrayHasKey( 'test_ingredient2', $metadata );
-		$this->assertSame( 'test', $metadata['test_ingredient']['category'] );
-		$this->assertSame( 'test', $metadata['test_ingredient2']['category'] );
+		$this->assertSame( IngredientCategory::General, $metadata['test_ingredient']['category'] );
+		$this->assertSame( IngredientCategory::General, $metadata['test_ingredient2']['category'] );
 	}
 
 	public function test_init_continues_after_individual_ingredient_error(): void {
@@ -230,9 +231,9 @@ class IngredientRegistryTest extends WhiskeyTest {
  * Test ingredient for unit tests
  */
 class TestIngredient extends Ingredient {
-	public const NAME        = 'test_ingredient';
-	public const CATEGORY    = 'test';
-	public const DESCRIPTION = 'Test ingredient for testing';
+	public const string NAME        = 'test_ingredient';
+	public const IngredientCategory CATEGORY    = IngredientCategory::General;
+	public const string DESCRIPTION = 'Test ingredient for testing';
 
 	public function validate( $value ): ValidationResult {
 		return ValidationResult::valid();
@@ -247,9 +248,9 @@ class TestIngredient extends Ingredient {
  * Second test ingredient
  */
 class TestIngredient2 extends Ingredient {
-	public const NAME        = 'test_ingredient2';
-	public const CATEGORY    = 'test';
-	public const DESCRIPTION = 'Second test ingredient';
+	public const string NAME        = 'test_ingredient2';
+	public const IngredientCategory CATEGORY    = IngredientCategory::General;
+	public const string DESCRIPTION = 'Second test ingredient';
 
 	public function validate( $value ): ValidationResult {
 		return ValidationResult::valid();
@@ -264,9 +265,9 @@ class TestIngredient2 extends Ingredient {
  * Test ingredient with empty name
  */
 class TestIngredientEmptyName extends Ingredient {
-	public const NAME        = '';
-	public const CATEGORY    = 'test';
-	public const DESCRIPTION = 'Should be skipped';
+	public const string NAME        = '';
+	public const IngredientCategory CATEGORY    = IngredientCategory::General;
+	public const string DESCRIPTION = 'Should be skipped';
 
 	public function validate( $value ): ValidationResult {
 		return ValidationResult::valid();
