@@ -6,6 +6,7 @@ declare( strict_types = 1 );
 
 namespace Whiskey\Tests\Unit\Controllers;
 
+use Closure;
 use Whiskey\Tests\Unit\WhiskeyTest;
 use Whiskey\Controllers\RestController;
 use Whiskey\Tools\WhiskeyTool;
@@ -28,15 +29,15 @@ class RestControllerTest extends WhiskeyTest {
 
 		$tool1->expects( $this->once() )
 			->method( 'init_rest' )
-			->with( 'whiskey/v1', $this->isType( 'array' ) );
+			->with( 'whiskey/v1', $this->isInstanceOf( Closure::class ) );
 
 		$tool2->expects( $this->once() )
 			->method( 'init_rest' )
-			->with( 'whiskey/v1', $this->isType( 'array' ) );
+			->with( 'whiskey/v1', $this->isInstanceOf( Closure::class ) );
 
 		$tool3->expects( $this->once() )
 			->method( 'init_rest' )
-			->with( 'whiskey/v1', $this->isType( 'array' ) );
+			->with( 'whiskey/v1', $this->isInstanceOf( Closure::class ) );
 
 		$controller->register_routes();
 	}
@@ -54,9 +55,10 @@ class RestControllerTest extends WhiskeyTest {
 
 		$controller->register_routes();
 
-		$this->assertIsArray( $capturedCallback );
-		$this->assertSame( $controller, $capturedCallback[0] );
-		$this->assertSame( 'permission_callback', $capturedCallback[1] );
+		// First-class callable syntax creates a Closure
+		$this->assertInstanceOf( Closure::class, $capturedCallback );
+		// Verify it calls the permission_callback method correctly
+		$this->assertTrue( $capturedCallback() );
 	}
 
 	public function test_register_routes_handles_empty_tools_array(): void {
