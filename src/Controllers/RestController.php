@@ -26,7 +26,7 @@ class RestController {
 
 	public function register_routes(): void {
 		foreach ( $this->tools as $tool ) {
-			$tool->init_rest( self::NAMESPACE, [ $this, 'permission_callback' ] );
+			$tool->init_rest( self::NAMESPACE, $this->permission_callback( ... ) );
 		}
 	}
 

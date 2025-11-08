@@ -71,7 +71,7 @@ abstract class WhiskeyTool {
 			$config['path'],
 			[
 				'methods'             => $config['method'],
-				'callback'            => [ $this, 'handle_rest' ],
+				'callback'            => $this->handle_rest( ... ),
 				'permission_callback' => $permission_callback,
 				'args'                => $config['args'] ?? [],
 			]
@@ -93,7 +93,7 @@ abstract class WhiskeyTool {
 
 		WP_CLI::add_command(
 			$config['command'],
-			[ $this, 'handle_cli' ],
+			$this->handle_cli( ... ),
 			[
 				'shortdesc' => $config['synopsis'] ?? '',
 				'when'      => $config['when'] ?? 'after_wp_load',
