@@ -11,9 +11,9 @@ namespace Whiskey;
  */
 class ExecutionStrategy {
 
-	public const SEQUENTIAL        = 'sequential';
-	public const CONTINUE_ON_ERROR = 'continue_on_error';
-	public const DRY_RUN           = 'dry_run';
+	final public const SEQUENTIAL        = 'sequential';
+	final public const CONTINUE_ON_ERROR = 'continue_on_error';
+	final public const DRY_RUN           = 'dry_run';
 
 	/**
 	 * Check if execution should stop on the first ingredient failure.
