@@ -205,7 +205,7 @@ class ApplyRecipeTool extends WhiskeyTool {
 		}
 
 		// Check if it's an indexed array (not associative)
-		if ( array_keys( $array ) !== range( 0, count( $array ) - 1 ) ) {
+		if ( ! array_is_list( $array ) ) {
 			return false;
 		}
 
