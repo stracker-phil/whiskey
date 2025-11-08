@@ -11,6 +11,7 @@ namespace Whiskey\Tools;
 
 use WP_CLI;
 use Whiskey\IngredientCategory;
+use Override;
 
 /**
  * Tool to list all available ingredients
@@ -37,6 +38,7 @@ class ListIngredientsTool extends WhiskeyTool {
 		return [ 'ingredients' => $ingredients ];
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		$ingredients = $data['ingredients'] ?? [];
 

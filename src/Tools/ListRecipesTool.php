@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tools;
 
 use WP_CLI;
+use Override;
 
 /**
  * Tool to list all available recipes
@@ -36,6 +37,7 @@ class ListRecipesTool extends WhiskeyTool {
 		return [ 'recipes' => $recipes ];
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		$recipes = $data['recipes'] ?? [];
 

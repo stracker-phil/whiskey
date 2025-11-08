@@ -13,6 +13,7 @@ use RuntimeException;
 use WP_CLI;
 use WP_REST_Response;
 use Whiskey\ExecutionStrategy;
+use Override;
 
 /**
  * Tool to apply/execute a recipe
@@ -89,6 +90,7 @@ class ApplyRecipeTool extends WhiskeyTool {
 		return $result;
 	}
 
+	#[Override]
 	protected function format_rest_success( array $data ): WP_REST_Response {
 		// For REST, return ExecutionResult format directly
 		return new WP_REST_Response(
@@ -101,6 +103,7 @@ class ApplyRecipeTool extends WhiskeyTool {
 		);
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		$name     = $data['name'] ?? 'Unknown';
 		$dry_run  = $data['dry_run'] ?? false;

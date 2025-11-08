@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Whiskey\Tools;
 
 use WP_CLI;
+use Override;
 
 /**
  * Tool to show plugin status and information
@@ -38,6 +39,7 @@ class StatusTool extends WhiskeyTool {
 		];
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		WP_CLI::log( 'Whiskey Plugin Status:' );
 		WP_CLI::log( sprintf( '  PHP Version: %s', $data['php_version'] ?? 'Unknown' ) );

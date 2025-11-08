@@ -12,6 +12,7 @@ namespace Whiskey\Tools;
 use RuntimeException;
 use WP_CLI;
 use function WP_CLI\Utils\format_items;
+use Override;
 
 /**
  * Tool to show details of a specific ingredient
@@ -52,6 +53,7 @@ class ShowIngredientTool extends WhiskeyTool {
 		];
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		$format = $data['format'] ?? 'table';
 		$name   = $data['name'] ?? 'Unknown';
@@ -72,6 +74,7 @@ class ShowIngredientTool extends WhiskeyTool {
 		}
 	}
 
+	#[Override]
 	protected function extract_cli_args( array $args, array $assoc_args ): array {
 		// Include format parameter from assoc_args
 		return array_merge(

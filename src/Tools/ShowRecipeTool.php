@@ -11,6 +11,7 @@ namespace Whiskey\Tools;
 
 use RuntimeException;
 use WP_CLI;
+use Override;
 
 /**
  * Tool to show details of a specific recipe
@@ -50,6 +51,7 @@ class ShowRecipeTool extends WhiskeyTool {
 		];
 	}
 
+	#[Override]
 	protected function format_cli_output( array $data ): void {
 		$name   = $data['name'] ?? 'Unknown';
 		$config = $data['config'] ?? [];
