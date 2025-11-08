@@ -34,7 +34,7 @@ class RestController {
 	 * As this is a plugin to set up dev/test environments, we do not
 	 * add any permission check here.
 	 */
-	public function permission_callback(): bool {
+	public function permission_callback(): true {
 		return true;
 	}
 }
