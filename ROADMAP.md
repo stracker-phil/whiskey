@@ -208,28 +208,20 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 ### Branch `php-8.3` - Final Polish
 
-#### Typed Constants
+#### Typed Class Constants
 
-- [ ] Add types to all ingredient CATEGORY constants
-- [ ] Add types to REST namespace constant
-- [ ] Document changes
+- [x] Refactor: Ingredient (NAME, CATEGORY, DESCRIPTION), all 15 ingredient classes, RestController
+- [x] Document changes
 
-#### Override Attribute
+#### #[Override] Attribute
 
-- [ ] Add `#[Override]` to ingredient validate() implementations
-- [ ] Add `#[Override]` to ingredient execute() implementations
-- [ ] Document changes
-
-#### Additional Features
-
-- [ ] Use `json_validate()` for recipe config validation
-- [ ] Use anonymous readonly classes if applicable
-- [ ] Document changes
+- [x] Refactor: All 6 tool classes (8 optional method overrides only)
+- [x] Document changes
 
 #### Documentation
 
-- [ ] Pass all tests
-- [ ] Finish the before/after documentation in `docs/changes-8.3.md`
+- [x] Pass all tests
+- [x] Finish the before/after documentation in `docs/changes-8.3.md`
 - [ ] Capture new complexity metrics
 
 #### Final Report and Evaluation
