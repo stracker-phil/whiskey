@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class SetPayPalBrandedOnlyIngredient extends Ingredient {
 	public const NAME        = 'set_paypal_branded_only';
-	public const CATEGORY    = IngredientCategory::PAYPAL;
+	public const CATEGORY    = IngredientCategory::PayPal;
 	public const DESCRIPTION = 'Sets PayPal installation mode; true = branded-only (core-profiler), false = white-label (direct)';
 
 	private const OPTION_NOX_PROFILE = 'woocommerce_payments_nox_profile';

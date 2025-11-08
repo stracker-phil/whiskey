@@ -54,19 +54,27 @@ class ListIngredientsTool extends WhiskeyTool {
 		foreach ( $ingredients as $ingredient ) {
 			$meta = $this->ingredients->get_metadata( $ingredient );
 
-			$category = $meta['category'] ?? 'default';
-			if ( ! isset( $categories[ $category ] ) ) {
-				$categories[ $category ] = [];
+			// Get category (either as enum or string value), default to General
+			$category = $meta['category'] ?? IngredientCategory::General;
+
+			// Use the category enum value as key for grouping
+			$category_key = $category instanceof IngredientCategory ? $category->value : $category;
+
+			if ( ! isset( $categories[ $category_key ] ) ) {
+				$categories[ $category_key ] = [];
 			}
-			$categories[ $category ][] = [
+			$categories[ $category_key ][] = [
 				'name'        => $ingredient,
 				'description' => $meta['description'] ?? '',
 			];
 		}
 
 		foreach ( $categories as $category => $items ) {
-			$color        = IngredientCategory::get_color( $category );
-			$display_name = IngredientCategory::get_display_name( $category );
+			// Convert string category to enum
+			$category_enum = IngredientCategory::from( $category );
+
+			$color        = $category_enum->get_color();
+			$display_name = $category_enum->get_display_name();
 			$reset        = "\033[0m";
 
 			WP_CLI::log( $color . $display_name . $reset );

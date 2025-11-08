@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class SetPayPalLegacyModeIngredient extends Ingredient {
 	public const NAME        = 'set_paypal_legacy_mode';
-	public const CATEGORY    = IngredientCategory::PAYPAL;
+	public const CATEGORY    = IngredientCategory::PayPal;
 	public const DESCRIPTION = 'Switches PayPal between legacy and modern UI; true = legacy mode, false = modern UI';
 
 	private const OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';

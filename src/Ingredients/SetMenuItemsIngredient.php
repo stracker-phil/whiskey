@@ -16,7 +16,7 @@ use Whiskey\ValidationResult;
  */
 class SetMenuItemsIngredient extends Ingredient {
 	public const NAME        = 'set_menu_items';
-	public const CATEGORY    = IngredientCategory::WORDPRESS;
+	public const CATEGORY    = IngredientCategory::WordPress;
 	public const DESCRIPTION = 'Creates or replaces the primary navigation menu with the specified page slugs';
 
 	private const MENU_LOCATION = 'primary';

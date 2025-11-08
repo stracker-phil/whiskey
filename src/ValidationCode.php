@@ -9,28 +9,37 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
-class ValidationCode {
+enum ValidationCode: string {
+	case Valid                 = 'valid';
+	case InvalidType           = 'invalid_type';
+	case MissingRequiredKey    = 'missing_required_key';
+	case InvalidArrayStructure = 'invalid_array_structure';
+	case InvalidFormat         = 'invalid_format';
+	case InvalidValue          = 'invalid_value';
 
-	public const VALID                   = 'valid';
-	public const INVALID_TYPE            = 'invalid_type';
-	public const MISSING_REQUIRED_KEY    = 'missing_required_key';
-	public const INVALID_ARRAY_STRUCTURE = 'invalid_array_structure';
-	public const INVALID_FORMAT          = 'invalid_format';
-	public const INVALID_VALUE           = 'invalid_value';
-
-	public static function is_valid( string $result ): bool {
-		return self::VALID === $result;
+	/**
+	 * Check if this validation code represents a valid result.
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return $this === self::Valid;
 	}
 
-	public static function get_message( string $result, $context = null ): string {
-		return match ( $result ) {
-			self::VALID => 'Validation passed',
-			self::INVALID_TYPE => sprintf( 'Invalid type: expected %s', $context ?? 'unknown' ),
-			self::MISSING_REQUIRED_KEY => sprintf( 'Missing required key: %s', $context ?? 'unknown' ),
-			self::INVALID_ARRAY_STRUCTURE => 'Invalid array structure',
-			self::INVALID_FORMAT => sprintf( 'Invalid format: %s', $context ?? 'unknown' ),
-			self::INVALID_VALUE => sprintf( 'Invalid value: %s', $context ?? 'unknown' ),
-			default => 'Unknown validation error',
+	/**
+	 * Get human-readable message for this validation code.
+	 *
+	 * @param mixed|null $context Optional context for error messages
+	 * @return string
+	 */
+	public function get_message( mixed $context = null ): string {
+		return match ( $this ) {
+			self::Valid => 'Validation passed',
+			self::InvalidType => sprintf( 'Invalid type: expected %s', $context ?? 'unknown' ),
+			self::MissingRequiredKey => sprintf( 'Missing required key: %s', $context ?? 'unknown' ),
+			self::InvalidArrayStructure => 'Invalid array structure',
+			self::InvalidFormat => sprintf( 'Invalid format: %s', $context ?? 'unknown' ),
+			self::InvalidValue => sprintf( 'Invalid value: %s', $context ?? 'unknown' ),
 		};
 	}
 }

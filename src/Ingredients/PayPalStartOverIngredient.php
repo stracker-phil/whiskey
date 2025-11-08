@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class PayPalStartOverIngredient extends Ingredient {
 	public const NAME        = 'paypal_start_over';
-	public const CATEGORY    = IngredientCategory::PAYPAL;
+	public const CATEGORY    = IngredientCategory::PayPal;
 	public const DESCRIPTION = 'Deletes all PayPal plugin settings, resetting to pre-installation state';
 
 	private const OPTION_PREFIXES = [

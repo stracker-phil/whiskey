@@ -15,7 +15,7 @@ use Whiskey\ValidationResult;
  */
 class SetWooStorePagesIngredient extends Ingredient {
 	public const NAME        = 'set_woo_store_pages';
-	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
+	public const CATEGORY    = IngredientCategory::WooCommerce;
 	public const DESCRIPTION = 'Configures WooCommerce store pages; accepts array with keys: cart, checkout, my-account';
 
 	private const ALLOWED_KEYS = [ 'cart', 'checkout', 'my-account' ];

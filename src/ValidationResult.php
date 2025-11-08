@@ -19,12 +19,12 @@ class ValidationResult {
 	/**
 	 * Private constructor - use factory methods for type safety.
 	 *
-	 * @param string   $code     Validation code constant from ValidationCode
-	 * @param mixed    $context  Optional context for error messages
-	 * @param ?Closure $executor Optional executor to apply the valid ingredient
+	 * @param ValidationCode $code     Validation code enum
+	 * @param mixed          $context  Optional context for error messages
+	 * @param ?Closure       $executor Optional executor to apply the valid ingredient
 	 */
 	private function __construct(
-		private string $code,
+		private ValidationCode $code,
 		private mixed $context = null,
 		private ?Closure $executor = null
 	) {
@@ -34,7 +34,7 @@ class ValidationResult {
 	 * Create successful validation result.
 	 */
 	public static function valid( callable $executor ): self {
-		return new self( ValidationCode::VALID, null, $executor );
+		return new self( ValidationCode::Valid, null, $executor );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class ValidationResult {
 	 * @param mixed|null $context Expected type description
 	 */
 	public static function invalid_type( mixed $context = null ): self {
-		return new self( ValidationCode::INVALID_TYPE, $context );
+		return new self( ValidationCode::InvalidType, $context );
 	}
 
 	/**
@@ -52,14 +52,14 @@ class ValidationResult {
 	 * @param string $key Missing key name
 	 */
 	public static function missing_key( string $key ): self {
-		return new self( ValidationCode::MISSING_REQUIRED_KEY, $key );
+		return new self( ValidationCode::MissingRequiredKey, $key );
 	}
 
 	/**
 	 * Create invalid array structure validation result.
 	 */
 	public static function invalid_array_structure(): self {
-		return new self( ValidationCode::INVALID_ARRAY_STRUCTURE );
+		return new self( ValidationCode::InvalidArrayStructure );
 	}
 
 	/**
@@ -68,7 +68,7 @@ class ValidationResult {
 	 * @param mixed|null $context Format description
 	 */
 	public static function invalid_format( mixed $context = null ): self {
-		return new self( ValidationCode::INVALID_FORMAT, $context );
+		return new self( ValidationCode::InvalidFormat, $context );
 	}
 
 	/**
@@ -77,21 +77,21 @@ class ValidationResult {
 	 * @param mixed|null $context Value description
 	 */
 	public static function invalid_value( mixed $context = null ): self {
-		return new self( ValidationCode::INVALID_VALUE, $context );
+		return new self( ValidationCode::InvalidValue, $context );
 	}
 
 	/**
 	 * Check if validation passed.
 	 */
 	public function is_valid(): bool {
-		return $this->code === ValidationCode::VALID;
+		return $this->code->is_valid();
 	}
 
 	/**
 	 * Get human-readable validation message.
 	 */
 	public function get_message(): string {
-		return ValidationCode::get_message( $this->code, $this->context );
+		return $this->code->get_message( $this->context );
 	}
 
 	/**

@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class SetWooCurrencyIngredient extends Ingredient {
 	public const NAME        = 'set_woo_currency';
-	public const CATEGORY    = IngredientCategory::WOOCOMMERCE;
+	public const CATEGORY    = IngredientCategory::WooCommerce;
 	public const DESCRIPTION = 'Sets the currency for WooCommerce; accepts 3-letter currency code (e.g., "USD", "EUR", "GBP")';
 
 	public function validate( mixed $value ): ValidationResult {

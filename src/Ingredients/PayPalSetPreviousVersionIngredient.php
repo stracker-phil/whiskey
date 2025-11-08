@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class PayPalSetPreviousVersionIngredient extends Ingredient {
 	public const NAME        = 'paypal_set_previous_version';
-	public const CATEGORY    = IngredientCategory::PAYPAL;
+	public const CATEGORY    = IngredientCategory::PayPal;
 	public const DESCRIPTION = 'Sets the stored PayPal plugin version to trigger update logic; accepts version string (e.g., "2.0.0") or empty string to delete';
 
 	private const OPTION_NAME = 'woocommerce-ppcp-version';

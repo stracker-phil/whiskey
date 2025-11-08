@@ -15,7 +15,7 @@ use Whiskey\ValidationResult;
  */
 class CreatePagesIngredient extends Ingredient {
 	public const NAME        = 'create_pages';
-	public const CATEGORY    = IngredientCategory::WORDPRESS;
+	public const CATEGORY    = IngredientCategory::WordPress;
 	public const DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
 
 	public function validate( mixed $value ): ValidationResult {

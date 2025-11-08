@@ -14,7 +14,7 @@ use Whiskey\ValidationResult;
  */
 class PayPalBcdcOverrideIngredient extends Ingredient {
 	public const NAME        = 'paypal_bcdc_override';
-	public const CATEGORY    = IngredientCategory::PAYPAL;
+	public const CATEGORY    = IngredientCategory::PayPal;
 	public const DESCRIPTION = 'Controls PayPal BCDC migration override: true to enable, false to delete, array to set custom data';
 
 	private const OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';
