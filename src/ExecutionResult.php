@@ -12,9 +12,9 @@ namespace Whiskey;
 class ExecutionResult {
 
 	public function __construct(
-		private bool $success,
-		private string $message,
-		private array $data = []
+		private readonly bool $success,
+		private readonly string $message,
+		private readonly array $data = []
 	) {
 	}
 

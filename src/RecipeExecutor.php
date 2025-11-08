@@ -11,8 +11,8 @@ class RecipeExecutor {
 	private const EXTENDS = 'extends';
 
 	public function __construct(
-		private IngredientRegistry $ingredients,
-		private RecipeRegistry $recipes
+		private readonly IngredientRegistry $ingredients,
+		private readonly RecipeRegistry $recipes
 	) {
 	}
 

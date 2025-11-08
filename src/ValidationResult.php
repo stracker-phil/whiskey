@@ -24,9 +24,9 @@ class ValidationResult {
 	 * @param ?Closure       $executor Optional executor to apply the valid ingredient
 	 */
 	private function __construct(
-		private ValidationCode $code,
-		private mixed $context = null,
-		private ?Closure $executor = null
+		private readonly ValidationCode $code,
+		private readonly mixed $context = null,
+		private readonly ?Closure $executor = null
 	) {
 	}
 

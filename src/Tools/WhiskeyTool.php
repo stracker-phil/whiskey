@@ -26,9 +26,9 @@ use Whiskey\RecipeExecutor;
 abstract class WhiskeyTool {
 
 	public function __construct(
-		protected RecipeRegistry $recipes,
-		protected IngredientRegistry $ingredients,
-		protected RecipeExecutor $executor
+		protected readonly RecipeRegistry $recipes,
+		protected readonly IngredientRegistry $ingredients,
+		protected readonly RecipeExecutor $executor
 	) {
 	}
 

@@ -21,7 +21,7 @@ class RestController {
 	/**
 	 * @param WhiskeyTool[] $tools
 	 */
-	public function __construct( private array $tools ) {
+	public function __construct( private readonly array $tools ) {
 	}
 
 	public function register_routes(): void {

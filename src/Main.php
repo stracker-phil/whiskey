@@ -20,10 +20,10 @@ use Throwable;
  */
 class Main {
 	public function __construct(
-		private RecipeRegistry $recipes,
-		private IngredientRegistry $ingredients,
-		private RestController $rest_controller,
-		private CliController $cli_controller
+		private readonly RecipeRegistry $recipes,
+		private readonly IngredientRegistry $ingredients,
+		private readonly RestController $rest_controller,
+		private readonly CliController $cli_controller
 	) {
 		$this->init();
 	}
