@@ -185,25 +185,23 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 #### Readonly Classes
 
-- [ ] Refactor: ExecutionResult as readonly class
-- [ ] Refactor: Simple ingredient classes as readonly
-- [ ] Document changes
+- [x] Refactor: ExecutionResult, ValidationResult
+- [x] Document changes
 
-#### DNF Types
+#### DNF Types (Nullable Type Notation)
 
-- [ ] Review ingredient validate() signatures for DNF type opportunities
-- [ ] Review ingredient execute() return types
-- [ ] Document changes
+- [x] Refactor: ValidationResult, ExecutionStrategy, ProcessImagesIngredient
+- [x] Document changes
 
-#### Additional Features
+#### Standalone true/false Types
 
-- [ ] Use `true`/`false`/`null` types in ingredient validation
-- [ ] Document changes
+- [x] Refactor: RestController, ProcessImagesIngredient
+- [x] Document changes
 
 #### Documentation
 
-- [ ] Pass all tests
-- [ ] Finish the before/after documentation in `docs/changes-8.2.md`
+- [x] Pass all tests
+- [x] Finish the before/after documentation in `docs/changes-8.2.md`
 - [ ] Capture new complexity metrics
 
 ---
