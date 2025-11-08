@@ -201,11 +201,11 @@ class ProcessImagesIngredient extends Ingredient {
 		string $original_file,
 		string $size_name,
 		int $width,
-		?int $height = null,
-		?int $quality = 85,
-		?bool $crop = false,
-		?string $format = 'jpg',
-		?array $crop_position = null
+		int|null $height = null,
+		int|null $quality = 85,
+		bool|null $crop = false,
+		string|null $format = 'jpg',
+		array|null $crop_position = null
 	): bool|string {
 		// Clone editor to avoid modifying original
 		$size_editor = clone $editor;

@@ -70,7 +70,7 @@ class ExecutionStrategy {
 	 * @param string|null $value The strategy value from user input
 	 * @return string A valid strategy constant
 	 */
-	public static function from_string( ?string $value ): string {
+	public static function from_string( string|null $value ): string {
 		if ( ! $value ) {
 			return self::get_default();
 		}

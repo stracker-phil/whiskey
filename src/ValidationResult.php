@@ -21,12 +21,12 @@ readonly class ValidationResult {
 	 *
 	 * @param ValidationCode $code     Validation code enum
 	 * @param mixed          $context  Optional context for error messages
-	 * @param ?Closure       $executor Optional executor to apply the valid ingredient
+	 * @param Closure|null   $executor Optional executor to apply the valid ingredient
 	 */
 	private function __construct(
 		private ValidationCode $code,
 		private mixed $context = null,
-		private ?Closure $executor = null
+		private Closure|null $executor = null
 	) {
 	}
 
