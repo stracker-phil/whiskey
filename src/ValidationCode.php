@@ -10,12 +10,12 @@ declare( strict_types = 1 );
 namespace Whiskey;
 
 enum ValidationCode: string {
-	case Valid                 = 'valid';
-	case InvalidType           = 'invalid_type';
-	case MissingRequiredKey    = 'missing_required_key';
+	case Valid = 'valid';
+	case InvalidType = 'invalid_type';
+	case MissingRequiredKey = 'missing_required_key';
 	case InvalidArrayStructure = 'invalid_array_structure';
-	case InvalidFormat         = 'invalid_format';
-	case InvalidValue          = 'invalid_value';
+	case InvalidFormat = 'invalid_format';
+	case InvalidValue = 'invalid_value';
 
 	/**
 	 * Check if this validation code represents a valid result.
