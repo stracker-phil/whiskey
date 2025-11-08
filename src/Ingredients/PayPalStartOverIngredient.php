@@ -13,9 +13,9 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class PayPalStartOverIngredient extends Ingredient {
-	public const NAME        = 'paypal_start_over';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Deletes all PayPal plugin settings, resetting to pre-installation state';
+	public const string             NAME        = 'paypal_start_over';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Deletes all PayPal plugin settings, resetting to pre-installation state';
 
 	private const OPTION_PREFIXES = [
 		'woocommerce-ppcp-',

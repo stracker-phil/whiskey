@@ -13,9 +13,9 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class ProcessImagesIngredient extends Ingredient {
-	public const NAME        = 'process_images';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Processes an image URL into multiple variants; accepts array with image_url and optional alt text';
+	public const string             NAME        = 'process_images';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Processes an image URL into multiple variants; accepts array with image_url and optional alt text';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {

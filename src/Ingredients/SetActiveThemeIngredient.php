@@ -13,9 +13,9 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class SetActiveThemeIngredient extends Ingredient {
-	public const NAME        = 'set_active_theme';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
+	public const string             NAME        = 'set_active_theme';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Activates a theme; specify the theme directory name (e.g., "twentytwentyfour")';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {

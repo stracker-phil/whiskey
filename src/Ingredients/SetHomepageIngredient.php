@@ -14,9 +14,9 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class SetHomepageIngredient extends Ingredient {
-	public const NAME        = 'set_homepage';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
+	public const string             NAME        = 'set_homepage';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Changes the home-page to a static WP page; specify either a post_id or post_name';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( is_string( $value ) || is_int( $value ) ) {

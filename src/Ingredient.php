@@ -12,19 +12,19 @@ abstract class Ingredient {
 	 * Must be defined by the child class. This is the public name
 	 * of the ingredient that's used in recipes.
 	 */
-	public const NAME = '';
+	public const string NAME = '';
 
 	/**
 	 * Ingredient category for documentation/filtering
 	 * Can be overwritten in the child class.
 	 */
-	public const CATEGORY = IngredientCategory::General;
+	public const IngredientCategory CATEGORY = IngredientCategory::General;
 
 	/**
 	 * Optional. Description provided by the child class to document
 	 * the ingredient.
 	 */
-	public const DESCRIPTION = '';
+	public const string DESCRIPTION = '';
 
 	abstract public function validate( mixed $value ): ValidationResult;
 }

@@ -13,11 +13,11 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class PayPalBcdcOverrideIngredient extends Ingredient {
-	public const NAME        = 'paypal_bcdc_override';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Controls PayPal BCDC migration override: true to enable, false to delete, array to set custom data';
+	public const string             NAME        = 'paypal_bcdc_override';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Controls PayPal BCDC migration override: true to enable, false to delete, array to set custom data';
 
-	private const OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';
+	private const string OPTION_KEY = 'woocommerce_paypal_payments_bcdc_migration_override';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( is_bool( $value ) || is_array( $value ) ) {

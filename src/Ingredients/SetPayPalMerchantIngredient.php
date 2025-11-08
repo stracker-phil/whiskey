@@ -13,13 +13,13 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class SetPayPalMerchantIngredient extends Ingredient {
-	public const NAME        = 'set_paypal_merchant';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Sets PayPal merchant credentials; accepts array with merchant_id, merchant_email, client_id, client_secret, or false to clear';
+	public const string             NAME        = 'set_paypal_merchant';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Sets PayPal merchant credentials; accepts array with merchant_id, merchant_email, client_id, client_secret, or false to clear';
 
-	private const MODERN_OPTION     = 'woocommerce-ppcp-data-common';
-	private const LEGACY_OPTION     = 'woocommerce-ppcp-settings';
-	private const ONBOARDING_OPTION = 'woocommerce-ppcp-data-onboarding';
+	private const string MODERN_OPTION     = 'woocommerce-ppcp-data-common';
+	private const string LEGACY_OPTION     = 'woocommerce-ppcp-settings';
+	private const string ONBOARDING_OPTION = 'woocommerce-ppcp-data-onboarding';
 
 	private const REQUIRED_KEYS = [
 		'merchant_id',

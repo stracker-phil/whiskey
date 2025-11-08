@@ -13,11 +13,11 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class PayPalSetPreviousVersionIngredient extends Ingredient {
-	public const NAME        = 'paypal_set_previous_version';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Sets the stored PayPal plugin version to trigger update logic; accepts version string (e.g., "2.0.0") or empty string to delete';
+	public const string             NAME        = 'paypal_set_previous_version';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Sets the stored PayPal plugin version to trigger update logic; accepts version string (e.g., "2.0.0") or empty string to delete';
 
-	private const OPTION_NAME = 'woocommerce-ppcp-version';
+	private const string OPTION_NAME = 'woocommerce-ppcp-version';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {

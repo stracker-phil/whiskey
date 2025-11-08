@@ -13,9 +13,9 @@ use Whiskey\ValidationResult;
  * Group: WooCommerce
  */
 class SetWooCountryIngredient extends Ingredient {
-	public const NAME        = 'set_woo_country';
-	public const CATEGORY    = IngredientCategory::WooCommerce;
-	public const DESCRIPTION = 'Sets the default country/state for WooCommerce; accepts "US:CA", "AT", or ["US", "CA"]';
+	public const string             NAME        = 'set_woo_country';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WooCommerce;
+	public const string             DESCRIPTION = 'Sets the default country/state for WooCommerce; accepts "US:CA", "AT", or ["US", "CA"]';
 
 	public function validate( mixed $value ): ValidationResult {
 		// Accept string like "US:CA" or "AT"

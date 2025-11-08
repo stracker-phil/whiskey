@@ -13,9 +13,9 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class UpdatePermalinksIngredient extends Ingredient {
-	public const NAME        = 'permalink_structure';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Changes the permalink structure; common values: "/%postname%/", "/%year%/%monthnum%/%postname%/", or empty string for default';
+	public const string             NAME        = 'permalink_structure';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Changes the permalink structure; common values: "/%postname%/", "/%year%/%monthnum%/%postname%/", or empty string for default';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_string( $value ) ) {

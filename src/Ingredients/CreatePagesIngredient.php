@@ -14,9 +14,9 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class CreatePagesIngredient extends Ingredient {
-	public const NAME        = 'create_pages';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
+	public const string             NAME        = 'create_pages';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Creates or updates WordPress pages: shop, block-cart, block-checkout, classic-cart, classic-checkout, my-account';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {

@@ -13,12 +13,12 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class SetPayPalLegacyModeIngredient extends Ingredient {
-	public const NAME        = 'set_paypal_legacy_mode';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Switches PayPal between legacy and modern UI; true = legacy mode, false = modern UI';
+	public const string             NAME        = 'set_paypal_legacy_mode';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Switches PayPal between legacy and modern UI; true = legacy mode, false = modern UI';
 
-	private const OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';
-	private const OPTION_OLD_UI       = 'woocommerce_ppcp-settings-should-use-old-ui';
+	private const string OPTION_NEW_MERCHANT = 'woocommerce-ppcp-is-new-merchant';
+	private const string OPTION_OLD_UI       = 'woocommerce_ppcp-settings-should-use-old-ui';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_bool( $value ) ) {

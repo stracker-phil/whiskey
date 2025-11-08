@@ -13,14 +13,14 @@ use Whiskey\ValidationResult;
  * Group: PayPal
  */
 class SetPayPalBrandedOnlyIngredient extends Ingredient {
-	public const NAME        = 'set_paypal_branded_only';
-	public const CATEGORY    = IngredientCategory::PayPal;
-	public const DESCRIPTION = 'Sets PayPal installation mode; true = branded-only (core-profiler), false = white-label (direct)';
+	public const string             NAME        = 'set_paypal_branded_only';
+	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
+	public const string             DESCRIPTION = 'Sets PayPal installation mode; true = branded-only (core-profiler), false = white-label (direct)';
 
-	private const OPTION_NOX_PROFILE = 'woocommerce_payments_nox_profile';
-	private const OPTION_DATA_COMMON = 'woocommerce-ppcp-data-common';
-	private const PATH_BRANDED       = 'core-profiler';
-	private const PATH_DIRECT        = 'direct';
+	private const string OPTION_NOX_PROFILE = 'woocommerce_payments_nox_profile';
+	private const string OPTION_DATA_COMMON = 'woocommerce-ppcp-data-common';
+	private const string PATH_BRANDED       = 'core-profiler';
+	private const string PATH_DIRECT        = 'direct';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_bool( $value ) ) {

@@ -16,7 +16,7 @@ use Whiskey\Tools\WhiskeyTool;
  */
 class RestController {
 
-	private const NAMESPACE = 'whiskey/v1';
+	private const string NAMESPACE = 'whiskey/v1';
 
 	/**
 	 * @param WhiskeyTool[] $tools

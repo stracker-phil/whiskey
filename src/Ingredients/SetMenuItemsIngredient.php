@@ -15,12 +15,12 @@ use Whiskey\ValidationResult;
  * Group: WordPress core
  */
 class SetMenuItemsIngredient extends Ingredient {
-	public const NAME        = 'set_menu_items';
-	public const CATEGORY    = IngredientCategory::WordPress;
-	public const DESCRIPTION = 'Creates or replaces the primary navigation menu with the specified page slugs';
+	public const string             NAME        = 'set_menu_items';
+	public const IngredientCategory CATEGORY    = IngredientCategory::WordPress;
+	public const string             DESCRIPTION = 'Creates or replaces the primary navigation menu with the specified page slugs';
 
-	private const MENU_LOCATION = 'primary';
-	private const MENU_NAME     = 'Primary Navigation';
+	private const string MENU_LOCATION = 'primary';
+	private const string MENU_NAME     = 'Primary Navigation';
 
 	public function validate( mixed $value ): ValidationResult {
 		if ( ! is_array( $value ) ) {
