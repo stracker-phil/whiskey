@@ -14,7 +14,7 @@ use Closure;
 /**
  * Immutable value object holding validation result code + optional context.
  */
-class ValidationResult {
+readonly class ValidationResult {
 
 	/**
 	 * Private constructor - use factory methods for type safety.
@@ -24,9 +24,9 @@ class ValidationResult {
 	 * @param ?Closure       $executor Optional executor to apply the valid ingredient
 	 */
 	private function __construct(
-		private readonly ValidationCode $code,
-		private readonly mixed $context = null,
-		private readonly ?Closure $executor = null
+		private ValidationCode $code,
+		private mixed $context = null,
+		private ?Closure $executor = null
 	) {
 	}
 

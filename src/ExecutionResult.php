@@ -9,12 +9,12 @@ declare( strict_types = 1 );
 
 namespace Whiskey;
 
-class ExecutionResult {
+readonly class ExecutionResult {
 
 	public function __construct(
-		private readonly bool $success,
-		private readonly string $message,
-		private readonly array $data = []
+		private bool $success,
+		private string $message,
+		private array $data = []
 	) {
 	}
 
