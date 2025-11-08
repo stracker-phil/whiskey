@@ -147,40 +147,36 @@ php-8.3                 # + docs/changes-from-8.2.md (complete history)
 
 ### Branch `php-8.1` - Type Safety
 
-#### Enums for Categories
+#### Enums
 
-- [ ] Create `IngredientCategory` enum (WordPress, WooCommerce, PayPal, etc.)
-- [ ] Refactor: Replace `const CATEGORY` strings with enum
-- [ ] Refactor: Registry category filtering
-- [ ] Document changes
+- [x] Create: IngredientCategory, ValidationCode
+- [x] Refactor: All ingredients, ValidationResult factory methods, Registry filtering
+- [x] Document changes
 
 #### Readonly Properties
 
-- [ ] Refactor: ExecutionResult as readonly class
-- [ ] Refactor: Ingredient constructor properties as readonly
-- [ ] Refactor: Registry properties as readonly where appropriate
-- [ ] Document changes
-
-#### Never Return Type
-
-- [ ] Refactor: Error handling methods in ingredients
-- [ ] Document changes
+- [x] Refactor: ExecutionResult, ValidationResult, service classes
+- [x] Document changes
 
 #### Final Class Constants
 
-- [ ] Refactor: Ingredient CATEGORY constants as final
-- [ ] Refactor: REST namespace constant as final
-- [ ] Document changes
+- [x] Refactor: ExecutionStrategy public constants
+- [x] Document changes
+
+#### First-class Callable Syntax
+
+- [x] Refactor: RestController, WhiskeyTool (REST/CLI handlers)
+- [x] Document changes
 
 #### Additional Features
 
-- [ ] Use `array_is_list()` in validation where applicable
-- [ ] Document changes
+- [x] Use `array_is_list()` in validation
+- [x] Document changes
 
 #### Documentation
 
-- [ ] Pass all tests
-- [ ] Finish the before/after documentation in `docs/changes-8.1.md`
+- [x] Pass all tests
+- [x] Finish the before/after documentation in `docs/changes-8.1.md`
 - [ ] Capture new complexity metrics
 
 ---
