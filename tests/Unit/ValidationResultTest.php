@@ -141,35 +141,6 @@ class ValidationResultTest extends WhiskeyTest {
 		];
 	}
 
-	// ===== ValidationCode Tests =====
-
-	/**
-	 * GIVEN validation code string
-	 * WHEN checking if code is valid
-	 * THEN should correctly identify valid vs invalid codes
-	 *
-	 * @dataProvider validation_code_provider
-	 */
-	public function test_validation_code_is_valid( string $code, bool $expected ): void {
-		$this->assertSame( $expected, ValidationCode::is_valid( $code ) );
-	}
-
-	public function validation_code_provider(): array {
-		return [
-			'valid code'   => [ 'valid', true ],
-			'invalid code' => [ 'invalid_type', false ],
-		];
-	}
-
-	/**
-	 * GIVEN undefined validation code
-	 * WHEN getting message
-	 * THEN should return unknown error message
-	 */
-	public function test_undefined_code_returns_unknown_message(): void {
-		$this->assertSame( 'Unknown validation error', ValidationCode::get_message( '?' ) );
-	}
-
 	// ===== Object Identity Tests =====
 
 	/**

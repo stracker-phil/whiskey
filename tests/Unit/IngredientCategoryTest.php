@@ -13,121 +13,117 @@ class IngredientCategoryTest extends WhiskeyTest {
 	// ===== get_display_name() Tests =====
 
 	/**
-	 * GIVEN category constant
+	 * GIVEN category enum case
 	 * WHEN getting display name
 	 * THEN should return human-readable name
 	 *
 	 * @dataProvider display_name_provider
 	 */
-	public function test_get_display_name( string $category, string $expected_name ): void {
-		$this->assertSame( $expected_name, IngredientCategory::get_display_name( $category ) );
+	public function test_get_display_name( IngredientCategory $category, string $expected_name ): void {
+		$this->assertSame( $expected_name, $category->get_display_name() );
 	}
 
 	public function display_name_provider(): array {
 		return [
-			'general'                        => [ IngredientCategory::GENERAL, 'Generic' ],
-			'wordpress'                      => [ IngredientCategory::WORDPRESS, 'WordPress Core' ],
-			'woocommerce'                    => [ IngredientCategory::WOOCOMMERCE, 'WooCommerce' ],
-			'paypal'                         => [
-				IngredientCategory::PAYPAL,
-				'PayPal Integration',
-			],
-			'unknown category returns input' => [ 'unknown', 'unknown' ],
+			'general'     => [ IngredientCategory::General, 'Generic' ],
+			'wordpress'   => [ IngredientCategory::WordPress, 'WordPress Core' ],
+			'woocommerce' => [ IngredientCategory::WooCommerce, 'WooCommerce' ],
+			'paypal'      => [ IngredientCategory::PayPal, 'PayPal Integration' ],
 		];
 	}
 
 	// ===== get_color() Tests =====
 
 	/**
-	 * GIVEN valid category constant
+	 * GIVEN valid category enum case
 	 * WHEN getting color
 	 * THEN should return ANSI color code
 	 *
 	 * @dataProvider valid_categories_provider
 	 */
-	public function test_get_color_returns_ansi_codes_for_valid_categories( string $category ): void {
-		$color = IngredientCategory::get_color( $category );
+	public function test_get_color_returns_ansi_codes_for_valid_categories( IngredientCategory $category ): void {
+		$color = $category->get_color();
 
-		$this->assertStringStartsWith( "\033[", $color, "Category {$category} should return ANSI code" );
-		$this->assertStringEndsWith( 'm', $color, "Category {$category} should end with 'm'" );
+		$this->assertStringStartsWith( "\033[", $color, "Category {$category->value} should return ANSI code" );
+		$this->assertStringEndsWith( 'm', $color, "Category {$category->value} should end with 'm'" );
 	}
 
 	public function valid_categories_provider(): array {
 		return [
-			'general'     => [ IngredientCategory::GENERAL ],
-			'wordpress'   => [ IngredientCategory::WORDPRESS ],
-			'woocommerce' => [ IngredientCategory::WOOCOMMERCE ],
-			'paypal'      => [ IngredientCategory::PAYPAL ],
+			'general'     => [ IngredientCategory::General ],
+			'wordpress'   => [ IngredientCategory::WordPress ],
+			'woocommerce' => [ IngredientCategory::WooCommerce ],
+			'paypal'      => [ IngredientCategory::PayPal ],
 		];
 	}
 
 	/**
 	 * GIVEN valid categories
 	 * WHEN getting colors
-	 * THEN each category should have unique color
+	 * THEN each category should have unique color (General gets default)
 	 */
 	public function test_get_color_returns_unique_colors_per_category(): void {
 		$colors = [
-			'general'     => IngredientCategory::get_color( IngredientCategory::GENERAL ),
-			'wordpress'   => IngredientCategory::get_color( IngredientCategory::WORDPRESS ),
-			'woocommerce' => IngredientCategory::get_color( IngredientCategory::WOOCOMMERCE ),
-			'paypal'      => IngredientCategory::get_color( IngredientCategory::PAYPAL ),
+			'general'     => IngredientCategory::General->get_color(),
+			'wordpress'   => IngredientCategory::WordPress->get_color(),
+			'woocommerce' => IngredientCategory::WooCommerce->get_color(),
+			'paypal'      => IngredientCategory::PayPal->get_color(),
 		];
 
-		$unique_colors = array_unique( $colors );
-		$this->assertCount( 4, $unique_colors, 'Each category should have a unique color' );
+		// WordPress, WooCommerce, and PayPal should have unique colors
+		// General uses the default reset code
+		$specific_colors = array_filter(
+			$colors,
+			static fn( $color ) => $color !== "\033[0m"
+		);
+
+		$unique_colors = array_unique( $specific_colors );
+		$this->assertCount( 3, $unique_colors, 'WordPress, WooCommerce, and PayPal should have unique colors' );
 	}
 
+	// ===== Enum Cases Tests =====
+
 	/**
-	 * GIVEN unknown category
-	 * WHEN getting color
-	 * THEN should return ANSI reset code
+	 * GIVEN IngredientCategory enum
+	 * WHEN checking available cases
+	 * THEN should have all expected category cases
 	 */
-	public function test_get_color_returns_reset_for_unknown_category(): void {
-		$this->assertSame( "\033[0m", IngredientCategory::get_color( 'unknown' ) );
+	public function test_enum_has_all_category_cases(): void {
+		$cases = IngredientCategory::cases();
+
+		$this->assertCount( 4, $cases );
+		$this->assertContains( IngredientCategory::General, $cases );
+		$this->assertContains( IngredientCategory::WordPress, $cases );
+		$this->assertContains( IngredientCategory::WooCommerce, $cases );
+		$this->assertContains( IngredientCategory::PayPal, $cases );
 	}
 
-	// ===== all() Tests =====
-
 	/**
-	 * GIVEN IngredientCategory class
-	 * WHEN getting all categories
-	 * THEN should return array containing all category constants
-	 */
-	public function test_all_returns_complete_category_list(): void {
-		$categories = IngredientCategory::all();
-
-		$this->assertIsArray( $categories );
-		$this->assertCount( 4, $categories );
-		$this->assertContains( IngredientCategory::GENERAL, $categories );
-		$this->assertContains( IngredientCategory::WORDPRESS, $categories );
-		$this->assertContains( IngredientCategory::WOOCOMMERCE, $categories );
-		$this->assertContains( IngredientCategory::PAYPAL, $categories );
-	}
-
-	// ===== is_valid() Tests =====
-
-	/**
-	 * GIVEN various category strings
-	 * WHEN validating category
-	 * THEN should return true only for defined categories
+	 * GIVEN string value
+	 * WHEN converting to enum
+	 * THEN should return correct case or throw exception
 	 *
-	 * @dataProvider is_valid_provider
+	 * @dataProvider from_string_provider
 	 */
-	public function test_is_valid( string $category, bool $expected ): void {
-		$this->assertSame( $expected, IngredientCategory::is_valid( $category ) );
+	public function test_from_string_creates_correct_case( string $value, ?IngredientCategory $expected ): void {
+		if ( $expected === null ) {
+			$this->expectException( \ValueError::class );
+			IngredientCategory::from( $value );
+		} else {
+			$this->assertSame( $expected, IngredientCategory::from( $value ) );
+		}
 	}
 
-	public function is_valid_provider(): array {
+	public function from_string_provider(): array {
 		return [
-			'general is valid'                 => [ IngredientCategory::GENERAL, true ],
-			'wordpress is valid'               => [ IngredientCategory::WORDPRESS, true ],
-			'woocommerce is valid'             => [ IngredientCategory::WOOCOMMERCE, true ],
-			'paypal is valid'                  => [ IngredientCategory::PAYPAL, true ],
-			'unknown is invalid'               => [ 'invalid', false ],
-			'empty string is invalid'          => [ '', false ],
-			'WordPress capitalized is invalid' => [ 'WordPress', false ],
-			'WORDPRESS uppercase is invalid'   => [ 'WORDPRESS', false ],
+			'general is valid'                 => [ 'general', IngredientCategory::General ],
+			'wordpress is valid'               => [ 'wordpress', IngredientCategory::WordPress ],
+			'woocommerce is valid'             => [ 'woocommerce', IngredientCategory::WooCommerce ],
+			'paypal is valid'                  => [ 'paypal', IngredientCategory::PayPal ],
+			'unknown throws error'             => [ 'invalid', null ],
+			'empty string throws error'        => [ '', null ],
+			'WordPress capitalized is invalid' => [ 'WordPress', null ],
+			'WORDPRESS uppercase is invalid'   => [ 'WORDPRESS', null ],
 		];
 	}
 }

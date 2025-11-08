@@ -61,7 +61,7 @@ abstract class IngredientTest extends WhiskeyTest {
 		$class = $this->getIngredientClass();
 
 		$this->assertSame( $this->getExpectedName(), $class::NAME );
-		$this->assertSame( $this->getExpectedCategory(), $class::CATEGORY );
+		$this->assertSame( $this->getExpectedCategory(), $class::CATEGORY->value );
 		$this->assertNotEmpty( $class::DESCRIPTION );
 	}
 
