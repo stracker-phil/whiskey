@@ -1,7 +1,7 @@
 name: whiskey
 type: wordpress
 docroot: .ddev/wordpress
-php_version: "8.2"
+php_version: "8.3"
 webserver_type: apache-fpm
 xdebug_enabled: true
 additional_hostnames: []
