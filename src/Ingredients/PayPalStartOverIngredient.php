@@ -17,12 +17,12 @@ class PayPalStartOverIngredient extends Ingredient {
 	public const IngredientCategory CATEGORY    = IngredientCategory::PayPal;
 	public const string             DESCRIPTION = 'Deletes all PayPal plugin settings, resetting to pre-installation state';
 
-	private const OPTION_PREFIXES = [
+	private const array OPTION_PREFIXES = [
 		'woocommerce-ppcp-',
 		'woocommerce_ppcp-',
 	];
 
-	private const SPECIFIC_OPTIONS = [
+	private const array SPECIFIC_OPTIONS = [
 		'ppcp-settings',
 		'woocommerce_payments_nox_profile',
 		'ppcp-webhook-simulation',

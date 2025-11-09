@@ -21,14 +21,14 @@ class SetPayPalMerchantIngredient extends Ingredient {
 	private const string LEGACY_OPTION     = 'woocommerce-ppcp-settings';
 	private const string ONBOARDING_OPTION = 'woocommerce-ppcp-data-onboarding';
 
-	private const REQUIRED_KEYS = [
+	private const array REQUIRED_KEYS = [
 		'merchant_id',
 		'merchant_email',
 		'client_id',
 		'client_secret',
 	];
 
-	private const OPTIONAL_KEYS = [
+	private const array OPTIONAL_KEYS = [
 		'merchant_country',
 		'casual_seller',
 	];

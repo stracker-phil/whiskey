@@ -9,8 +9,8 @@ New patterns implemented in code:
 
 ## Typed Class Constants
 
-Usage: **16** classes, **38** constants
-> 🔎 Search for `public const string` or `public const IngredientCategory` (regex)
+Usage: **19** classes, **72** constants
+> 🔎 Search for `\sconst \w` (regex)
 
 ### Before
 

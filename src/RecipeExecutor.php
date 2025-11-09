@@ -8,7 +8,7 @@ use Whiskey\Registry\IngredientRegistry;
 use Whiskey\Registry\RecipeRegistry;
 
 class RecipeExecutor {
-	private const EXTENDS = 'extends';
+	private const string EXTENDS = 'extends';
 
 	public function __construct(
 		private readonly IngredientRegistry $ingredients,

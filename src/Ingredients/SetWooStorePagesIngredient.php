@@ -18,8 +18,8 @@ class SetWooStorePagesIngredient extends Ingredient {
 	public const IngredientCategory CATEGORY    = IngredientCategory::WooCommerce;
 	public const string             DESCRIPTION = 'Configures WooCommerce store pages; accepts array with keys: cart, checkout, my-account';
 
-	private const ALLOWED_KEYS = [ 'cart', 'checkout', 'my-account' ];
-	private const OPTION_MAP   = [
+	private const array ALLOWED_KEYS = [ 'cart', 'checkout', 'my-account' ];
+	private const array OPTION_MAP   = [
 		'cart'       => 'woocommerce_cart_page_id',
 		'checkout'   => 'woocommerce_checkout_page_id',
 		'my-account' => 'woocommerce_myaccount_page_id',
