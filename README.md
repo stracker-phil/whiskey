@@ -2,6 +2,15 @@
 
 > Like fine whiskey, code gets better with age. This plugin demonstrates PHP language improvements from 7.4 to 8.3 through practical WordPress automation.
 
+## Branches
+
+[main](https://github.com/stracker-phil/whiskey) |
+[php-7.4](https://github.com/stracker-phil/whiskey/tree/php-7.4) |
+[php-8.0](https://github.com/stracker-phil/whiskey/tree/php-8.0) |
+[php-8.1](https://github.com/stracker-phil/whiskey/tree/php-8.1) |
+[php-8.2](https://github.com/stracker-phil/whiskey/tree/php-8.2) |
+[php-8.3](https://github.com/stracker-phil/whiskey/tree/php-8.3)
+
 ## Overview
 
 Whiskey is a WordPress helper plugin that exposes REST API endpoints for site configuration tasks. It's designed to showcase PHP language improvements across versions while solving real automation needs.
