@@ -47,7 +47,7 @@ class ShowIngredientTool extends WhiskeyTool {
 
 		return [
 			'name'        => $name,
-			'category'    => $metadata['category'] ?? '',
+			'category'    => $metadata['category']->get_display_name(),
 			'description' => $metadata['description'] ?? '',
 		];
 	}
