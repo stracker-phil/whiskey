@@ -135,6 +135,7 @@ class RecipeExecutor {
 		$results     = [];
 		$has_failure = false;
 		$is_dry_run  = ! ExecutionStrategy::should_execute( $strategy );
+		$failures    = [];
 
 		foreach ( $validation_results as $key => $validation_result ) {
 			if ( $is_dry_run ) {
@@ -153,7 +154,8 @@ class RecipeExecutor {
 			$results[ $key ] = $result->to_array();
 
 			if ( ! $result->is_success() ) {
-				$has_failure = true;
+				$has_failure     = true;
+				$failures[ $key ] = $result->get_message();
 
 				// Stop on first failure if strategy requires it.
 				if ( ExecutionStrategy::should_stop_on_failure( $strategy ) ) {
@@ -164,8 +166,15 @@ class RecipeExecutor {
 
 		if ( $is_dry_run ) {
 			$message = 'Recipe validated successfully (dry-run mode)';
+		} elseif ( $has_failure ) {
+			// Build detailed failure message with ingredient names and errors
+			$failure_details = [];
+			foreach ( $failures as $ingredient => $error ) {
+				$failure_details[] = sprintf( '%s: %s', $ingredient, $error );
+			}
+			$message = 'Recipe execution failed. ' . implode( '; ', $failure_details );
 		} else {
-			$message = $has_failure ? 'Recipe execution failed' : 'Recipe executed successfully';
+			$message = 'Recipe executed successfully';
 		}
 
 		return new ExecutionResult(

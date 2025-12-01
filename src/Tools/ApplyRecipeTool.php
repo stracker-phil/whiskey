@@ -41,8 +41,10 @@ class ApplyRecipeTool extends WhiskeyTool {
 	}
 
 	protected function handle_logic( array $args ): array {
-		$name    = $args['name'] ?? $args[0] ?? null;
-		$dry_run = isset( $args['dry-run'] );
+		$name     = $args['name'] ?? $args[0] ?? null;
+		$dry_run  = isset( $args['dry-run'] );
+		$continue = isset( $args['continue'] );
+		$strategy = ExecutionStrategy::from_cli_args( $dry_run, $continue );
 
 		if ( ! $name ) {
 			throw new RuntimeException( 'Recipe name is required.' );
@@ -68,18 +70,23 @@ class ApplyRecipeTool extends WhiskeyTool {
 			];
 		}
 
-		$execution_result = $validation_result->execute();
+		$execution_result = $validation_result->execute( $strategy );
 
-		if ( ! $execution_result->is_success() ) {
+		// For continue-on-error, return results even on failure for proper reporting
+		$result = [
+			'name'     => $name,
+			'success'  => $execution_result->is_success(),
+			'message'  => $execution_result->get_message(),
+			'data'     => $execution_result->get_data(),
+			'strategy' => $strategy,
+		];
+
+		// Only throw exception for stop-on-failure strategy
+		if ( ! $execution_result->is_success() && ExecutionStrategy::should_stop_on_failure( $strategy ) ) {
 			throw new RuntimeException( sprintf( 'Recipe execution failed: %s', $execution_result->get_message() ) );
 		}
 
-		return [
-			'name'    => $name,
-			'success' => $execution_result->is_success(),
-			'message' => $execution_result->get_message(),
-			'data'    => $execution_result->get_data(),
-		];
+		return $result;
 	}
 
 	protected function format_rest_success( array $data ): WP_REST_Response {
@@ -95,8 +102,10 @@ class ApplyRecipeTool extends WhiskeyTool {
 	}
 
 	protected function format_cli_output( array $data ): void {
-		$name    = $data['name'] ?? 'Unknown';
-		$dry_run = $data['dry_run'] ?? false;
+		$name     = $data['name'] ?? 'Unknown';
+		$dry_run  = $data['dry_run'] ?? false;
+		$success  = $data['success'] ?? true;
+		$strategy = $data['strategy'] ?? ExecutionStrategy::SEQUENTIAL;
 
 		WP_CLI::log( sprintf( 'Recipe: %s', $name ) );
 		WP_CLI::log( '' );
@@ -114,16 +123,21 @@ class ApplyRecipeTool extends WhiskeyTool {
 
 		// Display ingredient results
 		$ingredient_data = $data['data'] ?? [];
+		$failure_count   = 0;
+		$success_count   = 0;
+
 		if ( ! empty( $ingredient_data ) ) {
 			foreach ( $ingredient_data as $ingredient => $ingredient_result ) {
-				$success         = $ingredient_result['success'] ?? false;
-				$message         = $ingredient_result['message'] ?? '';
-				$ingredient_info = $ingredient_result['data'] ?? [];
+				$ingredient_success = $ingredient_result['success'] ?? false;
+				$message            = $ingredient_result['message'] ?? '';
+				$ingredient_info    = $ingredient_result['data'] ?? [];
 
-				if ( $success ) {
+				if ( $ingredient_success ) {
 					WP_CLI::log( sprintf( '  ✓ %s: %s', $ingredient, $message ) );
+					++$success_count;
 				} else {
 					WP_CLI::log( sprintf( '  ✗ %s: %s', $ingredient, $message ) );
+					++$failure_count;
 				}
 
 				// Display data details if present
@@ -134,7 +148,23 @@ class ApplyRecipeTool extends WhiskeyTool {
 		}
 
 		WP_CLI::log( '' );
-		WP_CLI::success( $data['message'] ?? 'Recipe applied successfully.' );
+
+		// Show summary based on results and strategy
+		if ( $success ) {
+			WP_CLI::success( $data['message'] ?? 'Recipe applied successfully.' );
+		} elseif ( ExecutionStrategy::CONTINUE_ON_ERROR === $strategy ) {
+			// For continue-on-error, show summary and exit with error
+			$summary = sprintf(
+				'Recipe completed with failures: %d succeeded, %d failed',
+				$success_count,
+				$failure_count
+			);
+			WP_CLI::warning( $summary );
+			WP_CLI::error( $data['message'] ?? 'Recipe execution had failures.', false );
+		} else {
+			// For sequential (stop on first failure)
+			WP_CLI::error( $data['message'] ?? 'Recipe execution failed.' );
+		}
 	}
 
 	/**
